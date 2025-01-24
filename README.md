@@ -1,5 +1,5 @@
 API:
-
+* 
 
 
 Entities:
@@ -10,7 +10,6 @@ Entities:
   String email
   String password
   String avatarUrl
-  Availability availability
 
 * Availability:
   User user
@@ -21,25 +20,24 @@ Entities:
 * Enum TemporaryAvailability
   AVAILABLE, UNAVAILABLE, TEMPORARY
 
-//TODO date(?? creation, game time planned)
+//TODO date( game time planned)
 * Lobby:
   Long id
   String title  
   LocalTime date
   User owner
+  LobbyState state
+
+* Enum LobbyState
+      ACTIVE, PRESET
 
 
 * Invite:
   Long id
   String message
   Lobby forLobby
-  Set<UserAccept> users
-  InviteState state
-
-* UserAccept:
   User user
-  boolean accept
-
+  InviteState state
 
 * Enum InviteState:
   PENDING, DECLINED, ACCEPTED, DELAYED
