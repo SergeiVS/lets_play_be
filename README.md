@@ -32,12 +32,13 @@ Entities:
   String email
   String password
   String avatarUrl
+  Availability availability
 
 * Availability:
   User user
   LocalTime: unavailableFrom
   LocalTime: unavailableTo
-  TemporaryAvailability availability
+  TemporaryAvailability availability 
 
 * Enum TemporaryAvailability
   AVAILABLE, UNAVAILABLE, TEMPORARY_UNAVAILABLE
