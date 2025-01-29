@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class LetsPlayBeApplication {
+public class LetsPlayBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(LetsPlayBeApplication.class, args);
+		SpringApplication.run(LetsPlayBackendApplication.class, args);
 	}
-
 }

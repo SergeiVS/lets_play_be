@@ -1,0 +1,14 @@
+@startuml api
+
+interface auth {
++ login
++ logout
+}
+
+interface User {
++ changeImg
++ changeName
++ changeAvailability
+}
+
+@enduml
