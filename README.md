@@ -32,7 +32,11 @@ Entities:
   String email
   String password
   String avatarUrl
-  Availability availability
+  List<UseRole> roles
+
+* UserRole:
+    Long id
+    String name
 
 * Availability:
   User user
