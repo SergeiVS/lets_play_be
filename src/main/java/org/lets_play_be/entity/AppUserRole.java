@@ -19,12 +19,12 @@ import java.util.Objects;
 public class AppUserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @NotEmpty
     @Column(name = "role_name", unique = true, nullable = false)
-    String name;
+    private String name;
     @ManyToMany(mappedBy = "roles")
-    List<AppUser> users;
+    private List<AppUser> users;
 
     @Override
     public boolean equals(Object o) {

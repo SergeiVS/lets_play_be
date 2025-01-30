@@ -18,20 +18,20 @@ import java.util.List;
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    String name;
+    private String name;
 
     @Column(nullable = false, unique = true)
     @Email(message = "email is in wrong format")
-    String email;
+    private String email;
 
     @Column(nullable = false)
-    String password;
+    private String password;
 
-    String avatarUrl;
+    private String avatarUrl;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    List<AppUserRole> roles;
+    private List<AppUserRole> roles;
 }
