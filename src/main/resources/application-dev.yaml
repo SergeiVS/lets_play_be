@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: Lets Play Backend
+  datasource:
+    url: jdbc:postgresql://localhost:5431/devDb
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+jwt:
+  at-cookie-name: access-token
+  rt-cookie-name: refresh-token
+  jwt-secret: secret-key
+  at-expiration-in-ms: 900000
+  rt-expiration-in-ms: 604800000

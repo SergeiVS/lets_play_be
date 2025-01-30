@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: Lets Play Backend
+  datasource:
+    url: ${DATA_SOURCE_URL}
+    username: ${DATA_SOURCE_USERNAME}
+    password: ${DATA_SOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+jwt:
+  at-cookie-name: ${JWT_AT_COOKIE_NAME}
+  rt-cookie-name: ${JWT_RTCOOKIE_NAME}
+  jwt-secret: ${JWT_SECRET}
+  at-expiration-in-ms: ${JWT_AT_EXPIRATION_IN_MS}
+  rt-expiration-in-ms: ${JWT_RT_EXPIRATION_IN_MS}
