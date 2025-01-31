@@ -10,11 +10,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.lets_play_be.security.utils.AppUserDetailsService;
 import org.lets_play_be.security.utils.JwtService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,7 +26,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final UserDetailsService userDetailsService;
+    private final AppUserDetailsService userDetailsService;
     private final JwtService jwtService;
 
     @Override
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //            log.error("Invalid jwt token: {}", e.getMessage());
             doFilterInternal(request, response, filterChain);
         } catch (ExpiredJwtException e) {
-            log.error("Expired jwt token: {}", e.getMessage());
+//            log.error("Expired jwt token: {}", e.getMessage());
             doFilterInternal(request, response, filterChain);
         } catch (UnsupportedJwtException e) {
 //            log.error("Unsupported jwt token: {}", e.getMessage());
