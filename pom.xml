@@ -37,6 +37,7 @@
         <jjwt.version>0.11.2</jjwt.version>
         <spring-boot-starter-web-services.version>3.3.3</spring-boot-starter-web-services.version>
         <spring-boot-starter-validation.version>3.3.3</spring-boot-starter-validation.version>
+        <org.progectlombok.version>1.18.36</org.progectlombok.version>
     </properties>
     <dependencies>
 
@@ -110,7 +111,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <version>${org.progectlombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--        Test-->
@@ -136,6 +138,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${org.progectlombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

@@ -17,7 +17,7 @@ public class JwtProperties {
     private String jwtSecret;
     @Value("${jwt.at-expiration-in-ms}")
     private Integer atExpirationInMs;
-    @Value("{jwt.rt-expiration-in-ms}")
+    @Value("${jwt.rt-expiration-in-ms}")
     private Integer rtExpirationInMs;
     @Value("${jwt.at-cookie-name}")
     private String atCookieName;
