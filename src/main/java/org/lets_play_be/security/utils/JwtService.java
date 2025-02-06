@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
@@ -89,13 +90,13 @@ public class JwtService {
                         .map(role -> role.getName().toUpperCase()).collect(Collectors.toList()))
                 .setExpiration(exparationDate)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .signWith(getSignKey(), SignatureAlgorithm.ES256)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(config.getJwtSecret());
-        return Keys.hmacShaKeyFor(keyBytes);
+        byte[] keyBytes = config.getJwtSecret().getBytes();
+        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
     private Claims extractAllClaims(String token) {

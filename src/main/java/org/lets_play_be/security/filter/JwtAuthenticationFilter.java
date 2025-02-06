@@ -58,20 +58,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             username = jwtService.getUsernameFromToken(jwt);
         } catch (SignatureException e) {
-//            log.error("Invalid jwt signature: {}", e.getMessage());
-            doFilterInternal(request, response, filterChain);
+            log.error("Invalid jwt signature: {}", e.getMessage());
+            filterChain.doFilter(request, response);
         } catch (MalformedJwtException e) {
-//            log.error("Invalid jwt token: {}", e.getMessage());
-            doFilterInternal(request, response, filterChain);
+            log.error("Invalid jwt token: {}", e.getMessage());
+            filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-//            log.error("Expired jwt token: {}", e.getMessage());
-            doFilterInternal(request, response, filterChain);
+            log.error("Expired jwt token: {}", e.getMessage());
+            filterChain.doFilter(request, response);
         } catch (UnsupportedJwtException e) {
-//            log.error("Unsupported jwt token: {}", e.getMessage());
-            doFilterInternal(request, response, filterChain);
+            log.error("Unsupported jwt token: {}", e.getMessage());
+            filterChain.doFilter(request, response);
         } catch (IllegalArgumentException e) {
-//            log.error("Jwt token is empty: {}", e.getMessage());
-            doFilterInternal(request, response, filterChain);
+            log.error("Jwt token is empty: {}", e.getMessage());
+            filterChain.doFilter(request, response);
         }
         return username;
     }
