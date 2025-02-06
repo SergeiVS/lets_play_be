@@ -1,12 +1,15 @@
 package org.lets_play_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,15 +19,27 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_roles")
-public class AppUserRole {
+public class AppUserRole implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotEmpty
     @Column(name = "role_name", unique = true, nullable = false)
     private String name;
+
     @ManyToMany(mappedBy = "roles")
-    private List<AppUser> users;
+    @JsonIgnore
+    private List<AppUser> users = new ArrayList<>();
+
+    public AppUserRole(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getAuthority() {
+        return this.name;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -43,8 +58,9 @@ public class AppUserRole {
     public String toString() {
         return "AppUserRole{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", users=" + users +
+                ", name='" + name +
                 '}';
     }
+
+
 }

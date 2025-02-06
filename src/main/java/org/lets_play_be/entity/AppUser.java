@@ -34,6 +34,13 @@ public class AppUser {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<AppUserRole> roles;
 
+    public AppUser(String name, String email, String password, String avatarUrl) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.avatarUrl = avatarUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

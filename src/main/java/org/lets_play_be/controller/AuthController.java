@@ -1,6 +1,7 @@
 package org.lets_play_be.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.userDto.AppUserProfile;
 import org.lets_play_be.exception.RestException;
@@ -32,8 +33,8 @@ public class AuthController {
     private final GetUserProfileService getUserProfileService;
 
 
-    @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    @PostMapping
+    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         Authentication authentication;
         try {
             authentication = authenticationManager
