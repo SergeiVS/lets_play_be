@@ -17,6 +17,6 @@ spring:
 jwt:
   at-cookie-name: access-token
   rt-cookie-name: refresh-token
-  jwt-secret: secret-key
+  jwt-secret: 8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb
   at-expiration-in-ms: 900000
   rt-expiration-in-ms: 604800000
