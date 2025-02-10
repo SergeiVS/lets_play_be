@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serial;
+import java.text.MessageFormat;
 
 @Getter
 public class RestException extends RuntimeException {

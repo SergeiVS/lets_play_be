@@ -62,9 +62,14 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                new AntPathRequestMatcher("/swagger-ui/**"),
+                                new AntPathRequestMatcher("/v3/api-docs/**"),
+                                new AntPathRequestMatcher("/v3/api-docs.yaml"),
+                                new AntPathRequestMatcher("/swagger-ui.html"),
                                 new AntPathRequestMatcher("/api/auth/login", "POST"),
                                 new AntPathRequestMatcher("/api/auth/register", "POST")
-                        ).permitAll().anyRequest().authenticated()
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
