@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lets_play_be.security.utils.AppUserDetailsService;
@@ -30,50 +31,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String jwt = getAtJwtFromCookie(request);
-
-        if (jwt == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String username = getUserNameFromJwtOrThrow(request, response, filterChain, jwt);
-
-        if (username != null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtService.validateToken(jwt, userDetails) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        }
-        filterChain.doFilter(request, response);
-    }
-
-    private String getUserNameFromJwtOrThrow(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String jwt) throws ServletException, IOException {
-        String username = null;
         try {
-            username = jwtService.getUsernameFromToken(jwt);
+
+            if (request.getRequestURI().startsWith("/swagger-ui") || request.getRequestURI().startsWith("/v3/api-docs")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String jwt = getAtJwtFromCookie(request);
+
+            if (jwt == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String username = jwtService.getUsernameFromToken(jwt);
+
+            if (username != null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtService.validateToken(jwt, userDetails) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
         } catch (SignatureException e) {
             log.error("Invalid jwt signature: {}", e.getMessage());
             filterChain.doFilter(request, response);
+            return;
         } catch (MalformedJwtException e) {
             log.error("Invalid jwt token: {}", e.getMessage());
             filterChain.doFilter(request, response);
+            return;
         } catch (ExpiredJwtException e) {
             log.error("Expired jwt token: {}", e.getMessage());
             filterChain.doFilter(request, response);
+            return;
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported jwt token: {}", e.getMessage());
             filterChain.doFilter(request, response);
+            return;
         } catch (IllegalArgumentException e) {
             log.error("Jwt token is empty: {}", e.getMessage());
             filterChain.doFilter(request, response);
+            return;
         }
-        return username;
+        filterChain.doFilter(request, response);
     }
 
     private String getAtJwtFromCookie(HttpServletRequest request) {
