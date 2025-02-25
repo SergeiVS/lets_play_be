@@ -1,5 +1,6 @@
 package org.lets_play_be.security.utils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.userDto.AppUserProfile;
@@ -15,16 +16,20 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private  final AuthenticationManager authManager;
+    private final AuthenticationManager authManager;
     private final JwtService jwtService;
     private final GetUserProfileService getUserProfileService;
+    private final AppUserDetailsService userDetailsService;
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
@@ -32,14 +37,7 @@ public class AuthService {
         authentication = getAuthentication(loginRequest);
 
         if (authentication.isAuthenticated()) {
-            AppUserProfile userProfile = getUserProfileService.execute(authentication.getName());
-            ResponseCookie accessTokenCookie = jwtService
-                    .generateAccessTokenCookie(userProfile.email(), userProfile.roles());
-            ResponseCookie refreshTokenCookie = jwtService
-                    .generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
-            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-            return new LoginResponse(accessTokenCookie.getValue());
+            return getLoginResponse(response, authentication);
         } else {
             SecurityContextHolder.getContext().setAuthentication(null);
             throw new UsernameNotFoundException("Invalid UserRequest");
@@ -47,11 +45,62 @@ public class AuthService {
 
     }
 
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+
+        final String refreshToken = jwtService.getAccessTokenFromCookie(request);
+
+        final String userEmail = jwtService.getUsernameFromToken(refreshToken);
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+
+        isTokenExpired(refreshToken);
+
+        isTokenValid(refreshToken, userDetails);
+
+        setNewATIntoCookie(response, userEmail);
+
+    }
+
+    private void setNewATIntoCookie(HttpServletResponse response, String userEmail) {
+        final AppUserProfile profile = getUserProfileService.getUserProfile(userEmail);
+        final ResponseCookie cookie = jwtService.generateAccessTokenCookie(userEmail, profile.roles());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    private void isTokenValid(String refreshToken, UserDetails userDetails) {
+        if (!jwtService.validateToken(refreshToken, userDetails)) {
+            throw new RestException("Refresh token is not valid", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void isTokenExpired(String refreshToken) {
+        if (jwtService.isTokenExpired(refreshToken)) {
+            throw new RestException("Refresh token expired", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private LoginResponse getLoginResponse(HttpServletResponse response, Authentication authentication) {
+        
+        AppUserProfile userProfile = getUserProfileService.getUserProfile(authentication.getName());
+        ResponseCookie accessTokenCookie = jwtService
+                .generateAccessTokenCookie(userProfile.email(), userProfile.roles());
+        ResponseCookie refreshTokenCookie = jwtService
+                .generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        return new LoginResponse(accessTokenCookie.getValue());
+    }
+
+
     private Authentication getAuthentication(LoginRequest loginRequest) {
+
         Authentication authentication;
+        String email = normalizeEmail(loginRequest.email());
+        String password = loginRequest.password().trim();
+
         try {
             authentication = authManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (BadCredentialsException e) {
             throw new RestException(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }

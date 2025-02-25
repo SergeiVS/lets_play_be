@@ -16,4 +16,6 @@ public enum UserRoleEnum {
 
        return VALUES.stream().filter(role -> role.name().equalsIgnoreCase(name)).findFirst();
    }
+
+
 }

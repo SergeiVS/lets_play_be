@@ -5,20 +5,22 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
+import org.lets_play_be.dto.userDto.NewUserRegistrationRequest;
+import org.lets_play_be.dto.userDto.NewUserRegistrationResponse;
+import org.lets_play_be.exception.RestException;
 import org.lets_play_be.exception.ValidationErrorResponse;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("api/v1/auth")
 public interface AuthControllerApi {
 
     @Operation(summary = "Authenticate user by email an password")
@@ -40,5 +42,27 @@ public interface AuthControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping("login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response);
+    ResponseEntity<LoginResponse> login(
+            @RequestBody @Valid @NotNull LoginRequest loginRequest, HttpServletResponse response);
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Is registered",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = NewUserRegistrationResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid validation failure",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "User already exist",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+    })
+    @PostMapping("register")
+    ResponseEntity<NewUserRegistrationResponse> register(@RequestBody @Valid @NotNull NewUserRegistrationRequest request);
+
+    @Operation(summary = "Refresh access token if expire")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "New access token issued")
+    })
+    @GetMapping("refresh")
+    void refreshAccessToken(HttpServletRequest request, HttpServletResponse response);
 }
