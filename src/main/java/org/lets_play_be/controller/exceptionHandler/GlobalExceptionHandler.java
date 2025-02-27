@@ -7,7 +7,6 @@ import org.lets_play_be.dto.errorDto.ErrorResponse;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.exception.ValidationErrorResponse;
 import org.lets_play_be.exception.Violation;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -16,13 +15,18 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-@Hidden
+//@Hidden
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -74,6 +78,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return errorsResponse;
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ValidationErrorResponse errorsResponse = new ValidationErrorResponse();
@@ -85,4 +91,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("", ex);
         return new ResponseEntity<>(errorsResponse, HttpStatus.BAD_REQUEST);
     }
+
 }
