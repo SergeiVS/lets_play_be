@@ -7,8 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 
-import java.time.LocalTime;
-import java.time.OffsetTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,19 +22,19 @@ public class UserAvailability {
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private AvailabilityEnum availabilityType;
-    private OffsetTime fromAvailable;
-    private OffsetTime toAvailable;
-    @OneToOne(mappedBy = "availability")
-    @JoinColumn(name = "id")
+    private LocalDateTime fromAvailable;
+    private LocalDateTime toAvailable;
+    @OneToOne(mappedBy = "accounts")
     private AppUser user;
 
-    public UserAvailability(AvailabilityEnum availabilityType) {
+    public UserAvailability(AvailabilityEnum availabilityType, AppUser user) {
         this.availabilityType = availabilityType;
+        this.user = user;
     }
 
     public UserAvailability(
-            AvailabilityEnum availabilityType, OffsetTime fromAvailable,
-            OffsetTime toAvailable, AppUser user) {
+            AvailabilityEnum availabilityType, LocalDateTime fromAvailable,
+            LocalDateTime toAvailable, AppUser user) {
         this.availabilityType = availabilityType;
         this.fromAvailable = fromAvailable;
         this.toAvailable = toAvailable;
