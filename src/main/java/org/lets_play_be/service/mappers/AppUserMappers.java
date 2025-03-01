@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppUserMappers {
     public NewUserRegistrationResponse toNewUserResponse(AppUser appUser) {
-        return new NewUserRegistrationResponse(appUser.getId(), appUser.getName(), appUser.getEmail(), appUser.getAvatarUrl());
+        return new NewUserRegistrationResponse(appUser.getId(),
+                appUser.getName(), appUser.getEmail(), appUser.getAvatarUrl(), appUser.getAvailability().toString());
     }
 }

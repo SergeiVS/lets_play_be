@@ -24,12 +24,12 @@ public class UserAvailability {
     private AvailabilityEnum availabilityType;
     private LocalDateTime fromAvailable;
     private LocalDateTime toAvailable;
-    @OneToOne(mappedBy = "accounts")
+    @OneToOne(mappedBy = "availability")
+    @JoinColumn(name = "id")
     private AppUser user;
 
-    public UserAvailability(AvailabilityEnum availabilityType, AppUser user) {
+    public UserAvailability(AvailabilityEnum availabilityType) {
         this.availabilityType = availabilityType;
-        this.user = user;
     }
 
     public UserAvailability(

@@ -36,7 +36,7 @@ public class AppUser {
     private List<AppUserRole> roles;
 
     @OneToOne(orphanRemoval = true)
-    UserAvailability availability;
+    private UserAvailability availability;
 
     public AppUser(String name, String email, String password, String avatarUrl) {
         this.name = name;
