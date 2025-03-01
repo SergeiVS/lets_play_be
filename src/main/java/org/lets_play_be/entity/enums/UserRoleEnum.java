@@ -14,7 +14,10 @@ public enum UserRoleEnum {
    public static Optional<UserRoleEnum> findRole(String name) {
        if (name == null) return Optional.empty();
 
-       return VALUES.stream().filter(role -> role.name().equalsIgnoreCase(name)).findFirst();
+       return VALUES.stream()
+               .filter(role -> role.name()
+                       .equalsIgnoreCase(name))
+               .findFirst();
    }
 
 

@@ -4,6 +4,8 @@ public record NewUserRegistrationResponse(
         Long userId,
         String name,
         String email,
-        String avatarUrl
+        String avatarUrl,
+        String availability
+
 ) {
 }

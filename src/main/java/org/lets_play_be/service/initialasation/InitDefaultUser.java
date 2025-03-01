@@ -1,11 +1,15 @@
 package org.lets_play_be.service.initialasation;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lets_play_be.entity.AppUser;
 import org.lets_play_be.entity.AppUserRole;
+import org.lets_play_be.entity.UserAvailability;
+import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.UserRoleEnum;
+import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.lets_play_be.service.appUserService.AppUserRepositoryService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
@@ -24,15 +28,22 @@ public class InitDefaultUser {
     private final AppUserRepositoryService repositoryService;
     private final PasswordEncoder passwordEncoder;
     private final AppUserRoleMapping appUserRoleMapping;
+    private final UserAvailabilityRepository availabilityRepository;
 
     @PostConstruct
+    @Transactional
     public void init() {
         List<AppUser> defaultUsers = getListOfDefaultUsers();
 
         for (AppUser user : defaultUsers) {
             if (!repositoryService.existsByEmail(user.getEmail())) {
-                AppUser userForSave = repositoryService.save(user);
-                log.info("Saved user: {}", userForSave.getEmail());
+
+                UserAvailability availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
+                availabilityRepository.save(availability);
+                user.setAvailability(availability);
+                AppUser savedUser = repositoryService.save(user);
+
+                log.info("Saved user: {}", savedUser.getEmail());
             }
         }
     }
@@ -59,6 +70,7 @@ public class InitDefaultUser {
         String passwordHash = passwordEncoder.encode(password);
         AppUser testUser = new AppUser(name, email, passwordHash, avatarUrl);
         testUser.setRoles(getAppUserRoles(roleNames));
+
         return testUser;
     }
 
