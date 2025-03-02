@@ -10,11 +10,10 @@ public record AppUserProfile(
         long id,
         String name,
         String email,
-        String avatarUrl,
         List<AppUserRole> roles
 ) implements Serializable {
 
     public static AppUserProfile from(AppUser user) {
-        return new AppUserProfile(user.getId(), user.getName(), user.getEmail(), user.getAvatarUrl(), user.getRoles());
+        return new AppUserProfile(user.getId(), user.getName(), user.getEmail(), user.getRoles());
     }
 }

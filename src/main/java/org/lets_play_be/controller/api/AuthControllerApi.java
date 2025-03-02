@@ -11,8 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
 import org.lets_play_be.dto.userDto.NewUserRegistrationRequest;
-import org.lets_play_be.dto.userDto.NewUserRegistrationResponse;
-import org.lets_play_be.exception.RestException;
+import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.exception.ValidationErrorResponse;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
@@ -48,7 +47,7 @@ public interface AuthControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Is registered",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NewUserRegistrationResponse.class))}),
+                            schema = @Schema(implementation = AppUserFullResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid validation failure",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -57,7 +56,7 @@ public interface AuthControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping("register")
-    ResponseEntity<NewUserRegistrationResponse> register(@RequestBody @Valid @NotNull NewUserRegistrationRequest request);
+    ResponseEntity<AppUserFullResponse> register(@RequestBody @Valid @NotNull NewUserRegistrationRequest request);
 
     @Operation(summary = "Refresh access token if expire")
     @ApiResponses(value = {

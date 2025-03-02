@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.controller.api.AuthControllerApi;
 import org.lets_play_be.dto.userDto.NewUserRegistrationRequest;
-import org.lets_play_be.dto.userDto.NewUserRegistrationResponse;
+import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
 import org.lets_play_be.security.utils.AuthService;
@@ -28,8 +28,8 @@ public class AuthController  implements AuthControllerApi {
     }
 
     @Override
-    public ResponseEntity<NewUserRegistrationResponse> register(NewUserRegistrationRequest request) {
-        NewUserRegistrationResponse newUserResponse = registerNewUserService.registerNewUser(request);
+    public ResponseEntity<AppUserFullResponse> register(NewUserRegistrationRequest request) {
+        AppUserFullResponse newUserResponse = registerNewUserService.registerNewUser(request);
         return new ResponseEntity<>(newUserResponse, HttpStatus.OK);
     }
 

@@ -78,18 +78,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return errorsResponse;
     }
 
-    @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ValidationErrorResponse errorsResponse = new ValidationErrorResponse();
-        errorsResponse.setErrors(ex.getAllErrors().stream()
-                .filter(FieldError.class::isInstance)
-                .map(FieldError.class::cast)
-                .map(violation -> new Violation(violation.getField(), violation.getDefaultMessage()))
-                .toList());
-        log.error("", ex);
-        return new ResponseEntity<>(errorsResponse, HttpStatus.BAD_REQUEST);
-    }
+//    @ResponseBody
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @Override
+//    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+//        ValidationErrorResponse errorsResponse = new ValidationErrorResponse();
+//        errorsResponse.setErrors(ex.getAllErrors().stream()
+//                .filter(FieldError.class::isInstance)
+//                .map(FieldError.class::cast)
+//                .map(violation -> new Violation(violation.getField(), violation.getDefaultMessage()))
+//                .toList());
+//        log.error("", ex);
+//        return new ResponseEntity<>(errorsResponse, HttpStatus.BAD_REQUEST);
+//    }
 
 }

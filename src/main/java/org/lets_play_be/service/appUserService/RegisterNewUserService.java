@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.common.ErrorMessage;
 import org.lets_play_be.dto.userDto.NewUserRegistrationRequest;
-import org.lets_play_be.dto.userDto.NewUserRegistrationResponse;
+import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.entity.AppUser;
 import org.lets_play_be.entity.AppUserRole;
 import org.lets_play_be.entity.UserAvailability;
@@ -31,7 +31,7 @@ public class RegisterNewUserService {
     private final UserAvailabilityRepository availabilityRepository;
 
     @Transactional
-    public NewUserRegistrationResponse registerNewUser(NewUserRegistrationRequest request) {
+    public AppUserFullResponse registerNewUser(NewUserRegistrationRequest request) {
 
         isUserExistByEmail(request.email());
         isUserExistByName(request.name());
@@ -39,7 +39,7 @@ public class RegisterNewUserService {
         AppUser userForSave = getUserForSave(request);
         AppUser savedUser = repositoryService.save(userForSave);
 
-        return mapper.toNewUserResponse(savedUser);
+        return mapper.toFullUserResponse(savedUser);
     }
 
     private AppUser getUserForSave(NewUserRegistrationRequest request) {
