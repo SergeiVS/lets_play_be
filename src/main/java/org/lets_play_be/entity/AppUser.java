@@ -13,7 +13,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Table(name = "accounts")
 public class AppUser {
     @Id

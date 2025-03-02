@@ -21,9 +21,9 @@ public class ValidationUtils {
             String errorMessage = "In a case of TEMPORARY_AVAILABLE from and to time fields must be filled";
             assert fromAvailable != null : errorMessage;
             assert toAvailable != null : errorMessage;
-        }
-        isFromTimeBeforeTo(fromAvailable, toAvailable);
 
+            isFromTimeBeforeTo(fromAvailable, toAvailable);
+        }
     }
 
     public static void isFromTimeBeforeTo(OffsetTime fromAvailable, OffsetTime toAvailable) {

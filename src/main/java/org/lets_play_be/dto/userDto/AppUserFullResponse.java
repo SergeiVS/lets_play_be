@@ -11,8 +11,6 @@ public record AppUserFullResponse(
         String avatarUrl,
         String availability,
         String[] roles,
-        @Nullable
         String fromAvailable,
-        @Nullable
         String toAvailable) implements Serializable {
 }

@@ -12,13 +12,14 @@ public class AppUserMappers {
 
         String[] roles = getUserRoles(appUser);
         //can be null
-        String fromAvailable = FormattingUtils.TIME_TO_STRING_FORMATTER(appUser.getAvailability().getFromAvailable());
+        String fromAvailable = appUser.getAvailability().getFromAvailable() == null ? null : FormattingUtils.TIME_TO_STRING_FORMATTER(appUser.getAvailability().getFromAvailable());
         //can be null
-        String toAvailable = FormattingUtils.TIME_TO_STRING_FORMATTER(appUser.getAvailability().getToAvailable());
+        String toAvailable = appUser.getAvailability().getToAvailable() == null ? null : FormattingUtils.TIME_TO_STRING_FORMATTER(appUser.getAvailability().getToAvailable());
 
         return new AppUserFullResponse(appUser.getId(),
                 appUser.getName(), appUser.getEmail(),
-                appUser.getAvatarUrl(), appUser.getAvailability().toString(), roles, fromAvailable, toAvailable);
+                appUser.getAvatarUrl(), appUser.getAvailability().getAvailabilityType().toString(),
+                roles, fromAvailable, toAvailable);
     }
 
 

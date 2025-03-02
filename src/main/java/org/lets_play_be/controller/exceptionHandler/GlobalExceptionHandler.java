@@ -26,7 +26,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-//@Hidden
+@Hidden
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -66,6 +66,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
@@ -78,18 +86,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return errorsResponse;
     }
 
-//    @ResponseBody
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    @Override
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-//        ValidationErrorResponse errorsResponse = new ValidationErrorResponse();
-//        errorsResponse.setErrors(ex.getAllErrors().stream()
-//                .filter(FieldError.class::isInstance)
-//                .map(FieldError.class::cast)
-//                .map(violation -> new Violation(violation.getField(), violation.getDefaultMessage()))
-//                .toList());
-//        log.error("", ex);
-//        return new ResponseEntity<>(errorsResponse, HttpStatus.BAD_REQUEST);
-//    }
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ValidationErrorResponse errorsResponse = new ValidationErrorResponse();
+        errorsResponse.setErrors(ex.getAllErrors().stream()
+                .filter(FieldError.class::isInstance)
+                .map(FieldError.class::cast)
+                .map(violation -> new Violation(violation.getField(), violation.getDefaultMessage()))
+                .toList());
+        log.error("", ex);
+        return new ResponseEntity<>(errorsResponse, HttpStatus.BAD_REQUEST);
+    }
 
 }

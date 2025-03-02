@@ -1,7 +1,5 @@
 package org.lets_play_be.utils;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.OffsetTime;
 import java.time.format.DateTimeFormatter;
 
@@ -13,6 +11,7 @@ public class FormattingUtils {
 
     public static String TIME_TO_STRING_FORMATTER (OffsetTime localTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_TIME;
+        if (localTime == null) {return null;}
         return formatter.format(localTime);
     };
 
@@ -21,9 +20,8 @@ public class FormattingUtils {
     }
 
     public static OffsetTime convertStringToLocalTime(String timeString) {
-        if (timeString == null) {
-            return null;
-        }
+        if (timeString == null||  timeString.isEmpty())return null;
+
         assertTrue(timeString.matches("[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]"), timeString);
         return OffsetTime.parse(timeString);
     }
