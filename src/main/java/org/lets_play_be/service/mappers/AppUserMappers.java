@@ -24,7 +24,7 @@ public class AppUserMappers {
 
     private String[] getUserRoles(AppUser appUser) {
         return appUser.getRoles()
-                        .stream()
+                .stream()
                 .map(AppUserRole::getName)
                 .toArray(String[]::new);
     }
