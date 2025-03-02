@@ -33,22 +33,24 @@ public class RegisterNewUserService {
     @Transactional
     public NewUserRegistrationResponse registerNewUser(NewUserRegistrationRequest request) {
 
-        String name = request.name();
-        String email = normalizeEmail(request.email());
-        String password = passwordEncoder.encode(request.password().trim());
-        String avatarUrl = (request.avatarUrl() == null || request.avatarUrl().isBlank() )? "N/A" : request.avatarUrl().trim();
-        AppUserRole role = roleService.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name());
-        UserAvailability availability = availabilityRepository.save(new UserAvailability(AvailabilityEnum.AVAILABLE));
+        isUserExistByEmail(request.email());
+        isUserExistByName(request.name());
 
-        isUserExistByEmail(email);
-
-        AppUser userForSave = getUserForSave(name, email, password, avatarUrl, availability, role);
+        AppUser userForSave = getUserForSave(request);
         AppUser savedUser = repositoryService.save(userForSave);
 
         return mapper.toNewUserResponse(savedUser);
     }
 
-    private AppUser getUserForSave(String name, String email, String password, String avatarUrl, UserAvailability availability, AppUserRole role) {
+    private AppUser getUserForSave(NewUserRegistrationRequest request) {
+
+        String name = request.name();
+        String email = normalizeEmail(request.email());
+        String password = passwordEncoder.encode(request.password().trim());
+        String avatarUrl = (request.avatarUrl() == null || request.avatarUrl().isBlank()) ? "N/A" : request.avatarUrl().trim();
+        AppUserRole role = roleService.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name());
+        UserAvailability availability = availabilityRepository.save(new UserAvailability(AvailabilityEnum.AVAILABLE));
+
         AppUser userForSave = new AppUser(name, email, password, avatarUrl);
         userForSave.setAvailability(availability);
         userForSave.getRoles().add(role);
@@ -57,6 +59,12 @@ public class RegisterNewUserService {
 
     private void isUserExistByEmail(String email) {
         if (repositoryService.existsByEmail(email)) {
+            throw new RestException(ErrorMessage.USER_ALREADY_EXISTS.toString(), HttpStatus.CONFLICT);
+        }
+    }
+
+    private void isUserExistByName(String name) {
+        if (repositoryService.existsByName(name)) {
             throw new RestException(ErrorMessage.USER_ALREADY_EXISTS.toString(), HttpStatus.CONFLICT);
         }
     }
