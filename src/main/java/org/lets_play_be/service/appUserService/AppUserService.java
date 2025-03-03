@@ -81,9 +81,9 @@ public class AppUserService {
         }
     }
 
-    private void validateUserInRequest(Long userIdFronRequest, AppUser user) {
-        if (!user.getId().equals(userIdFronRequest)) {
-            throw new IllegalStateException("User userIdFronRequest not match request argument");
+    private void validateUserInRequest(Long userIdFromRequest, AppUser user) {
+        if (!user.getId().equals(userIdFromRequest)) {
+            throw new IllegalStateException("User userId from request not match id of Principal");
         }
 
     }

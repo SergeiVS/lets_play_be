@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public record AppUserProfile(
-        long id,
+        Long id,
         String name,
         String email,
         List<AppUserRole> roles

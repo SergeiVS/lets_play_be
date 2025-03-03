@@ -9,8 +9,8 @@ public record AppUserFullResponse(
         String name,
         String email,
         String avatarUrl,
-        String availability,
         String[] roles,
+        String availability,
         String fromAvailable,
         String toAvailable) implements Serializable {
 }
