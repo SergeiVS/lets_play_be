@@ -7,14 +7,13 @@ import java.io.Serializable;
 import java.util.List;
 
 public record AppUserProfile(
-        long id,
+        Long id,
         String name,
         String email,
-        String avatarUrl,
         List<AppUserRole> roles
 ) implements Serializable {
 
     public static AppUserProfile from(AppUser user) {
-        return new AppUserProfile(user.getId(), user.getName(), user.getEmail(), user.getAvatarUrl(), user.getRoles());
+        return new AppUserProfile(user.getId(), user.getName(), user.getEmail(), user.getRoles());
     }
 }

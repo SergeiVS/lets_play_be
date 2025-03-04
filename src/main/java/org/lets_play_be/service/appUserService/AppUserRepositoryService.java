@@ -29,4 +29,8 @@ public class AppUserRepositoryService {
     public boolean existsByEmail(String email) {
         return appUserRepository.existsByEmail(email);
     }
+
+    public boolean existsByName(String name) {
+        return appUserRepository.existsByName(name);
+    }
 }

@@ -7,6 +7,7 @@ import org.lets_play_be.dto.userDto.AppUserProfile;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
+import org.lets_play_be.security.securityConfig.JwtProperties;
 import org.lets_play_be.service.appUserService.GetUserProfileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 
@@ -88,7 +93,16 @@ public class AuthService {
                 .generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-        return new LoginResponse(accessTokenCookie.getValue());
+
+        OffsetDateTime tokenExpiration = getTokenExpiration(accessTokenCookie);
+
+        return new LoginResponse(tokenExpiration.toString());
+    }
+
+    private OffsetDateTime getTokenExpiration(ResponseCookie accessTokenCookie) {
+        return jwtService
+                .extractExpiration(accessTokenCookie.getValue())
+                .toInstant().atOffset(ZoneOffset.of("+01:00"));
     }
 
 
