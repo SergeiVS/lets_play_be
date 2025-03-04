@@ -83,6 +83,10 @@ public class JwtService {
         return generateCookie(config.getAtCookieName(), "", config.getAtExpirationInMs());
     }
 
+    public Date extractExpiration(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
+
     private String generateJwtToken(String subject, Date exparationDate, List<AppUserRole> roles) {
         return Jwts.builder()
                 .setSubject(subject)
@@ -108,9 +112,7 @@ public class JwtService {
                 .getBody();
     }
 
-    private Date extractExpiration(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
-    }
+
 
     private ResponseCookie generateCookie(String name, String value, int maxAge) {
         return ResponseCookie
