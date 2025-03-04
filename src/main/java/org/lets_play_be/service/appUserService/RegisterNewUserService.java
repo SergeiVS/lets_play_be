@@ -47,7 +47,7 @@ public class RegisterNewUserService {
         String name = request.name();
         String email = normalizeEmail(request.email());
         String password = passwordEncoder.encode(request.password().trim());
-        String avatarUrl = (request.avatarUrl() == null || request.avatarUrl().isBlank()) ? "N/A" : request.avatarUrl().trim();
+        String avatarUrl = (request.avatarUrl().isEmpty()) ? "N/A" : request.avatarUrl().trim();
         AppUserRole role = roleService.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name());
         UserAvailability availability = availabilityRepository.save(new UserAvailability(AvailabilityEnum.AVAILABLE));
 

@@ -101,7 +101,7 @@
             <optional>true</optional>
         </dependency>
 
-<!--        Database-->
+        <!--        Database-->
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -109,7 +109,7 @@
             <scope>runtime</scope>
         </dependency>
 
-<!--        Swagger-->
+        <!--        Swagger-->
 
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -140,6 +140,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.14.2</version>
         </dependency>
     </dependencies>
 

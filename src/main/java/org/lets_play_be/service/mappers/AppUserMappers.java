@@ -18,8 +18,8 @@ public class AppUserMappers {
 
         return new AppUserFullResponse(appUser.getId(),
                 appUser.getName(), appUser.getEmail(),
-                appUser.getAvatarUrl(), appUser.getAvailability().getAvailabilityType().toString(),
-                roles, fromAvailable, toAvailable);
+                appUser.getAvatarUrl(), roles, appUser.getAvailability().getAvailabilityType().toString(),
+                fromAvailable, toAvailable);
     }
 
 
