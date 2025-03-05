@@ -63,5 +63,5 @@ public interface AuthControllerApi {
             @ApiResponse(responseCode = "200", description = "New access token issued")
     })
     @GetMapping("refresh")
-    void refreshAccessToken(HttpServletRequest request, HttpServletResponse response);
+    ResponseEntity<LoginResponse> refreshAccessToken(HttpServletRequest request, HttpServletResponse response);
 }

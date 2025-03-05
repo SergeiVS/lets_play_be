@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class AuthController  implements AuthControllerApi {
+public class AuthController implements AuthControllerApi {
 
     private final AuthService authService;
     private final RegisterNewUserService registerNewUserService;
 
     @Override
     public ResponseEntity<LoginResponse> login(LoginRequest loginRequest, HttpServletResponse response) {
-        LoginResponse loginResponse= authService.login(loginRequest, response);
-       return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+        LoginResponse loginResponse = authService.login(loginRequest, response);
+        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 
     @Override
@@ -35,8 +35,8 @@ public class AuthController  implements AuthControllerApi {
 
 
     @Override
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        authService.refreshAccessToken(request, response);
+    public ResponseEntity<LoginResponse> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        return new ResponseEntity<>(authService.refreshAccessToken(request, response), HttpStatus.OK);
     }
 
 }

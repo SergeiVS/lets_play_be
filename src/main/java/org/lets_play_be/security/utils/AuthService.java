@@ -7,7 +7,6 @@ import org.lets_play_be.dto.userDto.AppUserProfile;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
-import org.lets_play_be.security.securityConfig.JwtProperties;
 import org.lets_play_be.service.appUserService.GetUserProfileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
@@ -50,7 +48,7 @@ public class AuthService {
 
     }
 
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public LoginResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
         final String refreshToken = jwtService.getAccessTokenFromCookie(request);
 
@@ -64,6 +62,7 @@ public class AuthService {
 
         setNewATIntoCookie(response, userEmail);
 
+        return new LoginResponse(jwtService.extractExpiration(jwtService.getAccessTokenFromCookie(request)).toString());
     }
 
     private void setNewATIntoCookie(HttpServletResponse response, String userEmail) {
@@ -85,7 +84,7 @@ public class AuthService {
     }
 
     private LoginResponse getLoginResponse(HttpServletResponse response, Authentication authentication) {
-        
+
         AppUserProfile userProfile = getUserProfileService.getUserProfile(authentication.getName());
         ResponseCookie accessTokenCookie = jwtService
                 .generateAccessTokenCookie(userProfile.email(), userProfile.roles());
