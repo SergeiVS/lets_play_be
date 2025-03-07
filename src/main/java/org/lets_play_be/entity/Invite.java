@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.lets_play_be.entity.enums.InviteState;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @ToString
@@ -31,6 +33,19 @@ public class Invite {
         this.message = message;
         this.user = user;
         this.lobby = lobby;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || o.getClass() != this.getClass()) return false;
+        Invite that = (Invite) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
     }
 
 }

@@ -1,4 +1,4 @@
-package org.lets_play_be.service.initialasation;
+package org.lets_play_be.service.initialization;
 
 import org.lets_play_be.entity.AppUserRole;
 import org.lets_play_be.entity.enums.UserRoleEnum;

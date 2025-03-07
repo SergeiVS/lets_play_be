@@ -1,4 +1,4 @@
-package org.lets_play_be.service.initialasation;
+package org.lets_play_be.service.initialization;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;

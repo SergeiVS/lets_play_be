@@ -38,7 +38,7 @@ public class AppUser {
     @OneToOne(orphanRemoval = true)
     private UserAvailability availability;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
     private List<Invite> invites;
 
     public AppUser(String name, String email, String password, String avatarUrl) {
