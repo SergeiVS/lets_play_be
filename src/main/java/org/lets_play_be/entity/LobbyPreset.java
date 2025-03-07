@@ -38,7 +38,7 @@ public class LobbyPreset extends LobbyBase {
     }
 
     public LobbyActive activateLobby(){
-        return new LobbyActive(getTitle(), getTime());
+        return new LobbyActive(getTitle(), getTime(), owner);
     }
 
     @Override

@@ -26,8 +26,9 @@ public class LobbyActive extends LobbyBase {
     @OneToMany(mappedBy = "lobby", orphanRemoval = true)
     private List<Invite> invites;
 
-    public LobbyActive(String title, OffsetTime time) {
+    public LobbyActive(String title, OffsetTime time, AppUser owner) {
         super(title, time);
+        this.owner = owner;
         this.type = LobbyType.ACTIVE;
         this.invites = new ArrayList<>();
     }
