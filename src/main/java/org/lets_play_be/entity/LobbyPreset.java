@@ -20,7 +20,7 @@ public class LobbyPreset extends LobbyBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "owner_id")
     AppUser owner;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_lobby_preset",
@@ -37,6 +37,10 @@ public class LobbyPreset extends LobbyBase {
         this.users = users;
     }
 
+    public LobbyActive activateLobby(){
+        return new LobbyActive(getTitle(), getTime());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,6 +53,7 @@ public class LobbyPreset extends LobbyBase {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
+
 
 
 }

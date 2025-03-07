@@ -38,12 +38,16 @@ public class AppUser {
     @OneToOne(orphanRemoval = true)
     private UserAvailability availability;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    private List<Invite> invites;
+
     public AppUser(String name, String email, String password, String avatarUrl) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.avatarUrl = avatarUrl;
-        roles = new ArrayList<>();
+        this.roles = new ArrayList<>();
+        this.invites = new ArrayList<>();
     }
 
     @Override
