@@ -8,9 +8,8 @@ import java.time.OffsetTime;
 
 @Getter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @MappedSuperclass
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class LobbyBase {
     private String title;
     @Setter(AccessLevel.PROTECTED)

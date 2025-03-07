@@ -2,7 +2,6 @@ package org.lets_play_be.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.lets_play_be.entity.enums.LobbyType;
@@ -16,20 +15,23 @@ import java.util.Objects;
 @Table(name = "lobby_preset")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LobbyPreset extends LobbyBase {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "owner_id")
-    AppUser owner;
+    private AppUser owner;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_lobby_preset",
             joinColumns = @JoinColumn(name = "lobby_prset_id"),
             inverseJoinColumns = @JoinColumn(name = "accounts_id"))
-    List<AppUser> users;
+    private List<AppUser> users;
 
 
-    public LobbyPreset(String title,  OffsetTime time, Long id, AppUser owner, List<AppUser> users) {
+    public LobbyPreset(String title, OffsetTime time, Long id, AppUser owner, List<AppUser> users) {
         super(title, time);
         setType(LobbyType.PRESET);
         this.id = id;
@@ -37,7 +39,7 @@ public class LobbyPreset extends LobbyBase {
         this.users = users;
     }
 
-    public LobbyActive activateLobby(){
+    public LobbyActive activateLobby() {
         return new LobbyActive(getTitle(), getTime(), owner);
     }
 
@@ -53,7 +55,6 @@ public class LobbyPreset extends LobbyBase {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
-
 
 
 }
