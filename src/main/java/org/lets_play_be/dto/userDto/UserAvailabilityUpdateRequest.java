@@ -16,9 +16,9 @@ public record UserAvailabilityUpdateRequest(@NotNull(message = "Field userId sho
                                             String newAvailability,
                                             @Pattern(regexp = "[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
-                                            String newFromAvailable,
+                                            String newFromUnavailable,
                                             @Pattern(regexp = "[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
-                                            String newToAvailable
+                                            String newToUnavailable
 ) implements Serializable {
 }

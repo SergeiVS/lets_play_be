@@ -72,14 +72,14 @@ class RegisterNewUserServiceTest {
 
         availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
         availability.setId(1L);
-        availability.setFromAvailable(OffsetTime.parse("00:00+00:00"));
-        availability.setToAvailable(OffsetTime.parse("00:00+00:00"));
+        availability.setFromUnavailable(OffsetTime.parse("00:00+00:00"));
+        availability.setToUnavailable(OffsetTime.parse("00:00+00:00"));
 
         responseMocked = new AppUserFullResponse(1L, "Name", "name@testemail.com", avatarUrl,
                 new String[]{"ROLE_USER"}, "AVAILABLE", fromAvailable, toAvailable);
 
-        fromAvailable = availability.getFromAvailable().toString();
-        toAvailable = availability.getToAvailable().toString();
+        fromAvailable = availability.getFromUnavailable().toString();
+        toAvailable = availability.getToUnavailable().toString();
 
         name = request.name();
         email = request.email();

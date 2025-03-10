@@ -55,16 +55,16 @@ public class AppUserService {
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
         UserAvailability availability = user.getAvailability();
         String availabilityString = request.newAvailability();
-        OffsetTime fromAvailable = convertStringToLocalTime(request.newFromAvailable());
-        OffsetTime toAvailable = convertStringToLocalTime(request.newToAvailable());
+        OffsetTime fromAvailable = convertStringToLocalTime(request.newFromUnavailable());
+        OffsetTime toAvailable = convertStringToLocalTime(request.newToUnavailable());
 
 
         validateAvailabilityString(availabilityString);
 
         availability.setAvailabilityType(AvailabilityEnum.valueOf(availabilityString.toUpperCase()));
         validateTimeOptionByTemp_Av(availability, fromAvailable, toAvailable);
-        availability.setFromAvailable(fromAvailable);
-        availability.setToAvailable(toAvailable);
+        availability.setFromUnavailable(fromAvailable);
+        availability.setToUnavailable(toAvailable);
         UserAvailability savedAvailability = availabilityRepository.save(availability);
         user.setAvailability(savedAvailability);
     }

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 
-import java.time.LocalDateTime;
 import java.time.OffsetTime;
 
 @Entity
@@ -20,8 +19,8 @@ public class UserAvailability {
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private AvailabilityEnum availabilityType;
-    private OffsetTime fromAvailable;
-    private OffsetTime toAvailable;
+    private OffsetTime fromUnavailable;
+    private OffsetTime toUnavailable;
     @OneToOne(mappedBy = "availability")
     private AppUser user;
 
@@ -30,11 +29,11 @@ public class UserAvailability {
     }
 
     public UserAvailability(
-            AvailabilityEnum availabilityType,OffsetTime fromAvailable,
-            OffsetTime toAvailable, AppUser user) {
+            AvailabilityEnum availabilityType, OffsetTime fromUnavailable,
+            OffsetTime toUnavailable, AppUser user) {
         this.availabilityType = availabilityType;
-        this.fromAvailable = fromAvailable;
-        this.toAvailable = toAvailable;
+        this.fromUnavailable = fromUnavailable;
+        this.toUnavailable = toUnavailable;
         this.user = user;
     }
 }

@@ -26,7 +26,7 @@ public class LobbyPreset extends LobbyBase {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_lobby_preset",
-            joinColumns = @JoinColumn(name = "lobby_prset_id"),
+            joinColumns = @JoinColumn(name = "lobby_preset_id"),
             inverseJoinColumns = @JoinColumn(name = "accounts_id"))
     private List<AppUser> users;
 
