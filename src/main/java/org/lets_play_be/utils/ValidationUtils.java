@@ -16,18 +16,18 @@ public class ValidationUtils {
         }
     }
 
-    public static void validateTimeOptionByTemp_Av(UserAvailability availability, OffsetTime fromAvailable, OffsetTime toAvailable) {
+    public static void validateTimeOptionByTemp_Av(UserAvailability availability, OffsetTime fromUnavailable, OffsetTime toUnavailable) {
         if (availability.getAvailabilityType().equals(AvailabilityEnum.TEMPORARILY_AVAILABLE)) {
             String errorMessage = "In a case of TEMPORARY_AVAILABLE from and to time fields must be filled";
-            assert fromAvailable != null : errorMessage;
-            assert toAvailable != null : errorMessage;
+            assert fromUnavailable != null : errorMessage;
+            assert toUnavailable != null : errorMessage;
 
-            isFromTimeBeforeTo(fromAvailable, toAvailable);
+            isFromTimeBeforeTo(fromUnavailable, toUnavailable);
         }
     }
 
-    public static void isFromTimeBeforeTo(OffsetTime fromAvailable, OffsetTime toAvailable) {
-        if(toAvailable.isBefore(fromAvailable)) {
+    public static void isFromTimeBeforeTo(OffsetTime fromUnavailable, OffsetTime toUnavailable) {
+        if(toUnavailable.isBefore(fromUnavailable)) {
             throw new IllegalArgumentException("To time field must be after from");
         }
     }
