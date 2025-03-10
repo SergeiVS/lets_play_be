@@ -38,6 +38,9 @@ public class AppUser {
     @OneToOne(orphanRemoval = true)
     private UserAvailability availability;
 
+    @OneToOne(mappedBy = "owner", orphanRemoval = true)
+    private LobbyActive lobby;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
     private List<Invite> invites;
 

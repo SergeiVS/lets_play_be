@@ -23,8 +23,8 @@ public class LobbyActive extends LobbyBase {
     private Long id;
     @Enumerated(EnumType.STRING)
     private LobbyType type;
-    @OneToOne(mappedBy = "owner")
-    @JoinColumn(name = "owner_id", nullable = false)
+    @OneToOne
+    @JoinColumn(nullable = false)
     private AppUser owner;
     @OneToMany(mappedBy = "lobby", orphanRemoval = true)
     private List<Invite> invites;
