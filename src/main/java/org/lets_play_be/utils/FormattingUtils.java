@@ -15,14 +15,16 @@ public class FormattingUtils {
         return formatter.format(localTime);
     };
 
-    public static String normalizeEmail(String email) {
+    public static String NORMALIZE_EMAIL(String email) {
         return email.replaceAll("\\s", "").trim();
     }
 
-    public static OffsetTime convertStringToLocalTime(String timeString) {
+    public static OffsetTime TIME_STRING_TO_OFFSET_TIME(String timeString) {
+
         if (timeString == null||  timeString.isEmpty())return null;
 
         assertTrue(timeString.matches("[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]"), timeString);
+
         return OffsetTime.parse(timeString);
     }
 }

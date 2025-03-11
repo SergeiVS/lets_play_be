@@ -31,10 +31,9 @@ public class LobbyPreset extends LobbyBase {
     private List<AppUser> users;
 
 
-    public LobbyPreset(String title, OffsetTime time, Long id, AppUser owner, List<AppUser> users) {
+    public LobbyPreset(String title, OffsetTime time, AppUser owner, List<AppUser> users) {
         super(title, time);
         setType(LobbyType.PRESET);
-        this.id = id;
         this.owner = owner;
         this.users = users;
     }

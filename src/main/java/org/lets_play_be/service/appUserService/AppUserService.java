@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 
-import static org.lets_play_be.utils.FormattingUtils.convertStringToLocalTime;
+import static org.lets_play_be.utils.FormattingUtils.TIME_STRING_TO_OFFSET_TIME;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
 import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av;
 
@@ -52,11 +52,20 @@ public class AppUserService {
         return userMappers.toFullUserResponse(savedUser);
     }
 
+    public AppUser getUserByEmailOrThrow(String email) {
+        return userRepositoryService.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
+    }
+
+    public AppUser getUserByIdOrThrow(Long id) {
+        return userRepositoryService.findById(id).orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
+    }
+
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
         UserAvailability availability = user.getAvailability();
         String availabilityString = request.newAvailability();
-        OffsetTime fromAvailable = convertStringToLocalTime(request.newFromUnavailable());
-        OffsetTime toAvailable = convertStringToLocalTime(request.newToUnavailable());
+        OffsetTime fromAvailable = TIME_STRING_TO_OFFSET_TIME(request.newFromUnavailable());
+        OffsetTime toAvailable = TIME_STRING_TO_OFFSET_TIME(request.newToUnavailable());
 
 
         validateAvailabilityString(availabilityString);
@@ -88,10 +97,7 @@ public class AppUserService {
 
     }
 
-    private AppUser getUserByEmailOrThrow(String email) {
-        return userRepositoryService.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
-    }
+
 
 
 }

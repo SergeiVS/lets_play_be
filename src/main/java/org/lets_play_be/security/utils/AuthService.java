@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
+import static org.lets_play_be.utils.FormattingUtils.NORMALIZE_EMAIL;
 
 @Service
 @RequiredArgsConstructor
@@ -108,7 +108,7 @@ public class AuthService {
     private Authentication getAuthentication(LoginRequest loginRequest) {
 
         Authentication authentication;
-        String email = normalizeEmail(loginRequest.email());
+        String email = NORMALIZE_EMAIL(loginRequest.email());
         String password = loginRequest.password().trim();
 
         try {
