@@ -6,7 +6,7 @@ import org.lets_play_be.dto.userDto.UserShortResponse;
 import java.io.Serializable;
 import java.util.List;
 
-public record NewLobbyPresetResponse(
+public record LobbyPresetFullResponse(
         Long id,
         String type,
         AppUserFullResponse owner,

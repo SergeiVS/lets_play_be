@@ -1,8 +1,8 @@
 package org.lets_play_be.service.lobbyService;
 
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
 import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
-import org.lets_play_be.dto.lobbyDto.NewLobbyPresetResponse;
 import org.lets_play_be.entity.AppUser;
 import org.lets_play_be.entity.LobbyPreset;
 import org.lets_play_be.service.appUserService.AppUserService;
@@ -22,11 +22,24 @@ public class LobbyPresetService {
     private final AppUserService appUserService;
     private final LobbyMappers lobbyMappers;
 
-    public NewLobbyPresetResponse createNewLobbyPreset(NewLobbyPresetRequest request, Authentication authentication) {
+    public LobbyPresetFullResponse createNewLobbyPreset(NewLobbyPresetRequest request, Authentication authentication) {
 
         LobbyPreset savedLobby = saveNewLobbyPreset(request, authentication);
 
-        return lobbyMappers.toNewLobbyPresetResponse(savedLobby);
+        return lobbyMappers.toLobbyPresetFullResponse(savedLobby);
+    }
+
+    public List<LobbyPresetFullResponse> getAllUserPresets(Authentication authentication) {
+        AppUser owner = getOwner(authentication);
+        List<LobbyPreset> lobbies = repoService.findByOwnerId(owner.getId());
+        return getListOfPresetsFullResponse(lobbies);
+    }
+
+    private List<LobbyPresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
+        return presets
+                .stream()
+                .map(lobbyMappers::toLobbyPresetFullResponse)
+                .toList();
     }
 
     private LobbyPreset saveNewLobbyPreset(NewLobbyPresetRequest request, Authentication authentication) {

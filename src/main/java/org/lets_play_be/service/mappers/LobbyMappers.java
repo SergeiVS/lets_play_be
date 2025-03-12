@@ -1,7 +1,7 @@
 package org.lets_play_be.service.mappers;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.dto.lobbyDto.NewLobbyPresetResponse;
+import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.LobbyPreset;
@@ -16,12 +16,12 @@ public class LobbyMappers {
 
     private final AppUserMappers userMapper;
 
-    public NewLobbyPresetResponse toNewLobbyPresetResponse(LobbyPreset lobby) {
+    public LobbyPresetFullResponse toLobbyPresetFullResponse(LobbyPreset lobby) {
 
         AppUserFullResponse owner = userMapper.toFullUserResponse(lobby.getOwner());
         List<UserShortResponse> users = lobby.getUsers().stream().map(userMapper::toUserShortResponse).toList();
         String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
 
-        return new NewLobbyPresetResponse(lobby.getId(), lobby.getType().toString(), owner, lobby.getTitle(), time, users);
+        return new LobbyPresetFullResponse(lobby.getId(), lobby.getType().toString(), owner, lobby.getTitle(), time, users);
     }
 }
