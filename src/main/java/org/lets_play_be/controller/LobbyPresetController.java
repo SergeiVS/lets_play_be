@@ -1,7 +1,8 @@
 package org.lets_play_be.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.controller.api.LobbyControllerApi;
+import org.lets_play_be.controller.api.LobbyPresetControllerApi;
+import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
 import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
 import org.lets_play_be.service.lobbyService.LobbyPresetService;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class LobbyController implements LobbyControllerApi {
+public class LobbyPresetController implements LobbyPresetControllerApi {
 
     private final LobbyPresetService lobbyPresetService;
 
@@ -29,5 +30,17 @@ public class LobbyController implements LobbyControllerApi {
     public ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication) {
         List<LobbyPresetFullResponse> responseList = lobbyPresetService.getAllUserPresets(authentication);
         return new ResponseEntity<>(responseList, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<LobbyPresetFullResponse> addUsers(ChangeLobbyPresetUsersRequest request) {
+        LobbyPresetFullResponse response = lobbyPresetService.addNewUsersToLobbyPreset(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<LobbyPresetFullResponse> removeUsers(ChangeLobbyPresetUsersRequest request) {
+        LobbyPresetFullResponse response = lobbyPresetService.removeUserFromPreset(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

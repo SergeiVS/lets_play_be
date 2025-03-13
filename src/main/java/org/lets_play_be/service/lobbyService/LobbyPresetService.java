@@ -1,6 +1,8 @@
 package org.lets_play_be.service.lobbyService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
 import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
 import org.lets_play_be.entity.AppUser;
@@ -22,6 +24,7 @@ public class LobbyPresetService {
     private final AppUserService appUserService;
     private final LobbyMappers lobbyMappers;
 
+    @Transactional
     public LobbyPresetFullResponse createNewLobbyPreset(NewLobbyPresetRequest request, Authentication authentication) {
 
         LobbyPreset savedLobby = saveNewLobbyPreset(request, authentication);
@@ -35,11 +38,52 @@ public class LobbyPresetService {
         return getListOfPresetsFullResponse(lobbies);
     }
 
+    @Transactional
+    public LobbyPresetFullResponse addNewUsersToLobbyPreset(ChangeLobbyPresetUsersRequest request) {
+
+        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.lobbyId());
+
+        List<AppUser> usersForAdd = getUsersForAdd(presetForChange, request.usersId());
+
+        presetForChange.getUsers().addAll(usersForAdd);
+
+        LobbyPreset savedPreset = repoService.save(presetForChange);
+
+        return lobbyMappers.toLobbyPresetFullResponse(savedPreset);
+    }
+
+    @Transactional
+    public LobbyPresetFullResponse removeUserFromPreset(ChangeLobbyPresetUsersRequest request) {
+
+        LobbyPreset presetForRemove = getLobbyByIdOrThrow(request.lobbyId());
+
+        removeUsersFromPreset(request, presetForRemove);
+
+        LobbyPreset savedPreset = repoService.save(presetForRemove);
+
+        return lobbyMappers.toLobbyPresetFullResponse(savedPreset);
+    }
+
+    public LobbyPreset getLobbyByIdOrThrow(Long id) {
+        return repoService.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
+    }
+
     private List<LobbyPresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
         return presets
                 .stream()
                 .map(lobbyMappers::toLobbyPresetFullResponse)
                 .toList();
+    }
+
+    private static void removeUsersFromPreset(ChangeLobbyPresetUsersRequest request, LobbyPreset presetForRemove) {
+        presetForRemove.getUsers().removeIf(user -> request.usersId().contains(user.getId()));
+    }
+
+    private List<AppUser> getUsersForAdd(LobbyPreset presetForChange, List<Long> usersId) {
+        for (AppUser user : presetForChange.getUsers()) {
+            usersId.remove(user.getId());
+        }
+        return getUsers(usersId);
     }
 
     private LobbyPreset saveNewLobbyPreset(NewLobbyPresetRequest request, Authentication authentication) {
