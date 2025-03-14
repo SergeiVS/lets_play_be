@@ -12,5 +12,5 @@ public interface BlacklistedTokenRepository extends JpaRepository<BlacklistedTok
     Optional<Entity> getByRefreshToken(String tokenHash);
 
     @Modifying
-    int removeBlacklistedTokensByExpiresAtAfter(OffsetDateTime expiresAtAfter);
+    int removeBlacklistedTokensByExpiresAtBefore(OffsetDateTime now);
 }

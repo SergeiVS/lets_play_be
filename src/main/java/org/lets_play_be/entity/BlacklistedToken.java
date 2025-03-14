@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.lets_play_be.entity.converters.RefreshTokenEncoder;
 
 import java.time.OffsetDateTime;
 
@@ -24,7 +24,8 @@ public class BlacklistedToken {
     @JoinColumn(nullable = false, name = "owner_id")
     private AppUser owner;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, length = 512)
+    @Convert(converter = RefreshTokenEncoder.class)
     private String refreshToken;
 
     @Column(nullable = false)
@@ -33,6 +34,6 @@ public class BlacklistedToken {
     public BlacklistedToken(AppUser user, String refreshToken, OffsetDateTime expiresAt) {
         this.owner = user;
         this.expiresAt = expiresAt;
-        this.refreshToken = new BCryptPasswordEncoder().encode(refreshToken);
+        this.refreshToken = refreshToken;
     }
 }
