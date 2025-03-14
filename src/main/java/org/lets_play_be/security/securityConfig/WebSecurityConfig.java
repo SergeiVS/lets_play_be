@@ -73,7 +73,9 @@ public class WebSecurityConfig {
                                 new AntPathRequestMatcher("/v3/api-docs/**"),
                                 new AntPathRequestMatcher("/v3/api-docs.yaml"),
                                 new AntPathRequestMatcher("/swagger-ui.html"),
-                                new AntPathRequestMatcher("/api/v1/auth/**", "POST")
+                                new AntPathRequestMatcher("/api/v1/auth/login", "POST"),
+                                new AntPathRequestMatcher("/api/v1/auth/refresh", "POST"),
+                                new AntPathRequestMatcher("/api/v1/auth/register", "POST")
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

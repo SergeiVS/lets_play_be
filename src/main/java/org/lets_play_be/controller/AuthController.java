@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController implements AuthControllerApi {
@@ -33,6 +35,10 @@ public class AuthController implements AuthControllerApi {
         return new ResponseEntity<>(newUserResponse, HttpStatus.OK);
     }
 
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        authService.logout(request, response, principal);
+    }
 
     @Override
     public ResponseEntity<LoginResponse> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
