@@ -52,8 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void handleFilterInternal(HttpServletRequest request) {
         String jwt = getAtJwtFromCookie(request);
+        String refreshJwt = getRefreshJwtFromCookie(request);
 
-        if (jwt == null) return;
+        if (jwt == null || refreshJwt == null) return;
 
         String username = jwtService.getUsernameFromToken(jwt);
 
@@ -61,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        if (isValidTokenAndNotAuthenticated(jwt, userDetails)) {
+        if (!isRefreshTokenBlacklisted(refreshJwt) && isValidTokenAndNotAuthenticated(jwt, userDetails)) {
             validateCredentials(request, userDetails);
         }
     }
@@ -72,6 +73,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
+    private boolean isRefreshTokenBlacklisted(String token) {
+        return jwtService.isRefreshTokenBlacklisted(token);
     }
 
     private boolean isValidTokenAndNotAuthenticated(String jwt, UserDetails userDetails) {
@@ -101,6 +106,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (request.getCookies() != null) {
             jwt = jwtService.getAccessTokenFromCookie(request);
+        }
+
+        return jwt;
+    }
+
+    private String getRefreshJwtFromCookie(HttpServletRequest request) {
+        String jwt = null;
+
+        if (request.getCookies() != null) {
+            jwt = jwtService.getRefreshTokenFromCookie(request);
         }
 
         return jwt;

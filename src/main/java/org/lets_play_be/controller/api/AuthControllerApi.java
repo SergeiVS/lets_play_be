@@ -18,6 +18,8 @@ import org.lets_play_be.security.model.LoginResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("api/v1/auth")
 public interface AuthControllerApi {
@@ -57,6 +59,15 @@ public interface AuthControllerApi {
     })
     @PostMapping("register")
     ResponseEntity<AppUserFullResponse> register(@RequestBody @Valid @NotNull NewUserRegistrationRequest request);
+
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "logged out",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AppUserFullResponse.class))}),
+    })
+    @PostMapping("/logout")
+    void logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
 
     @Operation(summary = "Refresh access token if expire")
     @ApiResponses(value = {
