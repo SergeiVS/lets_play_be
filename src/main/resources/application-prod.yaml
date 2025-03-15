@@ -20,3 +20,6 @@ jwt:
   jwt-secret: ${JWT_SECRET}
   at-expiration-in-ms: ${JWT_AT_EXPIRATION_IN_MS}
   rt-expiration-in-ms: ${JWT_RT_EXPIRATION_IN_MS}
+
+encryption:
+  refresh-token-secret: ${JWT_REFRESH_SECRET}
