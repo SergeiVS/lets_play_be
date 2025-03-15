@@ -19,10 +19,10 @@ public class BlacklistedTokenService {
 
     @Async
     public void checkAndCleanBlacklistedTokens() {
-        LOGGER.info("DB CLEAN UP | Cleaning up blacklisted tokens");
+        LOGGER.info("SCHEDULED | DB CLEAN UP | Cleaning up blacklisted tokens");
 
         int amountDeleted = blacklistedTokenRepository.removeBlacklistedTokensByExpiresAtBefore(OffsetDateTime.now());
 
-        LOGGER.info("DB CLEAN UP | Deleted {} blacklisted tokens", amountDeleted);
+        LOGGER.info("SCHEDULED | DB CLEAN UP | Deleted {} blacklisted tokens", amountDeleted);
     }
 }
