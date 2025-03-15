@@ -3,12 +3,11 @@ package org.lets_play_be.security.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.entity.AppUserRole;
+import org.lets_play_be.repository.BlacklistedTokenRepository;
 import org.lets_play_be.security.securityConfig.JwtProperties;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.http.ResponseCookie;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 public class JwtService {
 
     private final JwtProperties config;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -57,6 +57,10 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public boolean isRefreshTokenBlacklisted(String token) {
+        return blacklistedTokenRepository.getByRefreshToken(token).isPresent();
+    }
+
     public ResponseCookie generateAccessTokenCookie(String email, List<AppUserRole> roles) {
         String jwt = generateAccessToken(email, roles);
         return generateCookie(config.getAtCookieName(), jwt, config.getAtExpirationInMs());
@@ -75,11 +79,11 @@ public class JwtService {
         return getCookieValueByName(request, config.getAtCookieName());
     }
 
-    public ResponseCookie cleanRefreshTokenCookie(){
+    public ResponseCookie cleanRefreshTokenCookie() {
         return generateCookie(config.getRtCookieName(), "", config.getRtExpirationInMs());
     }
 
-    public ResponseCookie cleanAccessTokenCookie(){
+    public ResponseCookie cleanAccessTokenCookie() {
         return generateCookie(config.getAtCookieName(), "", config.getAtExpirationInMs());
     }
 
@@ -112,8 +116,6 @@ public class JwtService {
                 .getBody();
     }
 
-
-
     private ResponseCookie generateCookie(String name, String value, int maxAge) {
         return ResponseCookie
                 .from(name, value)
@@ -131,5 +133,4 @@ public class JwtService {
             return null;
         }
     }
-
 }

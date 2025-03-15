@@ -4,9 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.userDto.AppUserProfile;
+import org.lets_play_be.entity.BlacklistedToken;
 import org.lets_play_be.exception.RestException;
+import org.lets_play_be.repository.BlacklistedTokenRepository;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
+import org.lets_play_be.service.appUserService.AppUserRepositoryService;
 import org.lets_play_be.service.appUserService.GetUserProfileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -30,9 +34,29 @@ import static org.lets_play_be.utils.FormattingUtils.NORMALIZE_EMAIL;
 public class AuthService {
 
     private final AuthenticationManager authManager;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
+    private final AppUserRepositoryService appUserRepositoryService;
+
     private final JwtService jwtService;
     private final GetUserProfileService getUserProfileService;
     private final AppUserDetailsService userDetailsService;
+
+    public void logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        final String refreshToken = jwtService.getRefreshTokenFromCookie(request);
+
+        final OffsetDateTime expiry = getTokenExpirationFromToken(refreshToken);
+
+        final var user = appUserRepositoryService.findByEmail(principal.getName());
+
+        if (user.isPresent()) {
+            blacklistedTokenRepository.save(new BlacklistedToken(user.get(), refreshToken, expiry));
+
+            response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanAccessTokenCookie().toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanRefreshTokenCookie().toString());
+        } else {
+            throw new UsernameNotFoundException("Invalid UserRequest");
+        }
+    }
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
@@ -86,10 +110,8 @@ public class AuthService {
     private LoginResponse getLoginResponse(HttpServletResponse response, Authentication authentication) {
 
         AppUserProfile userProfile = getUserProfileService.getUserProfile(authentication.getName());
-        ResponseCookie accessTokenCookie = jwtService
-                .generateAccessTokenCookie(userProfile.email(), userProfile.roles());
-        ResponseCookie refreshTokenCookie = jwtService
-                .generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
+        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(userProfile.email(), userProfile.roles());
+        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
@@ -99,9 +121,11 @@ public class AuthService {
     }
 
     private OffsetDateTime getTokenExpiration(ResponseCookie accessTokenCookie) {
-        return jwtService
-                .extractExpiration(accessTokenCookie.getValue())
-                .toInstant().atOffset(ZoneOffset.of("+01:00"));
+        return getTokenExpirationFromToken(accessTokenCookie.getValue());
+    }
+
+    private OffsetDateTime getTokenExpirationFromToken(String token) {
+        return jwtService.extractExpiration(token).toInstant().atOffset(ZoneOffset.of("+01:00"));
     }
 
 
@@ -112,8 +136,7 @@ public class AuthService {
         String password = loginRequest.password().trim();
 
         try {
-            authentication = authManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (BadCredentialsException e) {
             throw new RestException(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
