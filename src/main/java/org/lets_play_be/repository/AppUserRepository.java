@@ -2,6 +2,7 @@ package org.lets_play_be.repository;
 
 import org.lets_play_be.entity.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
