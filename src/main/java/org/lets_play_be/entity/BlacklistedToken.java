@@ -21,7 +21,7 @@ public class BlacklistedToken {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "id")
+    @JoinColumn(nullable = false, name = "owner_id")
     private AppUser owner;
 
     @Column(nullable = false, length = 512)

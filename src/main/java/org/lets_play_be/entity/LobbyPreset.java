@@ -20,7 +20,7 @@ public class LobbyPreset extends LobbyBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "id")
+    @JoinColumn(nullable = false, name = "owner_id")
     private AppUser owner;
 
     @ManyToMany(fetch = FetchType.LAZY)
