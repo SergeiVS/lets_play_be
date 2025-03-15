@@ -2,9 +2,11 @@ package org.lets_play_be.utils;
 
 import org.lets_play_be.entity.UserAvailability;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
+import org.lets_play_be.entity.enums.LobbyType;
 
 import java.time.LocalTime;
 import java.time.OffsetTime;
+import java.util.Arrays;
 
 import static org.lets_play_be.entity.enums.AvailabilityEnum.getAvailabilityStrings;
 
@@ -13,6 +15,12 @@ public class ValidationUtils {
     public static void validateAvailabilityString(String newAvailability) {
         if (!getAvailabilityStrings().contains(newAvailability.toUpperCase())) {
             throw new IllegalArgumentException("The new Availability do not meet the AvailabilityEnum");
+        }
+    }
+
+    public static void validateLobbyTypeString(String lobbyType) {
+        if(!LobbyType.LobbyTypeStringList().contains(lobbyType.toUpperCase())) {
+            throw new IllegalArgumentException("The LobbyType do not meet the LobbyTypeEnum");
         }
     }
 

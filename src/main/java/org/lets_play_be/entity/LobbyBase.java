@@ -1,10 +1,11 @@
 package org.lets_play_be.entity;
 
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.*;
 import org.lets_play_be.entity.enums.LobbyType;
 
 import java.time.OffsetTime;
+
 
 @Getter
 @ToString
@@ -15,6 +16,7 @@ public abstract class LobbyBase {
     @Setter(AccessLevel.PROTECTED)
     private LobbyType type;
     private OffsetTime time;
+
 
     public LobbyBase(String title, OffsetTime time) {
         this.title = title;

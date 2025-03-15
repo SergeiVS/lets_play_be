@@ -8,7 +8,6 @@ import java.util.List;
 
 public record ChangeLobbyPresetUsersRequest(@NotNull(message = "Id could not be null")
                                             Long lobbyId,
-                                            @NotNull(message = "Id Array could not be null")
                                             @NotEmpty(message = "Id Array could not be empty")
                                             List<Long> usersId) implements Serializable {
 }

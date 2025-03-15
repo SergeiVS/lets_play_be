@@ -1,9 +1,11 @@
 package org.lets_play_be.controller.api;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
 import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,13 @@ public interface LobbyPresetControllerApi {
     @GetMapping
     public ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication);
 
+    @PutMapping("{id}")
+    public ResponseEntity<LobbyPresetFullResponse> updateUserLobbyPreset(@RequestBody
+                                                                         @NotNull
+                                                                         @Valid
+                                                                         UpdateLobbyTitleAndTimeRequest request,
+                                                                         Authentication authentication);
+
 
     @PutMapping("users")
     public ResponseEntity<LobbyPresetFullResponse> addUsers(@RequestBody
@@ -33,4 +42,6 @@ public interface LobbyPresetControllerApi {
     public ResponseEntity<LobbyPresetFullResponse> removeUsers(@RequestBody
                                                                @Valid
                                                                ChangeLobbyPresetUsersRequest request);
+
+
 }

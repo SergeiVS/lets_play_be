@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
 import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
 import org.lets_play_be.entity.AppUser;
 import org.lets_play_be.entity.LobbyPreset;
 import org.lets_play_be.service.appUserService.AppUserService;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LobbyPresetService {
+public class LobbyPresetCRUDService {
 
     private final LobbyPresetRepoService repoService;
     private final AppUserService appUserService;
@@ -62,6 +63,12 @@ public class LobbyPresetService {
         LobbyPreset savedPreset = repoService.save(presetForRemove);
 
         return lobbyMappers.toLobbyPresetFullResponse(savedPreset);
+    }
+
+//    TODO add method logic
+    @Transactional
+    public LobbyPresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication authentication) {
+        return null;
     }
 
     public LobbyPreset getLobbyByIdOrThrow(Long id) {
