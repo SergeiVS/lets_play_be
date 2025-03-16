@@ -2,10 +2,8 @@ package org.lets_play_be.controller.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
-import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
-import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
+import org.lets_play_be.dto.StandardStringResponse;
+import org.lets_play_be.dto.lobbyDto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -13,35 +11,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/lobby/preset")
+@RequestMapping("api/v1/lobby")
 public interface LobbyPresetControllerApi {
 
-    @PostMapping
+    @PostMapping("/preset")
     public ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(@RequestBody
                                                                         @Valid
                                                                         NewLobbyPresetRequest request,
                                                                         Authentication authentication);
 
-    @GetMapping
+    @GetMapping("preset")
     public ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication);
 
     @PutMapping("{id}")
-    public ResponseEntity<LobbyPresetFullResponse> updateUserLobbyPreset(@RequestBody
-                                                                         @NotNull
-                                                                         @Valid
-                                                                         UpdateLobbyTitleAndTimeRequest request,
-                                                                         Authentication authentication);
+    public ResponseEntity<UpdateLobbyTitleAndTimeResponse> updateLobbyTitleAndTime(@RequestBody
+                                                                                   @NotNull
+                                                                                   @Valid
+                                                                                   UpdateLobbyTitleAndTimeRequest request);
 
 
-    @PutMapping("users")
+    @PutMapping("preset/users")
     public ResponseEntity<LobbyPresetFullResponse> addUsers(@RequestBody
                                                             @Valid
                                                             ChangeLobbyPresetUsersRequest request);
 
-    @DeleteMapping("users")
+    @DeleteMapping("preset/users")
     public ResponseEntity<LobbyPresetFullResponse> removeUsers(@RequestBody
                                                                @Valid
                                                                ChangeLobbyPresetUsersRequest request);
 
-
+    @DeleteMapping("preset/{id}")
+    public ResponseEntity<StandardStringResponse> deletePreset(@PathVariable Long id);
 }

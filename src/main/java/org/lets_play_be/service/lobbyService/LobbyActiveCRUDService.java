@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class LobbyActiveCRUDService {
 
     private final LobbyActiveRepoService repoService;
-//    TODO add method logic
+//    TODO add method body
     public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
         return null;
     }

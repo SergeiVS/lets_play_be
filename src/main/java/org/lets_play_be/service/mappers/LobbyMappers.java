@@ -2,6 +2,7 @@ package org.lets_play_be.service.mappers;
 
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.LobbyPreset;
@@ -23,5 +24,16 @@ public class LobbyMappers {
         String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
 
         return new LobbyPresetFullResponse(lobby.getId(), lobby.getType().toString(), owner, lobby.getTitle(), time, users);
+    }
+
+    public UpdateLobbyTitleAndTimeResponse toUpdateResponse(LobbyPreset lobby) {
+
+        Long id = lobby.getId();
+        String type = lobby.getType().toString();
+        UserShortResponse owner = userMapper.toUserShortResponse(lobby.getOwner());
+        String title = lobby.getTitle();
+        String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
+
+        return new UpdateLobbyTitleAndTimeResponse(id, type, owner, title, time);
     }
 }

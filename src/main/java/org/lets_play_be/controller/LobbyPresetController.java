@@ -2,10 +2,9 @@ package org.lets_play_be.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.controller.api.LobbyPresetControllerApi;
-import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
-import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
-import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
+import org.lets_play_be.dto.StandardStringResponse;
+import org.lets_play_be.dto.lobbyDto.*;
+import org.lets_play_be.service.lobbyService.LobbyBaseUpdateService;
 import org.lets_play_be.service.lobbyService.LobbyPresetCRUDService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ import java.util.List;
 public class LobbyPresetController implements LobbyPresetControllerApi {
 
     private final LobbyPresetCRUDService lobbyPresetCRUDService;
+    private final LobbyBaseUpdateService lobbyBaseUpdateService;
 
     @Override
     public ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(NewLobbyPresetRequest request,
@@ -34,9 +34,11 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
     }
 
     @Override
-    public ResponseEntity<LobbyPresetFullResponse> updateUserLobbyPreset(UpdateLobbyTitleAndTimeRequest request, Authentication authentication) {
-        return null;
+    public ResponseEntity<UpdateLobbyTitleAndTimeResponse> updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+        UpdateLobbyTitleAndTimeResponse response = lobbyBaseUpdateService.updateLobbyTitleAndTime(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @Override
     public ResponseEntity<LobbyPresetFullResponse> addUsers(ChangeLobbyPresetUsersRequest request) {
@@ -47,6 +49,12 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
     @Override
     public ResponseEntity<LobbyPresetFullResponse> removeUsers(ChangeLobbyPresetUsersRequest request) {
         LobbyPresetFullResponse response = lobbyPresetCRUDService.removeUserFromPreset(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<StandardStringResponse> deletePreset(Long id) {
+        StandardStringResponse response = lobbyPresetCRUDService.removeLobbyPreset(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -17,6 +17,14 @@ public class LobbyPresetRepoService {
         return repository.findById(id);
     }
 
+    public boolean existsById(Long id) {
+        return repository.existsById(id);
+    }
+
+    public Optional<LobbyPreset> deleteById(Long id) {
+        return repository.findById(id);
+    }
+
     public LobbyPreset save(LobbyPreset lobbyPreset) {
         return repository.save(lobbyPreset);
     }

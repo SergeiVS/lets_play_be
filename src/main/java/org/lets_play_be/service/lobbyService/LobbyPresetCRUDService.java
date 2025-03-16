@@ -2,11 +2,10 @@ package org.lets_play_be.service.lobbyService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
-import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
-import org.lets_play_be.dto.lobbyDto.NewLobbyPresetRequest;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
+import org.lets_play_be.dto.StandardStringResponse;
+import org.lets_play_be.dto.lobbyDto.*;
 import org.lets_play_be.entity.AppUser;
+import org.lets_play_be.entity.LobbyActive;
 import org.lets_play_be.entity.LobbyPreset;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
@@ -16,12 +15,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class LobbyPresetCRUDService {
 
     private final LobbyPresetRepoService repoService;
+    private final LobbyActiveRepoService activeRepoService;
     private final AppUserService appUserService;
     private final LobbyMappers lobbyMappers;
 
@@ -65,15 +66,44 @@ public class LobbyPresetCRUDService {
         return lobbyMappers.toLobbyPresetFullResponse(savedPreset);
     }
 
-//    TODO add method logic
     @Transactional
-    public LobbyPresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication authentication) {
+    public StandardStringResponse removeLobbyPreset(Long id) {
+        Optional<LobbyPreset> presetDeletedOptional = repoService.deleteById(id);
+        if (presetDeletedOptional.isEmpty()) {
+            throw new IllegalArgumentException("Lobby with id: " + id + ", is not found");
+        }
+        return new StandardStringResponse("Lobby preset " + presetDeletedOptional.get().getTitle() + ", with id" + presetDeletedOptional.get().getId() + " is deleted");
+    }
+
+
+    @Transactional
+    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.id());
+        OffsetTime newTime = FormattingUtils.TIME_STRING_TO_OFFSET_TIME(request.newTime());
+        setNewValues(request, presetForChange, newTime);
+        LobbyPreset savedPreset = repoService.save(presetForChange);
+        return lobbyMappers.toUpdateResponse(savedPreset);
+    }
+
+//    TODO add method body
+    @Transactional
+    public LobbyActive activateLobbyPreset(Long id) {
         return null;
+    }
+
+    private static void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyPreset presetForChange, OffsetTime newTime) {
+        if (!request.newTitle().equals(presetForChange.getTitle())) {
+            presetForChange.setTitle(request.newTitle());
+        }
+        if (presetForChange.getTime() != newTime) {
+            presetForChange.setTime(newTime);
+        }
     }
 
     public LobbyPreset getLobbyByIdOrThrow(Long id) {
         return repoService.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
     }
+
 
     private List<LobbyPresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
         return presets
