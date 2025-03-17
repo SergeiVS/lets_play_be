@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.*;
 import org.lets_play_be.entity.AppUser;
+import org.lets_play_be.entity.Invite;
 import org.lets_play_be.entity.LobbyActive;
 import org.lets_play_be.entity.LobbyPreset;
+import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
@@ -23,6 +25,7 @@ public class LobbyPresetCRUDService {
 
     private final LobbyPresetRepoService repoService;
     private final LobbyActiveRepoService activeRepoService;
+    private final InviteService inviteService;
     private final AppUserService appUserService;
     private final LobbyMappers lobbyMappers;
 
@@ -85,11 +88,21 @@ public class LobbyPresetCRUDService {
         return lobbyMappers.toUpdateResponse(savedPreset);
     }
 
-//    TODO add method body
+    //    TODO add method body
     @Transactional
     public LobbyActive activateLobbyPreset(Long id) {
+        LobbyPreset preset = getLobbyByIdOrThrow(id);
+        LobbyActive active = preset.activateLobby();
+        List<Invite> invites = getInvites(preset.getUsers(), active);
+        active.getInvites().addAll(invites);
+        LobbyActive savedActive = activeRepoService.save(active);
         return null;
     }
+
+    private List<Invite> getInvites(List<AppUser> users, LobbyActive active) {
+        return users.stream().map(user -> new Invite(user, active, active.getTitle())).toList();
+    }
+
 
     private static void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyPreset presetForChange, OffsetTime newTime) {
         if (!request.newTitle().equals(presetForChange.getTitle())) {

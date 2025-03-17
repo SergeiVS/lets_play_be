@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.lets_play_be.entity.enums.LobbyType;
 
 import java.time.OffsetTime;
@@ -26,7 +25,7 @@ public class LobbyActive extends LobbyBase {
     @OneToOne
     @JoinColumn(nullable = false)
     private AppUser owner;
-    @OneToMany(mappedBy = "lobby", orphanRemoval = true)
+    @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Invite> invites;
 
     public LobbyActive(String title, OffsetTime time, AppUser owner) {

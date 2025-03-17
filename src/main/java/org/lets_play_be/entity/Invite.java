@@ -18,7 +18,9 @@ public class Invite {
     @Enumerated(EnumType.STRING)
     @Setter
     private InviteState state;
-
+    @Setter
+    private int delayedFor;
+    @Setter
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,6 +34,7 @@ public class Invite {
     public Invite(AppUser user, LobbyActive lobby, String message) {
         this.state = InviteState.PENDING;
         this.message = message;
+        this.delayedFor = 0;
         this.user = user;
         this.lobby = lobby;
     }
