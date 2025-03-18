@@ -19,9 +19,6 @@ public class LobbyPreset extends LobbyBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(nullable = false, name = "owner_id")
-//    private AppUser owner;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_lobby_preset",

@@ -25,7 +25,6 @@ public class LobbyPresetCRUDService {
 
     private final LobbyPresetRepoService repoService;
     private final LobbyActiveRepoService activeRepoService;
-    private final InviteService inviteService;
     private final AppUserService appUserService;
     private final LobbyMappers lobbyMappers;
 
@@ -91,11 +90,19 @@ public class LobbyPresetCRUDService {
     @Transactional
     public ActiveLobbyResponse activateLobbyPreset(ActivateLobbyPresetRequest request) {
         LobbyPreset preset = getLobbyByIdOrThrow(request.presetId());
+        AppUser owner = preset.getOwner();
+        isActiveLobbyUniqueForOwner(owner);
         LobbyActive active = preset.activateLobby();
         List<Invite> invites = getInvites(request.userIds(), active, request.message());
         active.getInvites().addAll(invites);
         LobbyActive savedActive = activeRepoService.save(active);
         return lobbyMappers.toActiveResponse(savedActive);
+    }
+
+    private void isActiveLobbyUniqueForOwner(AppUser owner) {
+        if(activeRepoService.existByOwner(owner)){
+            throw new IllegalArgumentException("User: " + owner + " has already an active lobby");
+        }
     }
 
     private List<Invite> getInvites(List<Long> userIds, LobbyActive active, String message) {

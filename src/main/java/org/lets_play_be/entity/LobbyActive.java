@@ -20,9 +20,7 @@ public class LobbyActive extends LobbyBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @OneToOne
-//    @JoinColumn(nullable = false)
-//    private AppUser owner;
+
     @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Invite> invites;
 
