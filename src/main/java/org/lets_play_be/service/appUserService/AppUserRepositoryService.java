@@ -15,11 +15,15 @@ public class AppUserRepositoryService {
     private final AppUserRepository appUserRepository;
 
     public AppUser save(AppUser appUser) {
-       return appUserRepository.save(appUser);
+        return appUserRepository.save(appUser);
     }
 
     public List<AppUser> saveAll(List<AppUser> appUsers) {
         return appUserRepository.saveAll(appUsers);
+    }
+
+    public List<AppUser> getUsersByIds(List<Long> ids) {
+        return appUserRepository.getAppUsersById(ids);
     }
 
     public Optional<AppUser> findByEmail(String email) {

@@ -20,18 +20,15 @@ public class LobbyActive extends LobbyBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    private LobbyType type;
-    @OneToOne
-    @JoinColumn(nullable = false)
-    private AppUser owner;
+//    @OneToOne
+//    @JoinColumn(nullable = false)
+//    private AppUser owner;
     @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Invite> invites;
 
     public LobbyActive(String title, OffsetTime time, AppUser owner) {
-        super(title, time);
-        this.owner = owner;
-        this.type = LobbyType.ACTIVE;
+        super(title, time, owner);
+        setType(LobbyType.ACTIVE);
         this.invites = new ArrayList<>();
     }
 

@@ -19,9 +19,9 @@ public class LobbyPreset extends LobbyBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "owner_id")
-    private AppUser owner;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(nullable = false, name = "owner_id")
+//    private AppUser owner;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_lobby_preset",
@@ -31,14 +31,13 @@ public class LobbyPreset extends LobbyBase {
 
 
     public LobbyPreset(String title, OffsetTime time, AppUser owner, List<AppUser> users) {
-        super(title, time);
+        super(title, time, owner);
         setType(LobbyType.PRESET);
-        this.owner = owner;
         this.users = users;
     }
 
     public LobbyActive activateLobby() {
-        return new LobbyActive(getTitle(), getTime(), owner);
+        return new LobbyActive(getTitle(), getTime(), super.getOwner());
     }
 
     @Override

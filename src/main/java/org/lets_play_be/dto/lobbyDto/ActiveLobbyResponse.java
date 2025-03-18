@@ -8,7 +8,7 @@ import java.util.List;
 
 public record ActiveLobbyResponse(long id,
                                   String date,
-                                  UserShortResponse owner,
+                                  InvitedUserResponse owner,
                                   String lobbyType,
                                   String title,
                                   List<InvitedUserResponse> invitedUsers) implements Serializable {

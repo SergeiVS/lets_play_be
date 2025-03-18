@@ -2,6 +2,8 @@ package org.lets_play_be.dto.userDto;
 
 import org.lets_play_be.entity.AppUser;
 import org.lets_play_be.entity.Invite;
+import org.lets_play_be.entity.enums.AvailabilityEnum;
+import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.utils.FormattingUtils;
 
 import java.io.Serializable;
@@ -27,5 +29,15 @@ public record InvitedUserResponse(
         int delayedFor = invite.getDelayedFor();
 
         return new InvitedUserResponse(userId, name, availability, unavailableFor, unavailableTo, inviteState, delayedFor);
+    }
+
+    public static InvitedUserResponse getInvitedOwner(AppUser user) {
+        long userId = user.getId();
+        String name = user.getName();
+        String availability = AvailabilityEnum.AVAILABLE.toString();
+        String time = "00.00.00+01.00";
+        String inviteState = InviteState.ACCEPTED.toString();
+        int delayedFor = 0;
+        return new InvitedUserResponse(userId,name,availability,time,time,inviteState,delayedFor);
     }
 }

@@ -1,5 +1,8 @@
 package org.lets_play_be.entity;
 
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
 import org.lets_play_be.entity.enums.LobbyType;
@@ -19,11 +22,16 @@ public abstract class LobbyBase {
     @Setter(AccessLevel.PROTECTED)
     private LobbyType type;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "owner_id")
+    private AppUser owner;
+
     private OffsetTime time;
 
 
-    public LobbyBase(String title, OffsetTime time) {
+    public LobbyBase(String title, OffsetTime time, AppUser owner) {
         this.title = title;
         this.time = time;
+        this.owner = owner;
     }
 }

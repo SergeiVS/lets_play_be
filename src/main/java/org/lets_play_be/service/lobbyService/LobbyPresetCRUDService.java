@@ -88,19 +88,24 @@ public class LobbyPresetCRUDService {
         return lobbyMappers.toUpdateResponse(savedPreset);
     }
 
-    //    TODO add method body
     @Transactional
-    public LobbyActive activateLobbyPreset(Long id) {
-        LobbyPreset preset = getLobbyByIdOrThrow(id);
+    public ActiveLobbyResponse activateLobbyPreset(ActivateLobbyPresetRequest request) {
+        LobbyPreset preset = getLobbyByIdOrThrow(request.presetId());
         LobbyActive active = preset.activateLobby();
-        List<Invite> invites = getInvites(preset.getUsers(), active);
+        List<Invite> invites = getInvites(request.userIds(), active, request.message());
         active.getInvites().addAll(invites);
         LobbyActive savedActive = activeRepoService.save(active);
-        return null;
+        return lobbyMappers.toActiveResponse(savedActive);
     }
 
-    private List<Invite> getInvites(List<AppUser> users, LobbyActive active) {
-        return users.stream().map(user -> new Invite(user, active, active.getTitle())).toList();
+    private List<Invite> getInvites(List<Long> userIds, LobbyActive active, String message) {
+        List<AppUser> users = appUserService.getUsersListByIds(userIds);
+
+        if (users.size() != userIds.size()) {
+            throw new IllegalArgumentException("One or more users are not exist. Found: " + users.size() + " users.");
+        }
+
+        return users.stream().map(user -> new Invite(user, active, message)).toList();
     }
 
 

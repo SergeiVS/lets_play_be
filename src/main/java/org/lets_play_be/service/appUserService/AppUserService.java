@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
+import java.util.List;
 
 import static org.lets_play_be.utils.FormattingUtils.TIME_STRING_TO_OFFSET_TIME;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
@@ -61,6 +62,10 @@ public class AppUserService {
         return userRepositoryService.findById(id).orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
     }
 
+    public List<AppUser> getUsersListByIds(List<Long> ids) {
+        return userRepositoryService.getUsersByIds(ids);
+    }
+
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
         UserAvailability availability = user.getAvailability();
         String availabilityString = request.newAvailability();
@@ -96,8 +101,6 @@ public class AppUserService {
         }
 
     }
-
-
 
 
 }
