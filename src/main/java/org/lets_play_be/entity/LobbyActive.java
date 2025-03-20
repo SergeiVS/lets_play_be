@@ -21,13 +21,18 @@ public class LobbyActive extends LobbyBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    @JoinColumn(nullable = false)
+    private LobbyPreset preset;
+
     @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Invite> invites;
 
-    public LobbyActive(String title, OffsetTime time, AppUser owner) {
+    public LobbyActive(String title, OffsetTime time, AppUser owner, LobbyPreset preset) {
         super(title, time, owner);
         setType(LobbyType.ACTIVE);
         this.invites = new ArrayList<>();
+        this.preset = preset;
     }
 
     @Override

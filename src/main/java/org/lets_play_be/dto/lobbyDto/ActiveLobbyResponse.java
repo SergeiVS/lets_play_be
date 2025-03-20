@@ -9,6 +9,7 @@ import java.util.List;
 public record ActiveLobbyResponse(long id,
                                   String date,
                                   InvitedUserResponse owner,
+                                  Long presetId,
                                   String lobbyType,
                                   String title,
                                   List<InvitedUserResponse> invitedUsers) implements Serializable {

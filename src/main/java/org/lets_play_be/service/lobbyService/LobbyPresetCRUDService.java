@@ -8,7 +8,6 @@ import org.lets_play_be.entity.AppUser;
 import org.lets_play_be.entity.Invite;
 import org.lets_play_be.entity.LobbyActive;
 import org.lets_play_be.entity.LobbyPreset;
-import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -70,11 +68,9 @@ public class LobbyPresetCRUDService {
 
     @Transactional
     public StandardStringResponse removeLobbyPreset(Long id) {
-        Optional<LobbyPreset> presetDeletedOptional = repoService.deleteById(id);
-        if (presetDeletedOptional.isEmpty()) {
-            throw new IllegalArgumentException("Lobby with id: " + id + ", is not found");
-        }
-        return new StandardStringResponse("Lobby preset " + presetDeletedOptional.get().getTitle() + ", with id" + presetDeletedOptional.get().getId() + " is deleted");
+        repoService.deleteById(id);
+
+        return new StandardStringResponse("Lobby preset with id: " + id + " is deleted");
     }
 
 
@@ -100,8 +96,8 @@ public class LobbyPresetCRUDService {
     }
 
     private void isActiveLobbyUniqueForOwner(AppUser owner) {
-        if(activeRepoService.existByOwner(owner)){
-            throw new IllegalArgumentException("User: " + owner + " has already an active lobby");
+        if (activeRepoService.existByOwner(owner)) {
+            throw new IllegalArgumentException("User: " + owner.getName() + " has already an active lobby");
         }
     }
 

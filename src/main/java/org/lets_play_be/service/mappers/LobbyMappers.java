@@ -44,10 +44,11 @@ public class LobbyMappers {
         Long id = lobby.getId();
         String type = lobby.getType().toString();
         InvitedUserResponse owner = InvitedUserResponse.getInvitedOwner(lobby.getOwner());
+        long presetId = lobby.getPreset().getId();
         String title = lobby.getTitle();
         String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
         List<InvitedUserResponse> invitedUsers = getListOfInvitedUsersResponses(lobby.getInvites());
-        return new ActiveLobbyResponse(id, type, owner, title, time, invitedUsers);
+        return new ActiveLobbyResponse(id, type, owner,presetId, title, time, invitedUsers);
     }
 
     private List<InvitedUserResponse> getListOfInvitedUsersResponses(List<Invite> invites) {

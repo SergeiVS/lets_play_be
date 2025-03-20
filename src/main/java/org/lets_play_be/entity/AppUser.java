@@ -2,7 +2,10 @@ package org.lets_play_be.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +16,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Table(name = "accounts")
 public class AppUser {
     @Id
@@ -38,19 +40,12 @@ public class AppUser {
     @OneToOne(orphanRemoval = true)
     private UserAvailability availability;
 
-//    @OneToMany(mappedBy = "owner", orphanRemoval = true)
-//    private LobbyBase lobby;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
-    private List<Invite> invites;
-
     public AppUser(String name, String email, String password, String avatarUrl) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.avatarUrl = avatarUrl;
         this.roles = new ArrayList<>();
-        this.invites = new ArrayList<>();
     }
 
     @Override
@@ -65,4 +60,8 @@ public class AppUser {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
+
+
 }
+
+

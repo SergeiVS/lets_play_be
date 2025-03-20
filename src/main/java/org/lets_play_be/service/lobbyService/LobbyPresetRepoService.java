@@ -21,8 +21,8 @@ public class LobbyPresetRepoService {
         return repository.existsById(id);
     }
 
-    public Optional<LobbyPreset> deleteById(Long id) {
-        return repository.findById(id);
+    public void deleteById(Long id) {
+       repository.deleteById(id);
     }
 
     public LobbyPreset save(LobbyPreset lobbyPreset) {

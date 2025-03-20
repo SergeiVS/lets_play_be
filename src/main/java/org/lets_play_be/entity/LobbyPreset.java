@@ -19,7 +19,8 @@ public class LobbyPreset extends LobbyBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
+    @OneToOne(mappedBy = "preset", orphanRemoval = true, optional = true)
+    LobbyActive active;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_lobby_preset",
             joinColumns = @JoinColumn(name = "lobby_preset_id"),
@@ -34,7 +35,7 @@ public class LobbyPreset extends LobbyBase {
     }
 
     public LobbyActive activateLobby() {
-        return new LobbyActive(getTitle(), getTime(), super.getOwner());
+        return new LobbyActive(getTitle(), getTime(), super.getOwner(), this);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.lets_play_be.service.appUserService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lets_play_be.common.ErrorMessage;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.UserAvailabilityUpdateRequest;
@@ -11,6 +12,7 @@ import org.lets_play_be.entity.UserAvailability;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.lets_play_be.service.mappers.AppUserMappers;
+import org.slf4j.Logger;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ import java.util.List;
 import static org.lets_play_be.utils.FormattingUtils.TIME_STRING_TO_OFFSET_TIME;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
 import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AppUserService {
