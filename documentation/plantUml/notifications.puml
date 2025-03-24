@@ -1,25 +1,29 @@
 @startuml notifications
-abstract class Notification{
-AppUser recipient
-OffsetDateTime createAt
+
+skinparam linetype ortho
+
+abstract class Notification {
+    AppUser recipient
+    OffsetDateTime createAt
+    boolean seen
+    boolean delivered
 }
 
-enum InviteState{
-PENDING
-ACCEPTED
-DECLINED
-DELAYED
+enum InviteState {
+    PENDING
+    ACCEPTED
+    DECLINED
+    DELAYED
 }
 
-class Invite{
-long id
-InviteState inviteState
-Lobby lobbyActive
-String message
+class Invite {
+    long id
+    Lobby lobbyActive
+    String message
 }
+
+Invite -up-|> Notification
 
 Invite *-- InviteState
-
-Invite --|> Notification
 
 @enduml
