@@ -41,7 +41,6 @@ class Lobby{
 - AppUser: owner
 - List<Invite>: invites
 }
-AppUser "1"--> Lobby
-Lobby "1"--> AppUser
+AppUser "1"-- Lobby
 
 @enduml

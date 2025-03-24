@@ -1,0 +1,25 @@
+@startuml notifications
+abstract class Notification{
+AppUser recipient
+OffsetDateTime createAt
+}
+
+enum InviteState{
+PENDING
+ACCEPTED
+DECLINED
+DELAYED
+}
+
+class Invite{
+long id
+InviteState inviteState
+Lobby lobbyActive
+String message
+}
+
+Invite *-- InviteState
+
+Invite --|> Notification
+
+@enduml
