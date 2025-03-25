@@ -1,0 +1,31 @@
+@startuml Start Lobby
+
+Actor -> Frontend : press "Let's play"
+activate Frontend
+
+Frontend -> Backend : start Lobby
+activate Backend
+
+Backend -> Backend : send Invites
+activate Backend
+
+Backend -> DB : create Invites
+activate DB
+DB --> Backend
+deactivate DB
+
+Backend -> InvitesSender : sendInvites
+activate InvitesSender
+InvitesSender --> Backend
+deactivate InvitesSender
+
+Backend -> Backend
+deactivate Backend
+
+Backend -> Frontend : new Lobby State
+deactivate Backend
+
+Frontend -> Actor : display new Lobby state
+deactivate Frontend
+
+@enduml

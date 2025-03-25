@@ -6,7 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.entity.AppUserRole;
+import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.repository.BlacklistedTokenRepository;
 import org.lets_play_be.security.securityConfig.JwtProperties;
 import org.springframework.cglib.core.internal.Function;

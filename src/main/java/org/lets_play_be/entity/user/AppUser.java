@@ -1,11 +1,10 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.user;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.notification.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Table(name = "accounts")
 public class AppUser {
     @Id
@@ -37,8 +37,11 @@ public class AppUser {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<AppUserRole> roles;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private UserAvailability availability;
+
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
+//    private List<Notification> notifications;
 
     public AppUser(String name, String email, String password, String avatarUrl) {
         this.name = name;
@@ -46,6 +49,7 @@ public class AppUser {
         this.password = password;
         this.avatarUrl = avatarUrl;
         this.roles = new ArrayList<>();
+//        this.notifications = new ArrayList<>();
     }
 
     @Override
@@ -60,8 +64,4 @@ public class AppUser {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
-
-
 }
-
-

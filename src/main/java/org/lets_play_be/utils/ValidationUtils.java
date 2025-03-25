@@ -1,10 +1,9 @@
 package org.lets_play_be.utils;
 
-import org.lets_play_be.entity.UserAvailability;
+import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.LobbyType;
 
-import java.time.LocalTime;
 import java.time.OffsetTime;
 import java.util.Arrays;
 

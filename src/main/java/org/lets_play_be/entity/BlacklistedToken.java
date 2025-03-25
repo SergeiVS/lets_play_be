@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.lets_play_be.entity.converters.RefreshTokenEncoder;
+import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetDateTime;
 

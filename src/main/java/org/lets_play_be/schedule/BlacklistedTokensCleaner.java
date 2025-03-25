@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BlacklistedTokensCleaner {
 
-    private final int SCHEDULE_DELAY_MINUTES = 10;
+    private final int SCHEDULE_DELAY_MINUTES = 60  * 24;
 
     private final BlacklistedTokenService blacklistedTokenService;
 

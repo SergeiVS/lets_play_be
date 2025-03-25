@@ -1,7 +1,7 @@
 package org.lets_play_be.security.utils;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.entity.AppUser;
+import org.lets_play_be.entity.user.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

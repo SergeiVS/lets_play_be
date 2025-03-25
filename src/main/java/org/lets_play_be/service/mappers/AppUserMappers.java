@@ -1,7 +1,6 @@
 package org.lets_play_be.service.mappers;
 
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
-import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.AppUser;
 import org.lets_play_be.entity.AppUserRole;
 import org.lets_play_be.utils.FormattingUtils;
@@ -21,10 +20,6 @@ public class AppUserMappers {
                 appUser.getName(), appUser.getEmail(),
                 appUser.getAvatarUrl(), roles, appUser.getAvailability().getAvailabilityType().toString(),
                 fromAvailable, toAvailable);
-    }
-
-    public UserShortResponse toUserShortResponse(AppUser appUser) {
-        return new UserShortResponse(appUser.getId(), appUser.getName());
     }
 
 

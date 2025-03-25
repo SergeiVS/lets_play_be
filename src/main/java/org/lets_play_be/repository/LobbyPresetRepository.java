@@ -1,6 +1,6 @@
 package org.lets_play_be.repository;
 
-import org.lets_play_be.entity.LobbyPreset;
+import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

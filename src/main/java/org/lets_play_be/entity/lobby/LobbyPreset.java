@@ -1,10 +1,11 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.lobby;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.lets_play_be.entity.enums.LobbyType;
+import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;
 import java.util.List;
@@ -18,9 +19,12 @@ public class LobbyPreset extends LobbyBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    @OneToOne(mappedBy = "preset", orphanRemoval = true, optional = true)
-    LobbyActive active;
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "owner_id")
+    private AppUser owner;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_lobby_preset",
             joinColumns = @JoinColumn(name = "lobby_preset_id"),
@@ -28,14 +32,16 @@ public class LobbyPreset extends LobbyBase {
     private List<AppUser> users;
 
 
-    public LobbyPreset(String title, OffsetTime time, AppUser owner, List<AppUser> users) {
+    public LobbyPreset(String title, OffsetTime time, Long id, AppUser owner, List<AppUser> users) {
         super(title, time, owner);
         setType(LobbyType.PRESET);
+        this.id = id;
+//        this.owner = owner;
         this.users = users;
     }
 
     public LobbyActive activateLobby() {
-        return new LobbyActive(getTitle(), getTime(), super.getOwner(), this);
+        return new LobbyActive(getTitle(), getTime(), owner);
     }
 
     @Override
@@ -50,4 +56,6 @@ public class LobbyPreset extends LobbyBase {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
+
+
 }

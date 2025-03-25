@@ -1,0 +1,48 @@
+@startuml Startup Sequence
+
+actor Actor
+participant Frontend
+participant Backend
+participant "Notification Manager"
+database DB
+
+Actor -> Frontend : open the app
+activate Frontend
+
+Frontend -> Backend : get User
+activate Backend
+
+Backend -> Frontend : User Object
+deactivate Backend
+
+Frontend -> Backend : subscribe for notifications
+activate Backend
+
+Backend -> "Notification Manager" : notify subscription
+activate "Notification Manager"
+"Notification Manager" -> DB : query all outstanding Notifications
+
+alt Outstanding Notifications Present
+"Notification Manager" -> "Notification Manager" : send notifications
+activate "Notification Manager"
+
+"Notification Manager" -> Frontend : Notifications
+
+"Notification Manager" --> "Notification Manager"
+deactivate "Notification Manager"
+
+
+deactivate "Notification Manager"
+
+Backend --> Frontend : subscribe confirmation
+deactivate Backend
+
+Frontend -> Backend : get current lobby
+activate Backend
+Backend -> Frontend : lobby
+deactivate Backend
+
+Frontend -> Actor : show stub Lobby
+deactivate Frontend
+
+@enduml

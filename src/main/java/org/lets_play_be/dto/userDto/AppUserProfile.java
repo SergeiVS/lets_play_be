@@ -1,7 +1,7 @@
 package org.lets_play_be.dto.userDto;
 
-import org.lets_play_be.entity.AppUser;
-import org.lets_play_be.entity.AppUserRole;
+import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.entity.user.AppUserRole;
 
 import java.io.Serializable;
 import java.util.List;

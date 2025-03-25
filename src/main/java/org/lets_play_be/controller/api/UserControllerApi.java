@@ -46,7 +46,7 @@ public interface UserControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PutMapping
+    @PatchMapping
     ResponseEntity<AppUserFullResponse> updateUserData(@RequestBody @Valid @NotNull UserDataUpdateRequest request,
                                                        @NotNull Principal principal);
 
@@ -62,7 +62,7 @@ public interface UserControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PutMapping("availability")
+    @PatchMapping("availability")
     ResponseEntity<AppUserFullResponse> updateUserAvailability(@RequestBody @Valid @NotNull
                                                                UserAvailabilityUpdateRequest request, @NotNull Principal principal);
 }

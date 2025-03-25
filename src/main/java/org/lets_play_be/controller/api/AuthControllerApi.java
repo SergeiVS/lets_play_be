@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
 import org.lets_play_be.dto.userDto.NewUserRegistrationRequest;
@@ -16,6 +15,7 @@ import org.lets_play_be.exception.ValidationErrorResponse;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -26,7 +26,7 @@ public interface AuthControllerApi {
 
     @Operation(summary = "Authenticate user by email an password")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Is logged on",
+            @ApiResponse(responseCode = "200", description = "Is logged in",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = LoginResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
@@ -44,7 +44,7 @@ public interface AuthControllerApi {
     })
     @PostMapping("login")
     ResponseEntity<LoginResponse> login(
-            @RequestBody @Valid @NotNull LoginRequest loginRequest, HttpServletResponse response);
+            @RequestBody @Validated @NotNull LoginRequest loginRequest, HttpServletResponse response);
 
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Is registered",
@@ -58,7 +58,7 @@ public interface AuthControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping("register")
-    ResponseEntity<AppUserFullResponse> register(@RequestBody @Valid @NotNull NewUserRegistrationRequest request);
+    ResponseEntity<AppUserFullResponse> register(@RequestBody @Validated @NotNull NewUserRegistrationRequest request);
 
 
     @ApiResponses(value = {
@@ -66,7 +66,7 @@ public interface AuthControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = AppUserFullResponse.class))}),
     })
-    @PostMapping("/logout")
+    @PostMapping("logout")
     void logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
 
     @Operation(summary = "Refresh access token if expire")
