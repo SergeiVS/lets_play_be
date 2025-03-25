@@ -27,4 +27,8 @@ public class FormattingUtils {
 
         return OffsetTime.parse(timeString);
     }
+
+    public static DateTimeFormatter getTimeFormatter(){
+        return DateTimeFormatter.ofPattern("HHmmssZ");
+    }
 }

@@ -1,9 +1,9 @@
 package org.lets_play_be.service.InviteService;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.entity.AppUser;
-import org.lets_play_be.entity.Invite;
-import org.lets_play_be.entity.LobbyActive;
+import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.InviteRepository;
 import org.springframework.stereotype.Service;
 

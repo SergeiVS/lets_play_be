@@ -4,10 +4,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.*;
-import org.lets_play_be.entity.AppUser;
-import org.lets_play_be.entity.Invite;
-import org.lets_play_be.entity.LobbyActive;
-import org.lets_play_be.entity.LobbyPreset;
+import org.lets_play_be.entity.lobby.LobbyPreset;
+import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
@@ -83,33 +82,7 @@ public class LobbyPresetCRUDService {
         return lobbyMappers.toUpdateResponse(savedPreset);
     }
 
-    @Transactional
-    public ActiveLobbyResponse activateLobbyPreset(ActivateLobbyPresetRequest request) {
-        LobbyPreset preset = getLobbyByIdOrThrow(request.presetId());
-        AppUser owner = preset.getOwner();
-        isActiveLobbyUniqueForOwner(owner);
-        LobbyActive active = preset.activateLobby();
-        List<Invite> invites = getInvites(request.userIds(), active, request.message());
-        active.getInvites().addAll(invites);
-        LobbyActive savedActive = activeRepoService.save(active);
-        return lobbyMappers.toActiveResponse(savedActive);
-    }
 
-    private void isActiveLobbyUniqueForOwner(AppUser owner) {
-        if (activeRepoService.existByOwner(owner)) {
-            throw new IllegalArgumentException("User: " + owner.getName() + " has already an active lobby");
-        }
-    }
-
-    private List<Invite> getInvites(List<Long> userIds, LobbyActive active, String message) {
-        List<AppUser> users = appUserService.getUsersListByIds(userIds);
-
-        if (users.size() != userIds.size()) {
-            throw new IllegalArgumentException("One or more users are not exist. Found: " + users.size() + " users.");
-        }
-
-        return users.stream().map(user -> new Invite(user, active, message)).toList();
-    }
 
 
     private static void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyPreset presetForChange, OffsetTime newTime) {

@@ -18,10 +18,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.OffsetTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import static org.lets_play_be.service.mappers.AppUserMappers.getTimeFormatter;
+import static org.lets_play_be.utils.FormattingUtils.getTimeFormatter;
 
 @Slf4j
 @Component
@@ -32,7 +31,6 @@ public class InitDefaultUser {
     private final AppUserRepositoryService repositoryService;
     private final PasswordEncoder passwordEncoder;
     private final AppUserRoleMapping appUserRoleMapping;
-    private final UserAvailabilityRepository availabilityRepository;
 
     @PostConstruct
     @Transactional

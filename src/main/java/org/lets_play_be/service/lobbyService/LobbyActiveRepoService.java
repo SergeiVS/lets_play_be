@@ -1,8 +1,8 @@
 package org.lets_play_be.service.lobbyService;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.entity.AppUser;
-import org.lets_play_be.entity.LobbyActive;
+import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.LobbyActiveRepository;
 import org.springframework.stereotype.Service;
 

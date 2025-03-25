@@ -39,11 +39,11 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<ActiveLobbyResponse> activatePreset(ActivateLobbyPresetRequest request) {
-        ActiveLobbyResponse response   = lobbyPresetCRUDService.activateLobbyPreset(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @Override
+//    public ResponseEntity<ActiveLobbyResponse> activatePreset(ActivateLobbyPresetRequest request) {
+//        ActiveLobbyResponse response   = lobbyPresetCRUDService.activateLobbyPreset(request);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
 
     @Override

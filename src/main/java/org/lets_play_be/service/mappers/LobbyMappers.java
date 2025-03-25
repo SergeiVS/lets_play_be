@@ -6,9 +6,9 @@ import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.dto.userDto.UserShortResponse;
-import org.lets_play_be.entity.Invite;
-import org.lets_play_be.entity.LobbyActive;
-import org.lets_play_be.entity.LobbyPreset;
+import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.LobbyPreset;
+import org.lets_play_be.entity.notification.Invite;
 import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.stereotype.Service;
 
@@ -44,11 +44,10 @@ public class LobbyMappers {
         Long id = lobby.getId();
         String type = lobby.getType().toString();
         InvitedUserResponse owner = InvitedUserResponse.getInvitedOwner(lobby.getOwner());
-        long presetId = lobby.getPreset().getId();
         String title = lobby.getTitle();
         String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
         List<InvitedUserResponse> invitedUsers = getListOfInvitedUsersResponses(lobby.getInvites());
-        return new ActiveLobbyResponse(id, type, owner,presetId, title, time, invitedUsers);
+        return new ActiveLobbyResponse(id, type, owner, title, time, invitedUsers);
     }
 
     private List<InvitedUserResponse> getListOfInvitedUsersResponses(List<Invite> invites) {

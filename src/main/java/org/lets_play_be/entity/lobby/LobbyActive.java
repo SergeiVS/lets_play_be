@@ -1,10 +1,14 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.lobby;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.lets_play_be.entity.enums.LobbyType;
+import org.lets_play_be.entity.lobby.LobbyBase;
+import org.lets_play_be.entity.lobby.LobbyPreset;
+import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;
 import java.util.ArrayList;
@@ -21,18 +25,13 @@ public class LobbyActive extends LobbyBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
-    private LobbyPreset preset;
-
     @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
     private List<Invite> invites;
 
-    public LobbyActive(String title, OffsetTime time, AppUser owner, LobbyPreset preset) {
+    public LobbyActive(String title, OffsetTime time, AppUser owner) {
         super(title, time, owner);
         setType(LobbyType.ACTIVE);
         this.invites = new ArrayList<>();
-        this.preset = preset;
     }
 
     @Override

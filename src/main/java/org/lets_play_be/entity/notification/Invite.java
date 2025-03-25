@@ -6,6 +6,7 @@ import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 
+import java.time.OffsetTime;
 import java.util.Objects;
 
 @Entity
@@ -21,10 +22,8 @@ public class Invite extends Notification {
     private InviteState state;
 
     private String message;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false, updatable = false)
-//    private AppUser user;
+    @Setter
+    private int delayedFor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lobby_active_id", nullable = false, updatable = false)
@@ -35,6 +34,7 @@ public class Invite extends Notification {
         this.state = InviteState.PENDING;
         this.message = message;
         this.lobby = lobby;
+        this.delayedFor = 0;
     }
 
 

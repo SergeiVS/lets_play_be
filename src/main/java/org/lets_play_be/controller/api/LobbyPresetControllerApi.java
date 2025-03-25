@@ -29,8 +29,8 @@ public interface LobbyPresetControllerApi {
                                                                                    @NotNull
                                                                                    @Validated
                                                                                    UpdateLobbyTitleAndTimeRequest request);
-    @PostMapping("active")
-    public ResponseEntity<ActiveLobbyResponse> activatePreset(ActivateLobbyPresetRequest request);
+//    @PostMapping("active")
+//    public ResponseEntity<ActiveLobbyResponse> activatePreset(ActivateLobbyPresetRequest request);
 
 
     @PutMapping("users")

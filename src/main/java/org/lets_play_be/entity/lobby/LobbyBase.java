@@ -1,4 +1,4 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.lobby;
 
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -6,6 +6,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
 import org.lets_play_be.entity.enums.LobbyType;
+import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;
 
