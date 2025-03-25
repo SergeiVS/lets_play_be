@@ -37,7 +37,7 @@ public class AppUser {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<AppUserRole> roles;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private UserAvailability availability;
 
 //    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)

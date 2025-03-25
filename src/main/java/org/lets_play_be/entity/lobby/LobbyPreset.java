@@ -33,10 +33,10 @@ public class LobbyPreset extends LobbyBase {
 
 
     public LobbyPreset(String title, OffsetTime time, Long id, AppUser owner, List<AppUser> users) {
-        super(title, time);
+        super(title, time, owner);
         setType(LobbyType.PRESET);
         this.id = id;
-        this.owner = owner;
+//        this.owner = owner;
         this.users = users;
     }
 

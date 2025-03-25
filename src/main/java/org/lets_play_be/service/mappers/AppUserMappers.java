@@ -6,6 +6,8 @@ import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class AppUserMappers {
     public AppUserFullResponse toFullUserResponse(AppUser appUser) {
@@ -20,6 +22,10 @@ public class AppUserMappers {
                 appUser.getName(), appUser.getEmail(),
                 appUser.getAvatarUrl(), roles, appUser.getAvailability().getAvailabilityType().toString(),
                 fromAvailable, toAvailable);
+    }
+
+    public static DateTimeFormatter getTimeFormatter() {
+        return DateTimeFormatter.ofPattern("HHmmssZ");
     }
 
 
