@@ -1,8 +1,8 @@
 package org.lets_play_be.service.mappers;
 
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
-import org.lets_play_be.entity.AppUser;
-import org.lets_play_be.entity.AppUserRole;
+import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.stereotype.Service;
 

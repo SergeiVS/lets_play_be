@@ -1,7 +1,7 @@
 package org.lets_play_be.service.appUserService;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.entity.AppUser;
+import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.AppUserRepository;
 import org.springframework.stereotype.Service;
 

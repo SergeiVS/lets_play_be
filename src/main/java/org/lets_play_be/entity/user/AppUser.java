@@ -1,8 +1,10 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.user;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.notification.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +40,8 @@ public class AppUser {
     @OneToOne(orphanRemoval = true)
     private UserAvailability availability;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
-    private List<Invite> invites;
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
+//    private List<Notification> notifications;
 
     public AppUser(String name, String email, String password, String avatarUrl) {
         this.name = name;
@@ -47,7 +49,7 @@ public class AppUser {
         this.password = password;
         this.avatarUrl = avatarUrl;
         this.roles = new ArrayList<>();
-        this.invites = new ArrayList<>();
+//        this.notifications = new ArrayList<>();
     }
 
     @Override

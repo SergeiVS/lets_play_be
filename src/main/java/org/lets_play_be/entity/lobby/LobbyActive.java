@@ -1,11 +1,12 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.lobby;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.lets_play_be.entity.notification.Invite;
 import org.lets_play_be.entity.enums.LobbyType;
+import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;
 import java.util.ArrayList;

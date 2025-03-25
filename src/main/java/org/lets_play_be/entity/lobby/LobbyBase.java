@@ -1,4 +1,4 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.lobby;
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
