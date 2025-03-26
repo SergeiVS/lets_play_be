@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.*;
 import org.lets_play_be.entity.lobby.LobbyPreset;
-import org.lets_play_be.entity.notification.Invite;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
@@ -21,12 +20,11 @@ import java.util.List;
 public class LobbyPresetCRUDService {
 
     private final LobbyPresetRepoService repoService;
-    private final LobbyActiveRepoService activeRepoService;
     private final AppUserService appUserService;
     private final LobbyMappers lobbyMappers;
 
     @Transactional
-    public LobbyPresetFullResponse createNewLobbyPreset(NewLobbyPresetRequest request, Authentication authentication) {
+    public LobbyPresetFullResponse createNewLobbyPreset(NewLobbyRequest request, Authentication authentication) {
 
         LobbyPreset savedLobby = saveNewLobbyPreset(request, authentication);
 
@@ -76,7 +74,7 @@ public class LobbyPresetCRUDService {
     @Transactional
     public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
         LobbyPreset presetForChange = getLobbyByIdOrThrow(request.id());
-        OffsetTime newTime = FormattingUtils.TIME_STRING_TO_OFFSET_TIME(request.newTime());
+        OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
         setNewValues(request, presetForChange, newTime);
         LobbyPreset savedPreset = repoService.save(presetForChange);
         return lobbyMappers.toUpdateResponse(savedPreset);
@@ -114,21 +112,17 @@ public class LobbyPresetCRUDService {
         for (AppUser user : presetForChange.getUsers()) {
             usersId.remove(user.getId());
         }
-        return getUsers(usersId);
+        return appUserService.getUsersListByIds(usersId);
     }
 
-    private LobbyPreset saveNewLobbyPreset(NewLobbyPresetRequest request, Authentication authentication) {
+    private LobbyPreset saveNewLobbyPreset(NewLobbyRequest request, Authentication authentication) {
 
         AppUser owner = getOwner(authentication);
-        OffsetTime time = FormattingUtils.TIME_STRING_TO_OFFSET_TIME(request.time());
-        List<AppUser> users = getUsers(request.userIds());
+        OffsetTime time = FormattingUtils.timeStringToOffsetTime(request.time());
+        List<AppUser> users = appUserService.getUsersListByIds(request.userIds());
 
         LobbyPreset lobbyToSave = new LobbyPreset(request.title(), time, owner, users);
         return repoService.save(lobbyToSave);
-    }
-
-    private List<AppUser> getUsers(List<Long> userIds) {
-        return userIds.stream().map(appUserService::getUserByIdOrThrow).toList();
     }
 
     private AppUser getOwner(Authentication authentication) {

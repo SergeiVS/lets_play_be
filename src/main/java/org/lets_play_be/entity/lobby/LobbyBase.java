@@ -5,6 +5,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.user.AppUser;
 
@@ -17,7 +18,7 @@ import java.time.OffsetTime;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class LobbyBase {
-
+    @NaturalId
     private String title;
 
     @Setter(AccessLevel.PROTECTED)
@@ -35,4 +36,6 @@ public abstract class LobbyBase {
         this.time = time;
         this.owner = owner;
     }
+
+
 }

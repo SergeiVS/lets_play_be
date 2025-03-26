@@ -18,7 +18,7 @@ public interface LobbyPresetControllerApi {
     @PostMapping
     public ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(@RequestBody
                                                                         @Valid
-                                                                        NewLobbyPresetRequest request,
+                                                                        NewLobbyRequest request,
                                                                         Authentication authentication);
 
     @GetMapping

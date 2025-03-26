@@ -12,14 +12,13 @@ import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.lets_play_be.service.mappers.AppUserMappers;
-import org.slf4j.Logger;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
 
-import static org.lets_play_be.utils.FormattingUtils.TIME_STRING_TO_OFFSET_TIME;
+import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
 import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av;
 @Slf4j
@@ -71,8 +70,8 @@ public class AppUserService {
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
         UserAvailability availability = user.getAvailability();
         String availabilityString = request.newAvailability();
-        OffsetTime fromAvailable = TIME_STRING_TO_OFFSET_TIME(request.newFromUnavailable());
-        OffsetTime toAvailable = TIME_STRING_TO_OFFSET_TIME(request.newToUnavailable());
+        OffsetTime fromAvailable = timeStringToOffsetTime(request.newFromUnavailable());
+        OffsetTime toAvailable = timeStringToOffsetTime(request.newToUnavailable());
 
 
         validateAvailabilityString(availabilityString);

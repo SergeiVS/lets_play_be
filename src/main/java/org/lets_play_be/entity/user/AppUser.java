@@ -40,8 +40,6 @@ public class AppUser {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private UserAvailability availability;
 
-//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
-//    private List<Notification> notifications;
 
     public AppUser(String name, String email, String password, String avatarUrl) {
         this.name = name;

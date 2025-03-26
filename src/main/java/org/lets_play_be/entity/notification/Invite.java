@@ -15,6 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class Invite extends Notification {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -25,8 +26,8 @@ public class Invite extends Notification {
     @Setter
     private int delayedFor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lobby_active_id", nullable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "lobby_active_id")
     private LobbyActive lobby;
 
     public Invite(AppUser recipient, LobbyActive lobby, String message) {

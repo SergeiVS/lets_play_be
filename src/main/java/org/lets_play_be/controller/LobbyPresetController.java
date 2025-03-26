@@ -21,7 +21,7 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
     private final LobbyBaseUpdateService lobbyBaseUpdateService;
 
     @Override
-    public ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(NewLobbyPresetRequest request,
+    public ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(NewLobbyRequest request,
                                                                         Authentication authentication) {
         LobbyPresetFullResponse response = lobbyPresetCRUDService.createNewLobbyPreset(request, authentication);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

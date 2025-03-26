@@ -25,7 +25,7 @@ public class LobbyActive extends LobbyBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Invite> invites;
 
     public LobbyActive(String title, OffsetTime time, AppUser owner) {
@@ -39,11 +39,11 @@ public class LobbyActive extends LobbyBase {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
         LobbyActive that = (LobbyActive) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(getTitle(), that.getTitle());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hashCode(getTitle());
     }
 }

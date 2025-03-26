@@ -23,8 +23,8 @@ public record InvitedUserResponse(
         long userId = user.getId();
         String name = user.getName();
         String availability = user.getAvailability().getAvailabilityType().toString();
-        String unavailableFor = FormattingUtils.TIME_TO_STRING_FORMATTER(user.getAvailability().getFromUnavailable());
-        String unavailableTo = FormattingUtils.TIME_TO_STRING_FORMATTER(user.getAvailability().getToUnavailable());
+        String unavailableFor = FormattingUtils.timeToStringFormatter(user.getAvailability().getFromUnavailable());
+        String unavailableTo = FormattingUtils.timeToStringFormatter(user.getAvailability().getToUnavailable());
         String inviteState = invite.getState().toString();
         int delayedFor = invite.getDelayedFor();
 

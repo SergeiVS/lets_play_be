@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static org.lets_play_be.utils.FormattingUtils.NORMALIZE_EMAIL;
+import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class RegisterNewUserService {
     private AppUser getUserForSave(NewUserRegistrationRequest request) {
 
         String name = request.name();
-        String email = NORMALIZE_EMAIL(request.email());
+        String email = normalizeEmail(request.email());
         String password = passwordEncoder.encode(request.password().trim());
         String avatarUrl = (request.avatarUrl().isEmpty()) ? "N/A" : request.avatarUrl().trim();
         AppUserRole role = roleService.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name());

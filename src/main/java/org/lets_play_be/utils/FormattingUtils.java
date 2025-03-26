@@ -7,19 +7,19 @@ import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 
 public class FormattingUtils {
 
+    public static String normalizeEmail(String email) {
+        return email.replaceAll("\\s", "").trim();
+    }
+
     private FormattingUtils() {throw new IllegalStateException("Utility class");}
 
-    public static String TIME_TO_STRING_FORMATTER (OffsetTime localTime) {
+    public static String timeToStringFormatter(OffsetTime localTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_TIME;
         if (localTime == null) {return null;}
         return formatter.format(localTime);
     };
 
-    public static String NORMALIZE_EMAIL(String email) {
-        return email.replaceAll("\\s", "").trim();
-    }
-
-    public static OffsetTime TIME_STRING_TO_OFFSET_TIME(String timeString) {
+    public static OffsetTime timeStringToOffsetTime(String timeString) {
 
         if (timeString == null||  timeString.isEmpty())return null;
 

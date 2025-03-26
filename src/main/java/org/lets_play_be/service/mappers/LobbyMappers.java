@@ -24,7 +24,7 @@ public class LobbyMappers {
 
         UserShortResponse owner = userMapper.toUserShortResponse(lobby.getOwner());
         List<UserShortResponse> users = lobby.getUsers().stream().map(userMapper::toUserShortResponse).toList();
-        String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
+        String time = FormattingUtils.timeToStringFormatter(lobby.getTime());
 
         return new LobbyPresetFullResponse(lobby.getId(), lobby.getType().toString(), owner, lobby.getTitle(), time, users);
     }
@@ -35,7 +35,7 @@ public class LobbyMappers {
         String type = lobby.getType().toString();
         UserShortResponse owner = userMapper.toUserShortResponse(lobby.getOwner());
         String title = lobby.getTitle();
-        String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
+        String time = FormattingUtils.timeToStringFormatter(lobby.getTime());
 
         return new UpdateLobbyTitleAndTimeResponse(id, type, owner, title, time);
     }
@@ -45,7 +45,7 @@ public class LobbyMappers {
         String type = lobby.getType().toString();
         InvitedUserResponse owner = InvitedUserResponse.getInvitedOwner(lobby.getOwner());
         String title = lobby.getTitle();
-        String time = FormattingUtils.TIME_TO_STRING_FORMATTER(lobby.getTime());
+        String time = FormattingUtils.timeToStringFormatter(lobby.getTime());
         List<InvitedUserResponse> invitedUsers = getListOfInvitedUsersResponses(lobby.getInvites());
         return new ActiveLobbyResponse(id, type, owner, title, time, invitedUsers);
     }
