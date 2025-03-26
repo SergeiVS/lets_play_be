@@ -33,6 +33,9 @@ public class LobbyActiveCRUDService {
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
         AppUser owner = userService.getUserByEmailOrThrow(authentication.getName());
+
+        isLobbyExistingByOwnerId(owner);
+
         var savedLobby = saveNewLobbyFromRequest(request, owner);
 
         return lobbyMappers.toActiveResponse(savedLobby);
@@ -63,8 +66,12 @@ public class LobbyActiveCRUDService {
     private List<Invite> getSavedInviteList(NewActiveLobbyRequest request, LobbyActive lobbyForSave) {
 
         List<AppUser> users = userService.getUsersListByIds(request.userIds());
-//        List<Invite> invitesForSave =
-                return inviteService.getListOfNewInvites(users, lobbyForSave, request.message());
-//        return inviteService.saveAllInvites(invitesForSave);
+        return inviteService.getListOfNewInvites(users, lobbyForSave, request.message());
+    }
+
+    private void isLobbyExistingByOwnerId(AppUser owner) {
+        if (repoService.existByOwner(owner)) {
+            throw new IllegalArgumentException("The Lobby for given owner already exists");
+        }
     }
 }

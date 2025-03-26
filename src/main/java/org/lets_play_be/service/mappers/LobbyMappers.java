@@ -47,7 +47,7 @@ public class LobbyMappers {
         String title = lobby.getTitle();
         String time = FormattingUtils.timeToStringFormatter(lobby.getTime());
         List<InvitedUserResponse> invitedUsers = getListOfInvitedUsersResponses(lobby.getInvites());
-        return new ActiveLobbyResponse(id, type, owner, title, time, invitedUsers);
+        return new ActiveLobbyResponse(id, time, owner, type, title, invitedUsers);
     }
 
     private List<InvitedUserResponse> getListOfInvitedUsersResponses(List<Invite> invites) {
