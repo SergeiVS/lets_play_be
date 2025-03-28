@@ -18,7 +18,7 @@ import java.time.OffsetTime;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class LobbyBase {
-    @NaturalId
+
     private String title;
 
     @Setter(AccessLevel.PROTECTED)

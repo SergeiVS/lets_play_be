@@ -14,7 +14,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Table(name = "lobby_preset")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class LobbyPreset extends LobbyBase {
 
     @Id

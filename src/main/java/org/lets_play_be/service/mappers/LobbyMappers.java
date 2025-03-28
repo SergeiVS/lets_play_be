@@ -7,6 +7,7 @@ import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.LobbyBase;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.notification.Invite;
 import org.lets_play_be.utils.FormattingUtils;
@@ -29,9 +30,9 @@ public class LobbyMappers {
         return new LobbyPresetFullResponse(lobby.getId(), lobby.getType().toString(), owner, lobby.getTitle(), time, users);
     }
 
-    public UpdateLobbyTitleAndTimeResponse toUpdateResponse(LobbyPreset lobby) {
+    public<T extends LobbyBase> UpdateLobbyTitleAndTimeResponse toUpdateResponse( T lobby, long lobbyId) {
 
-        Long id = lobby.getId();
+        Long id = lobbyId;
         String type = lobby.getType().toString();
         UserShortResponse owner = userMapper.toUserShortResponse(lobby.getOwner());
         String title = lobby.getTitle();

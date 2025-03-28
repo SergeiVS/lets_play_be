@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetTime;
 import java.util.List;
 
+import static org.lets_play_be.service.lobbyService.LobbyBaseUpdateService.setNewValues;
+
 @Service
 @RequiredArgsConstructor
 public class LobbyPresetCRUDService {
@@ -73,29 +75,21 @@ public class LobbyPresetCRUDService {
 
     @Transactional
     public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
-        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.id());
+
+        var presetForChange = getLobbyByIdOrThrow(request.id());
+
         OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
+
         setNewValues(request, presetForChange, newTime);
-        LobbyPreset savedPreset = repoService.save(presetForChange);
-        return lobbyMappers.toUpdateResponse(savedPreset);
-    }
 
+        var savedPreset = repoService.save(presetForChange);
 
-
-
-    private static void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyPreset presetForChange, OffsetTime newTime) {
-        if (!request.newTitle().equals(presetForChange.getTitle())) {
-            presetForChange.setTitle(request.newTitle());
-        }
-        if (presetForChange.getTime() != newTime) {
-            presetForChange.setTime(newTime);
-        }
+        return lobbyMappers.toUpdateResponse(savedPreset, savedPreset.getId());
     }
 
     public LobbyPreset getLobbyByIdOrThrow(Long id) {
         return repoService.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
     }
-
 
     private List<LobbyPresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
         return presets

@@ -12,12 +12,14 @@ import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
+import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
 
+import static org.lets_play_be.service.lobbyService.LobbyBaseUpdateService.setNewValues;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Service
@@ -32,20 +34,34 @@ public class LobbyActiveCRUDService {
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
-        AppUser owner = userService.getUserByEmailOrThrow(authentication.getName());
+        var owner = userService.getUserByEmailOrThrow(authentication.getName());
 
         isLobbyExistingByOwnerId(owner);
 
         var savedLobby = saveNewLobbyFromRequest(request, owner);
 
         return lobbyMappers.toActiveResponse(savedLobby);
+    }
 
+    @Transactional
+    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+
+        var lobbyForChange = getLobbyByIdOrThrow(request.id());
+
+        OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
+
+        setNewValues(request, lobbyForChange, newTime);
+
+        var savedLobby = repoService.save(lobbyForChange);
+
+        return lobbyMappers.toUpdateResponse(savedLobby, savedLobby.getId());
     }
 
 
-    //    TODO add method body
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
-        return null;
+
+    public LobbyActive getLobbyByIdOrThrow(Long id) {
+        return repoService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No Lobby found with id: " + id));
     }
 
 

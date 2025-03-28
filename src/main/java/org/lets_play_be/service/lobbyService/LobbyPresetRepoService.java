@@ -22,7 +22,7 @@ public class LobbyPresetRepoService {
     }
 
     public void deleteById(Long id) {
-       repository.deleteById(id);
+        repository.deleteById(id);
     }
 
     public LobbyPreset save(LobbyPreset lobbyPreset) {

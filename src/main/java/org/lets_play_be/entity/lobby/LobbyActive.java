@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class LobbyActive extends LobbyBase {
 
     @Id
