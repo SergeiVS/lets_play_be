@@ -4,6 +4,7 @@ actor Actor
 participant Frontend
 participant Backend
 participant "Notification Manager"
+participant "Notification Sender"
 database DB
 
 Actor -> Frontend : open the app
@@ -20,19 +21,15 @@ activate Backend
 
 Backend -> "Notification Manager" : notify subscription
 activate "Notification Manager"
+
 "Notification Manager" -> DB : query all outstanding Notifications
+activate DB
+DB -> "Notification Manager" : list of all outstanding Notifications
+deactivate DB
 
-alt Outstanding Notifications Present
-"Notification Manager" -> "Notification Manager" : send notifications
-activate "Notification Manager"
-
-"Notification Manager" -> Frontend : Notifications
-
-"Notification Manager" --> "Notification Manager"
+"Notification Manager" -> "Notification Sender" : send Notifications
 deactivate "Notification Manager"
-
-
-deactivate "Notification Manager"
+activate "Notification Sender"
 
 Backend --> Frontend : subscribe confirmation
 deactivate Backend
@@ -41,6 +38,9 @@ Frontend -> Backend : get current lobby
 activate Backend
 Backend -> Frontend : lobby
 deactivate Backend
+
+"Notification Sender" -> Frontend : List of Notifications (async)
+deactivate "Notification Sender"
 
 Frontend -> Actor : show stub Lobby
 deactivate Frontend
