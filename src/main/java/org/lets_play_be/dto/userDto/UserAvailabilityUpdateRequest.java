@@ -8,7 +8,7 @@ import org.springframework.format.annotation.NumberFormat;
 
 import java.io.Serializable;
 
-public record UserAvailabilityUpdateRequest(@NotNull(message = "Field userId should be filled")
+public record UserAvailabilityUpdateRequest(@NotNull(message = "Field usersId should be filled")
                                             @NumberFormat
                                             @Schema(example = "UNAVAILABLE")
                                             Long userId,

@@ -1,8 +1,9 @@
 package org.lets_play_be.service.mappers;
 
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
-import org.lets_play_be.entity.AppUser;
-import org.lets_play_be.entity.AppUserRole;
+import org.lets_play_be.dto.userDto.UserShortResponse;
+import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,9 @@ public class AppUserMappers {
 
         String[] roles = getUserRoles(appUser);
         //can be null
-        String fromAvailable = appUser.getAvailability().getFromUnavailable() == null ? null : FormattingUtils.TIME_TO_STRING_FORMATTER(appUser.getAvailability().getFromUnavailable());
+        String fromAvailable = appUser.getAvailability().getFromUnavailable() == null ? null : FormattingUtils.timeToStringFormatter(appUser.getAvailability().getFromUnavailable());
         //can be null
-        String toAvailable = appUser.getAvailability().getToUnavailable() == null ? null : FormattingUtils.TIME_TO_STRING_FORMATTER(appUser.getAvailability().getToUnavailable());
+        String toAvailable = appUser.getAvailability().getToUnavailable() == null ? null : FormattingUtils.timeToStringFormatter(appUser.getAvailability().getToUnavailable());
 
         return new AppUserFullResponse(appUser.getId(),
                 appUser.getName(), appUser.getEmail(),
@@ -28,5 +29,9 @@ public class AppUserMappers {
                 .stream()
                 .map(AppUserRole::getName)
                 .toArray(String[]::new);
+    }
+
+    public UserShortResponse toUserShortResponse(AppUser appUser) {
+        return new UserShortResponse(appUser.getId(), appUser.getName());
     }
 }

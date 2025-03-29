@@ -1,17 +1,21 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.notification;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.lets_play_be.entity.enums.InviteState;
+import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.user.AppUser;
 
+import java.time.OffsetTime;
 import java.util.Objects;
 
 @Entity
 @Getter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Invite {
+@NoArgsConstructor
+public class Invite extends Notification {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -19,21 +23,21 @@ public class Invite {
     private InviteState state;
 
     private String message;
+    @Setter
+    private int delayedFor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    private AppUser user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lobby_active_id", nullable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "lobby_active_id")
     private LobbyActive lobby;
 
-    public Invite(AppUser user, LobbyActive lobby, String message) {
+    public Invite(AppUser recipient, LobbyActive lobby, String message) {
+        super(recipient);
         this.state = InviteState.PENDING;
         this.message = message;
-        this.user = user;
         this.lobby = lobby;
+        this.delayedFor = 0;
     }
+
 
     @Override
     public boolean equals(Object o) {

@@ -1,4 +1,4 @@
-package org.lets_play_be.entity;
+package org.lets_play_be.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,18 +9,21 @@ import java.time.OffsetTime;
 @Entity
 @Getter
 @Setter
-@ToString
 @Table(name = "availability")
 @NoArgsConstructor
 public class UserAvailability {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private AvailabilityEnum availabilityType;
+
     private OffsetTime fromUnavailable;
+
     private OffsetTime toUnavailable;
+
     @OneToOne(mappedBy = "availability")
     private AppUser user;
 

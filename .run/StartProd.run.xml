@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="StartProd" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="prod" />
-    <module name="lets_play_be" />
+    <module name="lets_play_backend" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.lets_play_be.LetsPlayBackendApplication" />
     <method v="2">
       <option name="Make" enabled="true" />

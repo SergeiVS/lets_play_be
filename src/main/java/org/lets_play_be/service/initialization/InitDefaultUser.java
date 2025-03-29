@@ -4,9 +4,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.lets_play_be.entity.AppUser;
-import org.lets_play_be.entity.AppUserRole;
-import org.lets_play_be.entity.UserAvailability;
+import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.entity.user.AppUserRole;
+import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.UserRoleEnum;
 import org.lets_play_be.repository.UserAvailabilityRepository;
@@ -16,8 +16,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lets_play_be.utils.FormattingUtils.getTimeFormatter;
 
 @Slf4j
 @Component
@@ -28,7 +31,6 @@ public class InitDefaultUser {
     private final AppUserRepositoryService repositoryService;
     private final PasswordEncoder passwordEncoder;
     private final AppUserRoleMapping appUserRoleMapping;
-    private final UserAvailabilityRepository availabilityRepository;
 
     @PostConstruct
     @Transactional
@@ -39,7 +41,8 @@ public class InitDefaultUser {
             if (!repositoryService.existsByEmail(user.getEmail())) {
 
                 UserAvailability availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
-                availabilityRepository.save(availability);
+                availability.setFromUnavailable(OffsetTime.parse("000000+0000", getTimeFormatter()));
+                availability.setToUnavailable(OffsetTime.parse("000000+0000", getTimeFormatter()));
                 user.setAvailability(availability);
                 AppUser savedUser = repositoryService.save(user);
 
