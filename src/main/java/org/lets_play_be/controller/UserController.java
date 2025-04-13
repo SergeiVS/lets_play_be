@@ -1,7 +1,5 @@
 package org.lets_play_be.controller;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.controller.api.UserControllerApi;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
@@ -27,7 +25,7 @@ public class UserController implements UserControllerApi {
 
     @Override
     public ResponseEntity<AppUserFullResponse> updateUserData(UserDataUpdateRequest request, Principal principal) {
-        AppUserFullResponse response = appUserService.updateUserNameAndAvatarUrl(request, principal.getName());
+        AppUserFullResponse response = appUserService.updateUserData(request, principal.getName());
         return ResponseEntity.ok(response);
     }
 

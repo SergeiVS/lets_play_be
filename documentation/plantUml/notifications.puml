@@ -1,29 +1,128 @@
 @startuml notifications
 
+skinparam linetype polyline
 skinparam linetype ortho
 
+class NotificationController {
+    + subscribeForSse(auth: Auth): SseEmitter<Notification>
+}
+
+class SseService {
+    + createSseConnection(user: User): SseEmitter<Notification>
+}
+
+class NotificationService {
+    + subscribeForSse(auth: Auth): SseEmitter<Notification>
+    - subscribeForActiveLobby(user: User, lobbyId: long): void
+    + notify(users: User[], notification: Notification): void
+    + notify(user: User, Notification: Notification): void
+    + notifyAsync(user: User, notification: Notification): void
+    + notifyAsync(user: User[], notification: Notification): void
+    + notifyAsync(user: User, notification: Notification, notifier: AsyncNotifier[]): void
+    + notifyAsync(user: User[], notification: Notification, notifier: AsyncNotifier[]): void
+}
+
+class NotificationLiveRecipientPool {
+    + addUser(user: User, emitter: SseEmitter)
+    + removeUser(user: User): void
+    + isInPoll(user: User): boolean
+    + getObserverFor(user: User): NotificationObserver
+}
+
+interface SseEmitter {
+}
+
+class LobbySubjectPool {
+    getSubject(lobbyId: long): NotificationSubject
+}
+
+class LobbyService {
+    + createLobby(): ActiveLobby
+    + unsubscribeUser(user: User): void
+}
+
+interface NotificationObserver {
+    + update(notification: Notification) : void
+}
+
+interface NotificationSubject {
+    + subscribe(observer: NotificationObserver): void
+    + unsubscribe(observer: NotificationObserver): void
+    + notify(notification: Notification): void
+}
+
+class SseNotificationObserver {
+    + SseNotificationObserver(emitter: SseEmitter,\n onSseClose: Runnable) <<constructor>>
+}
+
+class LobbySubject {
+}
+
+interface AsyncNotifier {
+    + notify(user: User, notification: Notification): void
+}
+
+class EmailNotifier {
+}
+
+class PushNotifier {
+}
+
+class ActiveLobby {
+    + subscribe(observer: NotificationObserver): void
+}
+
+LobbyService "1" -> "1" NotificationLiveRecipientPool : uses
+
+NotificationController "1" -down-> "1" NotificationService : uses
+NotificationService "1" -down-> "1" NotificationLiveRecipientPool : uses
+
+EmailNotifier .down.|> AsyncNotifier
+PushNotifier .down.|> AsyncNotifier
+
+NotificationService "1" -up-> "[]" AsyncNotifier : uses
+
+NotificationService "1" -down--> "1" SseService : uses
+
+LobbySubject .|> NotificationSubject
+
+LobbyService -> NotificationService
+
+SseNotificationObserver "1" -down-* "1" SseEmitter : uses
+SseNotificationObserver ..|> NotificationObserver
+
+NotificationSubject -> NotificationObserver
+
+NotificationService "1" -> "1" LobbySubjectPool : uses
+
+LobbyService "1" -down-> "*" SseNotificationObserver : uses
+
+LobbyService "1" -left-> "1" LobbySubjectPool : uses
+LobbyService "1" -> "1" LobbySubject : creates
+
+LobbySubjectPool "1" -down-> "[]" LobbySubject
+
+ActiveLobby "1" -down-> "1" LobbySubjectPool : uses
+
+LobbyService "1" -left-> "1" ActiveLobby : creates
+
+NotificationLiveRecipientPool "1" --* "*" SseNotificationObserver : creates
+
+enum NotificationType {
+    LOBBY_CREATED,\nLOBBY_UPDATE,\nGENERIC_MESSAGE
+}
+
+class NotificationFactory {
+    + create(type: NotificationType): Notification\n<<static>>
+}
+
 abstract class Notification {
-    AppUser recipient
-    OffsetDateTime createAt
-    boolean seen
-    boolean delivered
+    - id: uuid,
+    - for: User
+    - timestamp: OffsetDaytime
 }
 
-enum InviteState {
-    PENDING
-    ACCEPTED
-    DECLINED
-    DELAYED
-}
-
-class Invite {
-    long id
-    Lobby lobbyActive
-    String message
-}
-
-Invite -up-|> Notification
-
-Invite *-- InviteState
+Notification -down-* NotificationType
+NotificationFactory "1" -down-> "*" Notification : creates
 
 @enduml
