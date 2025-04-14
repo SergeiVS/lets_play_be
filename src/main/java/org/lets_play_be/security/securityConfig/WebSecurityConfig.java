@@ -100,7 +100,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.applyPermitDefaultValues();
         config.setAllowedOrigins(List.of("capacitor://localhost", "ionic://localhost", "http://localhost:9000", "http://localhost"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(true);
 

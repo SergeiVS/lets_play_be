@@ -36,11 +36,11 @@ public class AppUserService {
     }
 
     @Transactional
-    public AppUserFullResponse updateUserNameAndAvatarUrl(UserDataUpdateRequest request, String email) {
+    public AppUserFullResponse updateUserData(UserDataUpdateRequest request, String email) {
         AppUser user = getUserByEmailOrThrow(email);
         validateUserInRequest(request.userId(), user);
         setNewNameToUser(request, user);
-        setNeAvatarUrlToUser(request, user);
+        setNewAvatarUrlToUser(request, user);
         AppUser savedUser = userRepositoryService.save(user);
         return userMappers.toFullUserResponse(savedUser);
     }
@@ -84,7 +84,7 @@ public class AppUserService {
         user.setAvailability(savedAvailability);
     }
 
-    private void setNeAvatarUrlToUser(UserDataUpdateRequest request, AppUser user) {
+    private void setNewAvatarUrlToUser(UserDataUpdateRequest request, AppUser user) {
         if (request.newAvatarUrl() != null && !request.newAvatarUrl().isEmpty()) {
             user.setAvatarUrl(request.newAvatarUrl());
         }
