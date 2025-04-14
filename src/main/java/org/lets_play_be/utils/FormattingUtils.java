@@ -1,5 +1,6 @@
 package org.lets_play_be.utils;
 
+import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.format.DateTimeFormatter;
 
@@ -17,6 +18,12 @@ public class FormattingUtils {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_TIME;
         if (localTime == null) {return null;}
         return formatter.format(localTime);
+    };
+
+    public static String dateTimeToStringFormatter(OffsetDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        if (dateTime == null) {return null;}
+        return formatter.format(dateTime);
     };
 
     public static OffsetTime timeStringToOffsetTime(String timeString) {

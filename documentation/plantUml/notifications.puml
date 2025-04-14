@@ -1,4 +1,4 @@
-@startuml notifications
+   @startuml notifications
 
 skinparam linetype polyline
 skinparam linetype ortho

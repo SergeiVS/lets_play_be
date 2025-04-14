@@ -1,23 +1,27 @@
 package org.lets_play_be.dto.inviteDto;
 
-import org.lets_play_be.dto.notification.NotificationData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.Invite.Invite;
+import org.lets_play_be.notification.NotificationData;
 
 import java.io.Serializable;
 
 import static org.lets_play_be.dto.userDto.UserShortResponse.toUserShortResponse;
 
-public record InviteResponse (
-        long id,
-        String lobbyTitle,
-        UserShortResponse user,
-        String state,
-        String message,
-        int delayedFor
-) implements Serializable, NotificationData {
+@RequiredArgsConstructor
+@Getter
+public class InviteResponse extends NotificationData implements Serializable {
 
-    public InviteResponse toInviteResponse(Invite invite)  {
+    private final long id;
+    private final String lobbyTitle;
+    private final UserShortResponse user;
+    private final String state;
+    private final String message;
+    private final int delayedFor;
+
+    public InviteResponse toInviteResponse(Invite invite) {
 
         long id = invite.getId();
         String lobbyTitle = invite.getLobby().getTitle();
@@ -26,7 +30,7 @@ public record InviteResponse (
         String message = invite.getMessage();
         int delayedFor = invite.getDelayedFor();
 
-        return new InviteResponse(id,lobbyTitle,user,state,message,delayedFor);
+        return new InviteResponse(id, lobbyTitle, user, state, message, delayedFor);
     }
 
 }

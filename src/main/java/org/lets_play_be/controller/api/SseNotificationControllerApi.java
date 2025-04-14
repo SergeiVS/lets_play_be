@@ -1,14 +1,9 @@
 package org.lets_play_be.controller.api;
 
-import org.lets_play_be.dto.notification.Notification;
-import org.lets_play_be.dto.notification.StringNotification;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 

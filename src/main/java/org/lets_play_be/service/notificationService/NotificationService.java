@@ -1,6 +1,6 @@
 package org.lets_play_be.service.notificationService;
 
-import org.lets_play_be.dto.notification.Notification;
+import org.lets_play_be.notification.Notification;
 import org.lets_play_be.entity.user.AppUser;
 import org.springframework.stereotype.Service;
 
