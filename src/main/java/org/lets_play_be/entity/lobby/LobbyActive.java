@@ -1,13 +1,10 @@
 package org.lets_play_be.entity.lobby;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.lets_play_be.entity.enums.LobbyType;
-import org.lets_play_be.entity.lobby.LobbyBase;
-import org.lets_play_be.entity.lobby.LobbyPreset;
-import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;

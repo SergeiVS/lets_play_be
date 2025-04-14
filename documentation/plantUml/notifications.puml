@@ -26,4 +26,5 @@ Invite -up-|> Notification
 
 Invite *-- InviteState
 
+
 @enduml

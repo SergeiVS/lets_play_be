@@ -1,28 +1,44 @@
-package org.lets_play_be.entity.notification;
+package org.lets_play_be.entity.Invite;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 
-import java.time.OffsetTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
 @Getter
 @ToString
 @NoArgsConstructor
-public class Invite extends Notification {
+public class Invite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private AppUser recipient;
+
+    private OffsetDateTime createdAt;
+
+    @Setter
+    private boolean isDelivered;
+
+    @Setter
+    private boolean isSeen;
 
     @Enumerated(EnumType.STRING)
     @Setter
     private InviteState state;
 
     private String message;
+
     @Setter
     private int delayedFor;
 
@@ -31,8 +47,11 @@ public class Invite extends Notification {
     private LobbyActive lobby;
 
     public Invite(AppUser recipient, LobbyActive lobby, String message) {
-        super(recipient);
+        this.recipient = recipient;
         this.state = InviteState.PENDING;
+        this.createdAt = OffsetDateTime.now();
+        this.isDelivered = false;
+        this.isSeen = false;
         this.message = message;
         this.lobby = lobby;
         this.delayedFor = 0;

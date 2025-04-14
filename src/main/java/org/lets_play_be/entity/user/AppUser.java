@@ -3,8 +3,6 @@ package org.lets_play_be.entity.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
-import org.lets_play_be.entity.notification.Invite;
-import org.lets_play_be.entity.notification.Notification;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,8 @@
 package org.lets_play_be.dto.inviteDto;
 
+import org.lets_play_be.dto.notification.NotificationData;
 import org.lets_play_be.dto.userDto.UserShortResponse;
-import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.Invite.Invite;
 
 import java.io.Serializable;
 
@@ -14,9 +15,9 @@ public record InviteResponse (
         String state,
         String message,
         int delayedFor
-)implements Serializable {
+) implements Serializable, NotificationData {
 
-    public InviteResponse toInviteResponse(Invite invite) {
+    public InviteResponse toInviteResponse(Invite invite)  {
 
         long id = invite.getId();
         String lobbyTitle = invite.getLobby().getTitle();

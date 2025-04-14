@@ -9,7 +9,7 @@ import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.lobby.LobbyBase;
 import org.lets_play_be.entity.lobby.LobbyPreset;
-import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.stereotype.Service;
 

@@ -1,0 +1,27 @@
+@startuml
+
+class Subscription{
+- AppUser recipient
+- SubscriptionType type
+}
+
+class NotificationService{
+- Map<UUID, Subscription> subscriptions
+
++ Flux<ServerSentEvent> subscribe(Authorisation auth)
++ void sendNotifications()
+}
+
+class NotificationsController{
+- NotificationService service
+
++ Flux<UUID, Subscription> subscribe(Authentication auth)
++ void notify ()
+}
+
+() Client
+Client -down-> NotificationsController
+NotificationsController<|-down-NotificationService
+Subscription -up-o NotificationService
+
+@enduml

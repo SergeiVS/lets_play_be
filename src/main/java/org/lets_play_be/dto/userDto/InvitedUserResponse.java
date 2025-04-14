@@ -2,7 +2,7 @@ package org.lets_play_be.dto.userDto;
 
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.InviteState;
-import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.utils.FormattingUtils;
 
