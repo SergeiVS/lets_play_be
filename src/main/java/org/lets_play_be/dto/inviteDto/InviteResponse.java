@@ -1,7 +1,6 @@
 package org.lets_play_be.dto.inviteDto;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.notification.NotificationData;
@@ -10,16 +9,15 @@ import java.io.Serializable;
 
 import static org.lets_play_be.dto.userDto.UserShortResponse.toUserShortResponse;
 
-@RequiredArgsConstructor
-@Getter
-public class InviteResponse extends NotificationData implements Serializable {
 
-    private final long id;
-    private final String lobbyTitle;
-    private final UserShortResponse user;
-    private final String state;
-    private final String message;
-    private final int delayedFor;
+@Getter
+public record InviteResponse(long id,
+                             String lobbyTitle,
+                             UserShortResponse user,
+                             String state,
+                             String message,
+                             int delayedFor) implements Serializable, NotificationData {
+
 
     public InviteResponse toInviteResponse(Invite invite) {
 

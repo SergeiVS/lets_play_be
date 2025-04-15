@@ -19,6 +19,8 @@ public class NotificationFactory {
         return switch (data) {
             case MessageNotification m -> NotificationType.MESSAGE.name();
             case LobbyCreatedNotificationData lc -> NotificationType.LOBBY_CREATED.name();
+            case LobbyUpdatedNotification lu -> NotificationType.LOBBY_UPDATED.name();
+            case LobbyClosedNotification lu -> NotificationType.LOBBY_CLOSED.name();
             default -> throw new IllegalStateException("Unexpected value: " + data);
         };
     }

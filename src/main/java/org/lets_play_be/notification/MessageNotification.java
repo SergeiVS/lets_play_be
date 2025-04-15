@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 
-@RequiredArgsConstructor
-@Getter
-public class MessageNotification extends NotificationData implements Serializable  {
-    private final String message;
+
+public record MessageNotification(String message)  implements Serializable, NotificationData  {
+
 }
