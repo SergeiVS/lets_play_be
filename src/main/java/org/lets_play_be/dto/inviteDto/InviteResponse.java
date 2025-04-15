@@ -1,16 +1,13 @@
 package org.lets_play_be.dto.inviteDto;
 
-import lombok.Getter;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.Invite.Invite;
-import org.lets_play_be.notification.NotificationData;
+import org.lets_play_be.notification.notificationDto.NotificationData;
 
 import java.io.Serializable;
 
 import static org.lets_play_be.dto.userDto.UserShortResponse.toUserShortResponse;
 
-
-@Getter
 public record InviteResponse(long id,
                              String lobbyTitle,
                              UserShortResponse user,

@@ -1,5 +1,7 @@
 package org.lets_play_be.notification;
 
+import org.lets_play_be.notification.notificationDto.*;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -17,10 +19,10 @@ public class NotificationFactory {
     private static String getNotificationType(NotificationData data) {
 
         return switch (data) {
-            case MessageNotification m -> NotificationType.MESSAGE.name();
-            case LobbyCreatedNotificationData lc -> NotificationType.LOBBY_CREATED.name();
-            case LobbyUpdatedNotification lu -> NotificationType.LOBBY_UPDATED.name();
-            case LobbyClosedNotification lu -> NotificationType.LOBBY_CLOSED.name();
+            case MessageNotificationData ignored -> NotificationType.MESSAGE.name();
+            case LobbyCreatedNotificationData ignored -> NotificationType.LOBBY_CREATED.name();
+            case LobbyUpdatedNotificationData ignored -> NotificationType.LOBBY_UPDATED.name();
+            case LobbyClosedNotificationData ignored -> NotificationType.LOBBY_CLOSED.name();
             default -> throw new IllegalStateException("Unexpected value: " + data);
         };
     }
