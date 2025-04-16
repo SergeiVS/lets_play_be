@@ -1,6 +1,6 @@
 package org.lets_play_be.notification;
 
-import org.lets_play_be.notification.notificationDto.*;
+import org.lets_play_be.notification.dto.*;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

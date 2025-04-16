@@ -1,12 +1,22 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
-import org.lets_play_be.notification.EventService;
-import org.lets_play_be.notification.Observer;
+import org.lets_play_be.notification.NotificationObserver;
+import org.lets_play_be.notification.dto.Notification;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-public class SseNotificationObserver extends Observer<SseEmitter> {
+import java.io.IOException;
 
-    public SseNotificationObserver(EventService<SseEmitter> eventService) {
-        super(eventService);
+public class SseNotificationObserver implements NotificationObserver {
+
+    private final SseEmitter emitter;
+
+    public SseNotificationObserver(SseEmitter emitter) {
+        this.emitter = emitter;
+    }
+
+    @Override
+    public void update(Notification notification) throws IOException {
+        emitter.send(notification, MediaType.TEXT_EVENT_STREAM);
     }
 }

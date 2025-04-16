@@ -1,4 +1,4 @@
-package org.lets_play_be.notification.notificationDto;
+package org.lets_play_be.notification.dto;
 
 import java.io.Serializable;
 
