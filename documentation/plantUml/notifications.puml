@@ -52,7 +52,11 @@ interface NotificationSubject {
 }
 
 class SseNotificationObserver {
-    + SseNotificationObserver(emitter: SseEmitter,\n onSseClose: Runnable) <<constructor>>
+    - onClose: Map<long, Runnable>
+    ==
+    + SseNotificationObserver(emitter: SseEmitte) <<constructor>>
+    + addOnClose(lobbyId: long, onClose: Runnable)
+    + removeOnClose(lobbyId: long)
 }
 
 class LobbySubject {
