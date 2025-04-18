@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Getter
 public class SseNotificationObserver implements NotificationObserver {
 
     private final SseEmitter emitter;
 
-    Map<Long, Runnable> onCloseCallbacks = new HashMap<>();
+    private final Map<Long, Runnable> onCloseCallbacks = new HashMap<>();
 
     public SseNotificationObserver(SseEmitter emitter) {
         this.emitter = emitter;

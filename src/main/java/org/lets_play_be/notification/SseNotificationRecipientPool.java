@@ -1,11 +1,12 @@
 package org.lets_play_be.notification;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Component
 public class SseNotificationRecipientPool {
 
     private final Map<Long, NotificationObserver> observers = new HashMap<>();

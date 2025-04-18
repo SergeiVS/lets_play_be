@@ -40,9 +40,9 @@ public class LobbySubject implements NotificationSubject {
     @Override
     public void notifyObservers(Notification notification) {
 
-        observers.parallelStream().forEach(o -> {
+        observers.parallelStream().forEach(observer -> {
             try {
-                o.update(notification);
+                observer.update(notification);
             } catch (IOException e) {
                 throw new RestException(ErrorMessage.MESSAGE_NOT_SENT.toString(), HttpStatus.BAD_GATEWAY);
             }
