@@ -24,6 +24,10 @@ public class InviteService {
         return users.stream().map(user-> new Invite(user,lobby, message)).toList();
     }
 
+    public List<Invite> getInvitesByLobbyId(Long lobbyId) {
+        return inviteRepository.findInvitesByLobbyId(lobbyId);
+    }
+
     public List<Invite> saveAllInvites(List<Invite> invites) {
         return inviteRepository.saveAll(invites);
     }
