@@ -16,7 +16,7 @@ public class SseNotificationController implements SseNotificationControllerApi {
    private final NotificationService notificationService;
 
     @Override
-    public SseEmitter openSseStream(Authentication auth) throws IOException {
+    public SseEmitter openSseStream(Authentication auth) {
         return notificationService.subscribeForSse(auth);
     }
 

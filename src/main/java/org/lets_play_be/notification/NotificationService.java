@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.dto.Notification;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
-import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationObserver;
+import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
 import org.lets_play_be.notification.notificationService.sseNotification.SseService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.http.HttpStatus;
@@ -18,13 +18,13 @@ public class NotificationService {
 
     private final SseService sseService;
 
-    private final SseNotificationRecipientPool recipientPool;
+    private final SseLiveRecipientPool recipientPool;
 
     private final LobbySubjectPool subjectPool;
 
     private final AppUserService userService;
 
-    // TODO
+
     public SseEmitter subscribeForSse(Authentication auth) {
 
         var recipientId = userService.getUserIdByEmailOrThrow(auth.getName());
@@ -70,7 +70,7 @@ public class NotificationService {
     }
 
     private void createSseObserver(SseEmitter emitter, Long recipientId) {
-        var observer = new SseNotificationObserver(emitter);
-        recipientPool.addObserver(recipientId, observer);
+
+        recipientPool.addObserver(recipientId, emitter);
     }
 }

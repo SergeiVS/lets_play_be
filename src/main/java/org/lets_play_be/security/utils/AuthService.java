@@ -5,11 +5,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.userDto.AppUserProfile;
 import org.lets_play_be.entity.BlacklistedToken;
+import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
+import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
 import org.lets_play_be.repository.BlacklistedTokenRepository;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
-import org.lets_play_be.service.appUserService.AppUserRepositoryService;
+import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.appUserService.GetUserProfileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,27 +37,24 @@ public class AuthService {
 
     private final AuthenticationManager authManager;
     private final BlacklistedTokenRepository blacklistedTokenRepository;
-    private final AppUserRepositoryService appUserRepositoryService;
+    private final AppUserService userService;
+    private final SseLiveRecipientPool recipientPool;
 
     private final JwtService jwtService;
     private final GetUserProfileService getUserProfileService;
     private final AppUserDetailsService userDetailsService;
 
     public void logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
-        final String refreshToken = jwtService.getRefreshTokenFromCookie(request);
 
-        final OffsetDateTime expiry = getTokenExpirationFromToken(refreshToken);
+        final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
 
-        final var user = appUserRepositoryService.findByEmail(principal.getName());
+        final var expiry = getTokenExpirationFromToken(refreshToken);
 
-        if (user.isPresent()) {
-            blacklistedTokenRepository.save(new BlacklistedToken(user.get(), refreshToken, expiry));
+        final var user = userService.getUserByEmailOrThrow(principal.getName());
 
-            response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanAccessTokenCookie().toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanRefreshTokenCookie().toString());
-        } else {
-            throw new UsernameNotFoundException("Invalid UserRequest");
-        }
+        removeSseRecipient(user);
+
+        cleanTokens(response, user, refreshToken, expiry);
     }
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
@@ -142,6 +141,21 @@ public class AuthService {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
+    }
+
+    private void removeSseRecipient(AppUser user) {
+        if (recipientPool.isInPool(user.getId())){
+            recipientPool.removeRecipient(user.getId());
+        }
+    }
+
+    private void cleanTokens(HttpServletResponse response, AppUser user, String refreshToken, OffsetDateTime expiry) {
+
+        blacklistedTokenRepository.save(new BlacklistedToken(user, refreshToken, expiry));
+
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanAccessTokenCookie().toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanRefreshTokenCookie().toString());
+
     }
 
 }
