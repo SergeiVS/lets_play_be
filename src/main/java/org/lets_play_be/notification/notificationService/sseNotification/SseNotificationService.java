@@ -1,11 +1,11 @@
-package org.lets_play_be.notification;
+package org.lets_play_be.notification.notificationService.sseNotification;
 
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.exception.RestException;
+import org.lets_play_be.notification.NotificationObserver;
+import org.lets_play_be.notification.NotificationSubject;
 import org.lets_play_be.notification.dto.Notification;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
-import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
-import org.lets_play_be.notification.notificationService.sseNotification.SseService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationService {
+public class SseNotificationService {
 
     private final SseService sseService;
 

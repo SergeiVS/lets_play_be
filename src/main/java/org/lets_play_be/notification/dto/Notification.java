@@ -6,5 +6,6 @@ import java.util.UUID;
 public record Notification(UUID id,
                            String createdAt,
                            String type,
-                           NotificationData data) implements Serializable {
+                           NotificationData data
+) implements Serializable {
 }

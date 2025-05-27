@@ -24,7 +24,7 @@ import java.security.Principal;
 @RequestMapping("api/v1/auth")
 public interface AuthControllerApi {
 
-    @Operation(summary = "Authenticate user by email an password")
+    @Operation(summary = "Authenticate user by email and password")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Is logged in",
                     content = {@Content(mediaType = "application/json",

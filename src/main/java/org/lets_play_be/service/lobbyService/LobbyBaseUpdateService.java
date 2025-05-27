@@ -16,7 +16,7 @@ import static org.lets_play_be.utils.ValidationUtils.validateLobbyTypeString;
 public class LobbyBaseUpdateService {
 
     private final LobbyPresetCRUDService presetService;
-    private final LobbyActiveCRUDService activeService;
+    private final LobbyActiveService activeService;
 
     public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
 
