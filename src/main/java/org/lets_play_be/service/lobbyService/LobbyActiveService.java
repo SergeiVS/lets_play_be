@@ -7,8 +7,9 @@ import org.lets_play_be.dto.lobbyDto.NewActiveLobbyRequest;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.entity.lobby.LobbyActive;
-import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.repository.LobbyActiveRepository;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
@@ -24,12 +25,13 @@ import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Service
 @RequiredArgsConstructor
-public class LobbyActiveCRUDService {
+public class LobbyActiveService {
 
-    private final LobbyActiveRepoService repoService;
+    private final LobbyActiveRepository repository;
     private final AppUserService userService;
     private final InviteService inviteService;
     private final LobbyMappers lobbyMappers;
+
 
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
@@ -52,7 +54,7 @@ public class LobbyActiveCRUDService {
 
         setNewValues(request, lobbyForChange, newTime);
 
-        var savedLobby = repoService.save(lobbyForChange);
+        var savedLobby = repository.save(lobbyForChange);
 
         return lobbyMappers.toUpdateResponse(savedLobby, savedLobby.getId());
     }
@@ -60,7 +62,7 @@ public class LobbyActiveCRUDService {
 
 
     public LobbyActive getLobbyByIdOrThrow(Long id) {
-        return repoService.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No Lobby found with id: " + id));
     }
 
@@ -76,7 +78,7 @@ public class LobbyActiveCRUDService {
 
         lobbyForSave.getInvites().addAll(invitesForAdd);
 
-        return repoService.save(lobbyForSave);
+        return repository.save(lobbyForSave);
     }
 
     private List<Invite> getSavedInviteList(NewActiveLobbyRequest request, LobbyActive lobbyForSave) {
@@ -86,7 +88,7 @@ public class LobbyActiveCRUDService {
     }
 
     private void isLobbyExistingByOwnerId(AppUser owner) {
-        if (repoService.existByOwner(owner)) {
+        if (repository.existsById(owner.getId())) {
             throw new IllegalArgumentException("The Lobby for given owner already exists");
         }
     }

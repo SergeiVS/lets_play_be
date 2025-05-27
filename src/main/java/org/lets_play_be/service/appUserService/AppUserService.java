@@ -7,9 +7,9 @@ import org.lets_play_be.common.ErrorMessage;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.UserAvailabilityUpdateRequest;
 import org.lets_play_be.dto.userDto.UserDataUpdateRequest;
+import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
-import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.lets_play_be.service.mappers.AppUserMappers;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +21,7 @@ import java.util.List;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
 import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -65,6 +66,12 @@ public class AppUserService {
 
     public List<AppUser> getUsersListByIds(List<Long> ids) {
         return userRepositoryService.getUsersByIds(ids);
+    }
+
+    public Long getUserIdByEmailOrThrow(String email) {
+        return userRepositoryService.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()))
+                .getId();
     }
 
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {

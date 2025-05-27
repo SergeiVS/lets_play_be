@@ -1,4 +1,4 @@
-@startuml notifications
+   @startuml notifications
 
 skinparam linetype polyline
 skinparam linetype ortho
@@ -52,7 +52,11 @@ interface NotificationSubject {
 }
 
 class SseNotificationObserver {
-    + SseNotificationObserver(emitter: SseEmitter,\n onSseClose: Runnable) <<constructor>>
+    - onClose: Map<long, Runnable>
+    ==
+    + SseNotificationObserver(emitter: SseEmitte) <<constructor>>
+    + addOnClose(lobbyId: long, onClose: Runnable)
+    + removeOnClose(lobbyId: long)
 }
 
 class LobbySubject {
@@ -124,5 +128,6 @@ abstract class Notification {
 
 Notification -down-* NotificationType
 NotificationFactory "1" -down-> "*" Notification : creates
+
 
 @enduml

@@ -1,20 +1,20 @@
 package org.lets_play_be.dto.inviteDto;
 
 import org.lets_play_be.dto.userDto.UserShortResponse;
-import org.lets_play_be.entity.notification.Invite;
+import org.lets_play_be.entity.Invite.Invite;
+import org.lets_play_be.notification.dto.NotificationData;
 
 import java.io.Serializable;
 
 import static org.lets_play_be.dto.userDto.UserShortResponse.toUserShortResponse;
 
-public record InviteResponse (
-        long id,
-        String lobbyTitle,
-        UserShortResponse user,
-        String state,
-        String message,
-        int delayedFor
-)implements Serializable {
+public record InviteResponse(long id,
+                             String lobbyTitle,
+                             UserShortResponse user,
+                             String state,
+                             String message,
+                             int delayedFor) implements Serializable, NotificationData {
+
 
     public InviteResponse toInviteResponse(Invite invite) {
 
@@ -25,7 +25,7 @@ public record InviteResponse (
         String message = invite.getMessage();
         int delayedFor = invite.getDelayedFor();
 
-        return new InviteResponse(id,lobbyTitle,user,state,message,delayedFor);
+        return new InviteResponse(id, lobbyTitle, user, state, message, delayedFor);
     }
 
 }

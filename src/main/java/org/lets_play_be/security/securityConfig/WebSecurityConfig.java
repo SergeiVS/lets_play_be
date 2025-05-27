@@ -67,7 +67,8 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                new AntPathRequestMatcher("/api/v1/user/**")).hasAnyRole("ADMIN", "USER")
+                                new AntPathRequestMatcher("/api/v1/user/**"),
+                                new AntPathRequestMatcher("/api/v1/sse")).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(
                                 new AntPathRequestMatcher("/swagger-ui/**"),
                                 new AntPathRequestMatcher("/v3/api-docs/**"),
@@ -98,11 +99,10 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.applyPermitDefaultValues();
-        config.setAllowedOrigins(List.of("capacitor://localhost", "ionic://localhost", "http://localhost:9000", "http://localhost"));
+        config.setAllowedOrigins(List.of("capacitor://localhost", "ionic://localhost", "http://localhost:8080", "http://localhost:4200"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 

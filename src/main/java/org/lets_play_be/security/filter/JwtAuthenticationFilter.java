@@ -38,7 +38,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try {
-            if (isRequestToSwagger(request)) return;
+            if (isRequestToSwagger(request)) {
+                log.info("Request from Swagger");
+                return;
+            }
 
             handleFilterInternal(request);
         } catch (JwtException e) {

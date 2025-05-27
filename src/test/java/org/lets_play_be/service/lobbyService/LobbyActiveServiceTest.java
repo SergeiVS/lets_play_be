@@ -9,6 +9,7 @@ import org.lets_play_be.dto.lobbyDto.NewActiveLobbyRequest;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
+import org.lets_play_be.repository.LobbyActiveRepository;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
@@ -16,18 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
-
 @ExtendWith(MockitoExtension.class)
-class LobbyActiveCRUDServiceTest {
+class LobbyActiveServiceTest {
 
     @Mock
-    LobbyActiveRepoService repoService;
+    LobbyActiveRepository repoService;
 
     @Mock
     AppUserService userService;
@@ -38,7 +34,7 @@ class LobbyActiveCRUDServiceTest {
     LobbyMappers lobbyMappers;
 
     @InjectMocks
-    LobbyActiveCRUDService lobbyActiveCRUDService;
+    LobbyActiveService lobbyActiveService;
 
     NewActiveLobbyRequest newLobbyRequest;
 
