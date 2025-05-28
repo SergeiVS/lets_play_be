@@ -42,7 +42,7 @@ public class LobbyActiveService {
     private final SseLiveRecipientPool recipientPool;
     private final LobbyMappers lobbyMappers;
 
-
+    //TODO add real Notification message on create Lobby
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
@@ -107,9 +107,8 @@ public class LobbyActiveService {
     }
 
     private void subscribeRecipients(LobbyActive lobby) {
-        List<Long> recipientsIds = new ArrayList<>();
 
-        recipientsIds.add(lobby.getOwner().getId());
+        List<Long> recipientsIds = new ArrayList<>();
 
         lobby.getInvites().forEach(invite -> recipientsIds.add(invite.getRecipient().getId()));
 
