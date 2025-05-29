@@ -1,6 +1,5 @@
 package org.lets_play_be.notification.notificationService;
 
-import lombok.RequiredArgsConstructor;
 import org.lets_play_be.notification.NotificationSubject;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +22,7 @@ public class LobbySubjectPool {
     }
 
     public void removeSubject(LobbySubject subject) {
+
         subjectPool.remove(subject.getLobbyId());
     }
 }

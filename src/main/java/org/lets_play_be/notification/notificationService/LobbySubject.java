@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Getter
 public class LobbySubject implements NotificationSubject {
 
-    @Getter
+
     private final long lobbyId;
 
     private final List<NotificationObserver> observers;

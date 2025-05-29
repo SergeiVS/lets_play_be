@@ -41,13 +41,14 @@ public class SseNotificationService {
 
     public void subscribeSseObserverForActiveLobby(long recipientId, long lobbyId) {
 
-        isRecipientSubscribed(recipientId);
+        if(recipientPool.isInPool(recipientId)){
 
-        NotificationObserver observer = recipientPool.getObserver(recipientId);
+            NotificationObserver observer = recipientPool.getObserver(recipientId);
 
-        NotificationSubject subject = subjectPool.getSubject(lobbyId);
+            NotificationSubject subject = subjectPool.getSubject(lobbyId);
 
-        subject.subscribe(observer);
+            subject.subscribe(observer);
+        }
     }
 
     public void notifyLobbyMembers(long lobbyId, Notification notification) {
@@ -63,11 +64,11 @@ public class SseNotificationService {
         }
     }
 
-    private void isRecipientSubscribed(long recipientId) {
-        if (!recipientPool.isInPool(recipientId)) {
-            throw new RestException("Recipient with id: " + recipientId + " is not subscribed", HttpStatus.BAD_REQUEST);
-        }
-    }
+//    private void isRecipientSubscribed(long recipientId) {
+//        if (!recipientPool.isInPool(recipientId)) {
+//            throw new RestException("Recipient with id: " + recipientId + " is not subscribed", HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     private void createSseObserver(SseEmitter emitter, Long recipientId) {
 

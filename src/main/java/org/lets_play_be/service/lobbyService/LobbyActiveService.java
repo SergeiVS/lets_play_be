@@ -15,6 +15,7 @@ import org.lets_play_be.notification.dto.Notification;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
+import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
 import org.lets_play_be.repository.LobbyActiveRepository;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
@@ -37,12 +38,12 @@ public class LobbyActiveService {
 
     private final LobbyActiveRepository repository;
     private final AppUserService userService;
+    private final SseNotificationService sseNotificationService;
     private final InviteService inviteService;
     private final LobbySubjectPool subjectPool;
-    private final SseLiveRecipientPool recipientPool;
     private final LobbyMappers lobbyMappers;
 
-    //TODO add real Notification message on create Lobby
+    //TODO add real Notification message on create Lobby, add change of Invite.isDelivered
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
@@ -54,9 +55,9 @@ public class LobbyActiveService {
 
         subscribeLobbySubjectInPool(savedLobby);
 
-        String message = "You are added to Lobby: " + savedLobby.getTitle();
+        Notification notification = getNotification(savedLobby);
 
-        notifyRecipients(savedLobby.getId(), message);
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notification);
 
         return lobbyMappers.toActiveResponse(savedLobby);
     }
@@ -77,11 +78,13 @@ public class LobbyActiveService {
 
 
     public LobbyActive getLobbyByIdOrThrow(Long id) {
+
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No Lobby found with id: " + id));
     }
 
     private void subscribeLobbySubjectInPool(LobbyActive lobby) {
+
         LobbySubject subject = createLobbyNotificationSubject(lobby.getId());
 
         subjectPool.addSubject(subject);
@@ -94,31 +97,23 @@ public class LobbyActiveService {
         return new LobbySubject(lobbyId);
     }
 
-    private void notifyRecipients(Long lobbyId, String message) {
+    private void subscribeRecipients(LobbyActive lobby) {
 
-        NotificationSubject subject = subjectPool.getSubject(lobbyId);
+        List<Long> recipientsIds = getRecipientsIds(lobby);
 
-        MessageNotificationData notificationData = new MessageNotificationData(message);
+        for (Long recipientId : recipientsIds) {
 
-        Notification notification = createNotification(notificationData);
-
-        subject.notifyObservers(notification);
-
+            sseNotificationService.subscribeSseObserverForActiveLobby(recipientId, lobby.getId());
+        }
     }
 
-    private void subscribeRecipients(LobbyActive lobby) {
+    private List<Long> getRecipientsIds(LobbyActive lobby) {
 
         List<Long> recipientsIds = new ArrayList<>();
 
         lobby.getInvites().forEach(invite -> recipientsIds.add(invite.getRecipient().getId()));
 
-        NotificationSubject subject = subjectPool.getSubject(lobby.getId());
-
-        for (Long recipientId : recipientsIds) {
-            if (recipientPool.isInPool(recipientId)) {
-                subject.subscribe(recipientPool.getObserver(recipientId));
-            }
-        }
+        return recipientsIds;
     }
 
 
@@ -129,6 +124,7 @@ public class LobbyActiveService {
         OffsetTime time = timeStringToOffsetTime(request.time());
 
         LobbyActive lobbyForSave = new LobbyActive(title, time, owner);
+
         List<Invite> invitesForAdd = getSavedInviteList(request, lobbyForSave);
 
         lobbyForSave.getInvites().addAll(invitesForAdd);
@@ -139,12 +135,19 @@ public class LobbyActiveService {
     private List<Invite> getSavedInviteList(NewActiveLobbyRequest request, LobbyActive lobbyForSave) {
 
         List<AppUser> users = userService.getUsersListByIds(request.userIds());
-        return inviteService.getListOfNewInvites(users, lobbyForSave, request.message());
+        return inviteService.createListOfNewInvites(users, lobbyForSave, request.message());
     }
 
     private void isLobbyExistingByOwnerId(AppUser owner) {
-        if (repository.existsById(owner.getId())) {
+        if (repository.existsLobbyActiveByOwner(owner)) {
             throw new IllegalArgumentException("The Lobby for given owner already exists");
         }
+    }
+
+    private Notification getNotification(LobbyActive savedLobby) {
+
+        String message = "You are added to Lobby: " + savedLobby.getTitle();
+
+        return createNotification(new MessageNotificationData(message));
     }
 }

@@ -66,7 +66,7 @@ public class AuthService {
             return getLoginResponse(response, authentication);
         } else {
             SecurityContextHolder.getContext().setAuthentication(null);
-            throw new UsernameNotFoundException("Invalid UserRequest");
+            throw new UsernameNotFoundException("Invalid User Request");
         }
 
     }
