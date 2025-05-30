@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
-import org.lets_play_be.exception.ValidationErrorResponse;
-import org.lets_play_be.security.model.LoginResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +22,7 @@ public interface SseNotificationControllerApi {
     @Operation(summary = "Opening of SSE connection")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sse connection were created",
-                    content = {@Content(mediaType = "application/json",
+                    content = {@Content(mediaType = "text/event-stream",
                             schema = @Schema(implementation = SseEmitter.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
                     content = {@Content(mediaType = "application/json",
@@ -33,7 +31,7 @@ public interface SseNotificationControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping()
+    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     SseEmitter openSseStream(Authentication authentication) throws IOException;
 
 
