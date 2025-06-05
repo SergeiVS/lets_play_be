@@ -9,7 +9,6 @@ import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
-import org.lets_play_be.notification.NotificationSubject;
 import org.lets_play_be.notification.dto.MessageNotificationData;
 import org.lets_play_be.notification.dto.Notification;
 import org.lets_play_be.notification.notificationService.LobbySubject;
@@ -42,8 +41,9 @@ public class LobbyActiveService {
     private final InviteService inviteService;
     private final LobbySubjectPool subjectPool;
     private final LobbyMappers lobbyMappers;
+    private final SseLiveRecipientPool recipientPool;
 
-    //TODO add real Notification message on create Lobby, add change of Invite.isDelivered
+    //TODO add real Notification message on create Lobby,
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
@@ -59,8 +59,11 @@ public class LobbyActiveService {
 
         sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notification);
 
+        setInvitesDelivered(savedLobby.getInvites());
+
         return lobbyMappers.toActiveResponse(savedLobby);
     }
+
 
     @Transactional
     public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
@@ -116,6 +119,18 @@ public class LobbyActiveService {
         return recipientsIds;
     }
 
+    private void setInvitesDelivered(List<Invite> invites) {
+
+        for (Invite invite : invites) {
+
+            var recipientId = invite.getRecipient().getId();
+
+            if (recipientPool.isInPool(recipientId)) {
+
+                inviteService.changeIsDeliveredState(true, invite);
+            }
+        }
+    }
 
     private LobbyActive saveNewLobbyFromRequest(NewActiveLobbyRequest request, AppUser owner) {
 

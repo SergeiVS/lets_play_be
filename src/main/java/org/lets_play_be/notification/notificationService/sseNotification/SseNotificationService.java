@@ -64,12 +64,6 @@ public class SseNotificationService {
         }
     }
 
-//    private void isRecipientSubscribed(long recipientId) {
-//        if (!recipientPool.isInPool(recipientId)) {
-//            throw new RestException("Recipient with id: " + recipientId + " is not subscribed", HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
     private void createSseObserver(SseEmitter emitter, Long recipientId) {
 
         recipientPool.addObserver(recipientId, emitter);

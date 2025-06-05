@@ -26,9 +26,8 @@ public class InviteService {
         return users.stream().map(user -> new Invite(user, lobby, message)).toList();
     }
 
-    public Invite changeIsDeliveredState(boolean isDelivered, long userid, long lobbyId) {
+    public Invite changeIsDeliveredState(boolean isDelivered, Invite invite) {
 
-        Invite invite = getInviteByLobbyAndUserOrThrow(userid, lobbyId);
 
         invite.setDelivered(isDelivered);
 
