@@ -14,7 +14,6 @@ import java.io.IOException;
 public class SseNotificationController implements SseNotificationControllerApi {
 
    private final SseNotificationService notificationService;
-    private final SseNotificationService sseNotificationService;
 
     @Override
     public SseEmitter openSseStream(Authentication auth) {
@@ -23,7 +22,7 @@ public class SseNotificationController implements SseNotificationControllerApi {
 
     @Override
     public void getMissedNotifications(Authentication authentication) throws IOException {
-        sseNotificationService.sendMissedNotifications(authentication);
+        notificationService.sendMissedNotifications(authentication);
     }
 
 }
