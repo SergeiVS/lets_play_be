@@ -9,7 +9,7 @@ import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
-import org.lets_play_be.notification.dto.MessageNotificationData;
+import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
 import org.lets_play_be.notification.dto.Notification;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
@@ -55,7 +55,7 @@ public class LobbyActiveService {
 
         subscribeLobbySubjectInPool(savedLobby);
 
-        Notification notification = getNotification(savedLobby);
+        Notification notification = createNotification(new LobbyCreatedNotificationData(savedLobby));
 
         sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notification);
 
@@ -150,6 +150,7 @@ public class LobbyActiveService {
     private List<Invite> getSavedInviteList(NewActiveLobbyRequest request, LobbyActive lobbyForSave) {
 
         List<AppUser> users = userService.getUsersListByIds(request.userIds());
+
         return inviteService.createListOfNewInvites(users, lobbyForSave, request.message());
     }
 
@@ -157,12 +158,5 @@ public class LobbyActiveService {
         if (repository.existsLobbyActiveByOwner(owner)) {
             throw new IllegalArgumentException("The Lobby for given owner already exists");
         }
-    }
-
-    private Notification getNotification(LobbyActive savedLobby) {
-
-        String message = "You are added to Lobby: " + savedLobby.getTitle();
-
-        return createNotification(new MessageNotificationData(message));
     }
 }

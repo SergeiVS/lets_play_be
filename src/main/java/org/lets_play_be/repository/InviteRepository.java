@@ -12,7 +12,7 @@ public interface InviteRepository extends JpaRepository<Invite, Long> {
     @Query("SELECT i FROM Invite i WHERE i.lobby.id=:lobbyId")
     List<Invite> findInvitesByLobbyId(Long lobbyId);
 
-    @Query("SELECT i FROM Invite i WHERE i.lobby.id=:lobbyId AND i.recipient.id=:userId")
-    Optional<Invite> findByLobbyIdAndUserId(Long lobbyId, Long userId);
+    @Query("SELECT i FROM Invite  i INNER JOIN  i.recipient u WHERE i.isDelivered=false AND u.id= :userId ")
+    List<Invite> findNotDeliveredInvitesByUserId(Long userId);
 
 }

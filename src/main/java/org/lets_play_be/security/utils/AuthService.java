@@ -60,6 +60,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
         Authentication authentication;
+
         authentication = getAuthentication(loginRequest);
 
         if (authentication.isAuthenticated()) {

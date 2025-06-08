@@ -11,6 +11,7 @@ import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.UserRoleEnum;
 import org.lets_play_be.exception.RestException;
+import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.lets_play_be.service.appUserRoleService.AppUserRoleService;
 import org.lets_play_be.service.mappers.AppUserMappers;
@@ -24,7 +25,7 @@ import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 @RequiredArgsConstructor
 public class RegisterNewUserService {
 
-    private final AppUserRepositoryService repositoryService;
+    private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AppUserMappers mapper;
     private final AppUserRoleService roleService;
@@ -37,7 +38,7 @@ public class RegisterNewUserService {
         isUserExistByName(request.name());
 
         AppUser userForSave = getUserForSave(request);
-        AppUser savedUser = repositoryService.save(userForSave);
+        AppUser savedUser = userRepository.save(userForSave);
 
         return mapper.toFullUserResponse(savedUser);
     }
@@ -58,13 +59,13 @@ public class RegisterNewUserService {
     }
 
     private void isUserExistByEmail(String email) {
-        if (repositoryService.existsByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new RestException(ErrorMessage.USER_ALREADY_EXISTS.toString(), HttpStatus.CONFLICT);
         }
     }
 
     private void isUserExistByName(String name) {
-        if (repositoryService.existsByName(name)) {
+        if (userRepository.existsByName(name)) {
             throw new RestException(ErrorMessage.USER_ALREADY_EXISTS.toString(), HttpStatus.CONFLICT);
         }
     }

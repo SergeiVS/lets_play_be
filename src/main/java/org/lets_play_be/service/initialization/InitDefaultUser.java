@@ -9,7 +9,7 @@ import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.UserRoleEnum;
-import org.lets_play_be.repository.UserAvailabilityRepository;
+import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.service.appUserService.AppUserRepositoryService;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
@@ -28,7 +28,7 @@ import static org.lets_play_be.utils.FormattingUtils.getTimeFormatter;
 @RequiredArgsConstructor
 @DependsOn("initDefaultAppUserRoles")
 public class InitDefaultUser {
-    private final AppUserRepositoryService repositoryService;
+    private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AppUserRoleMapping appUserRoleMapping;
 
@@ -38,13 +38,13 @@ public class InitDefaultUser {
         List<AppUser> defaultUsers = getListOfDefaultUsers();
 
         for (AppUser user : defaultUsers) {
-            if (!repositoryService.existsByEmail(user.getEmail())) {
+            if (!userRepository.existsByEmail(user.getEmail())) {
 
                 UserAvailability availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
                 availability.setFromUnavailable(OffsetTime.parse("000000+0000", getTimeFormatter()));
                 availability.setToUnavailable(OffsetTime.parse("000000+0000", getTimeFormatter()));
                 user.setAvailability(availability);
-                AppUser savedUser = repositoryService.save(user);
+                AppUser savedUser = userRepository.save(user);
 
                 log.info("Saved user: {}", savedUser.getEmail());
             }

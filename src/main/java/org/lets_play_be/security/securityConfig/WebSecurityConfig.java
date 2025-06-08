@@ -1,11 +1,11 @@
 package org.lets_play_be.security.securityConfig;
 
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.security.filter.JwtAuthenticationFilter;
 import org.lets_play_be.security.handler.AppAccessDeniedHandler;
 import org.lets_play_be.security.handler.AppEntryPointHandler;
 import org.lets_play_be.security.utils.AppUserDetailsService;
-import org.lets_play_be.service.appUserService.AppUserRepositoryService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +35,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final AppUserRepositoryService repositoryService;
+    private final AppUserRepository userRepository;
     private final JwtAuthenticationFilter jwtFilter;
 
     @Bean
@@ -45,7 +45,7 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new AppUserDetailsService(repositoryService);
+        return new AppUserDetailsService(userRepository);
     }
 
     @Bean

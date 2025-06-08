@@ -18,43 +18,19 @@ public class InviteService {
 
     private final InviteRepository inviteRepository;
 
-    public Invite createInvite(String message, AppUser user, LobbyActive lobby) {
-        return new Invite(user, lobby, message);
-    }
-
     public List<Invite> createListOfNewInvites(List<AppUser> users, LobbyActive lobby, String message) {
+
         return users.stream().map(user -> new Invite(user, lobby, message)).toList();
     }
 
-    public Invite changeIsDeliveredState(boolean isDelivered, Invite invite) {
-
+    public void changeIsDeliveredState(boolean isDelivered, Invite invite) {
 
         invite.setDelivered(isDelivered);
 
-        return inviteRepository.save(invite);
-
+        inviteRepository.save(invite);
     }
 
-    public List<Invite> getInvitesByLobbyId(Long lobbyId) {
-        return inviteRepository.findInvitesByLobbyId(lobbyId);
+    public List<Invite> getNotDeliveredInvitesByUserIdl(long userId) {
+       return inviteRepository.findNotDeliveredInvitesByUserId(userId);
     }
-
-    public List<Invite> saveAllInvites(List<Invite> invites) {
-        return inviteRepository.saveAll(invites);
-    }
-
-    public Invite saveInvite(Invite invite) {
-        return inviteRepository.save(invite);
-    }
-
-    public Optional<Invite> findInviteById(Long id) {
-        return inviteRepository.findById(id);
-    }
-
-
-    private Invite getInviteByLobbyAndUserOrThrow(long userid, long lobbyId) {
-        return inviteRepository.findByLobbyIdAndUserId(lobbyId, userid)
-                .orElseThrow(() -> new RestException("No such User or Lobby exist", HttpStatus.BAD_REQUEST));
-    }
-
 }

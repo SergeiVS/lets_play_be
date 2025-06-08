@@ -3,6 +3,7 @@ package org.lets_play_be.entity.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.lets_play_be.entity.Invite.Invite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,14 +39,12 @@ public class AppUser {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private UserAvailability availability;
 
-
     public AppUser(String name, String email, String password, String avatarUrl) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.avatarUrl = avatarUrl;
         this.roles = new ArrayList<>();
-//        this.notifications = new ArrayList<>();
     }
 
     @Override

@@ -13,10 +13,10 @@ import java.util.Optional;
 public class AppUserRepositoryService {
 
     private final AppUserRepository appUserRepository;
-
-    public AppUser save(AppUser appUser) {
-        return appUserRepository.save(appUser);
-    }
+//
+//    public AppUser save(AppUser appUser) {
+//        return appUserRepository.save(appUser);
+//    }
 
     public List<AppUser> saveAll(List<AppUser> appUsers) {
         return appUserRepository.saveAll(appUsers);
