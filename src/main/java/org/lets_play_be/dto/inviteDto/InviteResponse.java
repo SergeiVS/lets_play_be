@@ -16,16 +16,14 @@ public record InviteResponse(long id,
                              int delayedFor) implements Serializable, NotificationData {
 
 
-    public InviteResponse toInviteResponse(Invite invite) {
-
-        long id = invite.getId();
-        String lobbyTitle = invite.getLobby().getTitle();
-        UserShortResponse user = toUserShortResponse(invite.getRecipient());
-        String state = invite.getState().toString();
-        String message = invite.getMessage();
-        int delayedFor = invite.getDelayedFor();
-
-        return new InviteResponse(id, lobbyTitle, user, state, message, delayedFor);
+    public InviteResponse(Invite invite) {
+        this(invite.getId(),
+                invite.getLobby().getTitle(),
+                toUserShortResponse(invite.getRecipient()),
+                invite.getState().toString(),
+                invite.getMessage(),
+                invite.getDelayedFor()
+        );
     }
 
 }

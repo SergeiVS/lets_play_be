@@ -33,12 +33,12 @@ public interface LobbyPresetControllerApi {
 //    public ResponseEntity<ActiveLobbyResponse> activatePreset(ActivateLobbyPresetRequest request);
 
 
-    @PutMapping("users")
+    @PutMapping("user")
     public ResponseEntity<LobbyPresetFullResponse> addUsers(@RequestBody
                                                             @Valid
                                                             ChangeLobbyPresetUsersRequest request);
 
-    @DeleteMapping("users")
+    @DeleteMapping("user")
     public ResponseEntity<LobbyPresetFullResponse> removeUsers(@RequestBody
                                                                @Valid
                                                                ChangeLobbyPresetUsersRequest request);

@@ -1,7 +1,10 @@
 package org.lets_play_be.service.InviteService;
 
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.dto.inviteDto.InviteResponse;
+import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.entity.Invite.Invite;
+import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
@@ -10,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +25,85 @@ public class InviteService {
         return users.stream().map(user -> new Invite(user, lobby, message)).toList();
     }
 
-    public void changeIsDeliveredState(boolean isDelivered, Invite invite) {
+    public void updateIsDeliveredState(boolean isDelivered, Invite invite) {
 
         invite.setDelivered(isDelivered);
 
         inviteRepository.save(invite);
     }
 
-    public List<Invite> getNotDeliveredInvitesByUserIdl(long userId) {
-       return inviteRepository.findNotDeliveredInvitesByUserId(userId);
+    public void updateIsSeen(boolean isSeen, long inviteId) {
+        var invite = getInviteByIdOrElseThrow(inviteId);
+        invite.setSeen(isSeen);
+        inviteRepository.save(invite);
     }
+
+    public List<Invite> getNotDeliveredInvitesByUserIdl(long userId) {
+        return inviteRepository.findNotDeliveredInvitesByUserId(userId);
+    }
+
+
+    public List<InviteResponse> getAllInvitesByUser(long userId) {
+        List<Invite> invites = inviteRepository.findInvitesByUserId(userId);
+        return invites.stream().map(InviteResponse::new).toList();
+    }
+
+
+    public List<InviteResponse> getAllInvitesByLobbyId(long lobbyId) {
+
+        List<Invite> invites = inviteRepository.findInvitesByLobbyId(lobbyId);
+        return invites.stream().map(InviteResponse::new).toList();
+    }
+
+    public InviteResponse updateInviteState(UpdateInviteStateRequest request) {
+
+        var invite = getInviteByIdOrElseThrow(request.inviteId());
+
+        checkUserRelationToInviteOrThrow(invite, request.userId());
+
+        setNewStateToInvite(invite, request);
+
+        var savedInvite = inviteRepository.save(invite);
+
+        return new InviteResponse(savedInvite);
+    }
+
+    private void setNewStateToInvite(Invite invite, UpdateInviteStateRequest request) {
+
+        String newState = request.newState();
+
+        List<String> states = InviteState.getValuesInviteStateStringsList();
+
+        if (newState.equalsIgnoreCase("delayed")) {
+
+            validateDelayedFor(request);
+            invite.setState(InviteState.valueOf(newState.toUpperCase()));
+            invite.setDelayedFor(request.delayedFor());
+
+        } else if (states.contains(newState.toUpperCase())) {
+
+            invite.setState(InviteState.valueOf(newState.toUpperCase()));
+        } else {
+
+            throw new IllegalArgumentException("New Invite state do not meet an Enum");
+        }
+    }
+
+    private static void validateDelayedFor(UpdateInviteStateRequest request) {
+        if (request.delayedFor() < 1) {
+            throw new IllegalArgumentException("By newState== delayed, value of delayedFor should be positive number");
+        }
+    }
+
+    private void checkUserRelationToInviteOrThrow(Invite invite, long userId) {
+        if (userId != invite.getRecipient().getId() && userId != invite.getLobby().getOwner().getId()) {
+            throw new RestException("User is not either lobby owner nor recipient of this invite", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private Invite getInviteByIdOrElseThrow(long inviteId) {
+        return inviteRepository.findById(inviteId).orElseThrow(
+                () -> new RestException("Invite not found", HttpStatus.BAD_REQUEST));
+    }
+
 }

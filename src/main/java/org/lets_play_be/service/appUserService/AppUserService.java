@@ -61,10 +61,6 @@ public class AppUserService {
                 .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
     }
 
-    public AppUser getUserByIdOrThrow(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
-    }
-
     public List<AppUser> getUsersListByIds(List<Long> ids) {
         return userRepository.findAllById(ids);
     }

@@ -1,7 +1,6 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.asm.Advice;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.NotificationFactory;
@@ -94,7 +93,7 @@ public class SseNotificationService {
                 var data = new LobbyCreatedNotificationData(lobby);
                 var notification = NotificationFactory.createNotification(data);
                 observer.update(notification);
-                inviteService.changeIsDeliveredState(true, invite);
+                inviteService.updateIsDeliveredState(true, invite);
             }
         } catch (IOException e) {
 

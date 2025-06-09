@@ -68,7 +68,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 new AntPathRequestMatcher("/api/v1/user/**"),
-                                new AntPathRequestMatcher("/api/v1/sse")).hasAnyRole("ADMIN", "USER")
+                                new AntPathRequestMatcher("/api/v1/sse"),
+                                new AntPathRequestMatcher("/api/v1/invite")
+                        ).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(
                                 new AntPathRequestMatcher("/swagger-ui/**"),
                                 new AntPathRequestMatcher("/v3/api-docs/**"),

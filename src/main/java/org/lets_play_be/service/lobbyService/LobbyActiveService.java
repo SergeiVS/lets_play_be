@@ -21,7 +21,6 @@ import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -155,7 +154,7 @@ public class LobbyActiveService {
 
             if (recipientPool.isInPool(recipientId)) {
 
-                inviteService.changeIsDeliveredState(true, invite);
+                inviteService.updateIsDeliveredState(true, invite);
             }
         }
     }
