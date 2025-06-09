@@ -67,9 +67,13 @@ public class LobbyActiveService {
 
 // TODO Add Ownership check.
     @Transactional
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+
+        var owner = userService.getUserByEmailOrThrow(auth.getName());
 
         var lobbyForChange = getLobbyByIdOrThrow(request.id());
+
+        isLobbyOwner(lobbyForChange, owner.getId());
 
         OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
 
@@ -80,15 +84,13 @@ public class LobbyActiveService {
         return lobbyMappers.toUpdateResponse(savedLobby, savedLobby.getId());
     }
 
-    //TODO Add missed Notifications send
     @Transactional
     public ActiveLobbyResponse closeLobby(Long lobbyId, Authentication auth) {
         var owner = userService.getUserByEmailOrThrow(auth.getName());
+
         var lobbyForDelete = getLobbyByIdOrThrow(lobbyId);
 
-        isOwner(lobbyForDelete, owner.getId());
-
-        List<Invite>invites = lobbyForDelete.getInvites();
+        isLobbyOwner(lobbyForDelete, owner.getId());
 
         Notification notification = createNotification(new LobbyClosedNotificationData(lobbyForDelete));
 
@@ -101,7 +103,7 @@ public class LobbyActiveService {
         return lobbyMappers.toActiveResponse(lobbyForDelete);
     }
 
-    private void isOwner(LobbyActive lobbyForDelete, Long id) {
+    public void isLobbyOwner(LobbyActive lobbyForDelete, Long id) {
         if(!Objects.equals(lobbyForDelete.getOwner().getId(), id)) {
             throw new IllegalArgumentException("User with Id: " + id + " is not owner of this lobby.");
         }

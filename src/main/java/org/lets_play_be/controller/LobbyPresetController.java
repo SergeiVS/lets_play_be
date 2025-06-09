@@ -34,17 +34,11 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
     }
 
     @Override
-    public ResponseEntity<UpdateLobbyTitleAndTimeResponse> updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
-        UpdateLobbyTitleAndTimeResponse response = lobbyBaseUpdateService.updateLobbyTitleAndTime(request);
+    public ResponseEntity<UpdateLobbyTitleAndTimeResponse> updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request,
+                                                                                   Authentication auth) {
+        UpdateLobbyTitleAndTimeResponse response = lobbyBaseUpdateService.updateLobbyTitleAndTime(request, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-//    @Override
-//    public ResponseEntity<ActiveLobbyResponse> activatePreset(ActivateLobbyPresetRequest request) {
-//        ActiveLobbyResponse response   = lobbyPresetCRUDService.activateLobbyPreset(request);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-
 
     @Override
     public ResponseEntity<LobbyPresetFullResponse> addUsers(ChangeLobbyPresetUsersRequest request) {

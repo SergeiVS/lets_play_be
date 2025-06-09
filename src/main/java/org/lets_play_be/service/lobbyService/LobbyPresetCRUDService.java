@@ -6,9 +6,11 @@ import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.*;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.exception.RestException;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +69,7 @@ public class LobbyPresetCRUDService {
 
     @Transactional
     public StandardStringResponse removeLobbyPreset(Long id) {
+
         repoService.deleteById(id);
 
         return new StandardStringResponse("Lobby preset with id: " + id + " is deleted");
@@ -74,9 +77,12 @@ public class LobbyPresetCRUDService {
 
 
     @Transactional
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+
+        var owner = appUserService.getUserIdByEmailOrThrow(auth.getName());
 
         var presetForChange = getLobbyByIdOrThrow(request.id());
+
 
         OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
 
@@ -122,6 +128,12 @@ public class LobbyPresetCRUDService {
     private AppUser getOwner(Authentication authentication) {
         String email = authentication.getName();
         return appUserService.getUserByEmailOrThrow(email);
+    }
+
+    private void isLobbyOwner(LobbyPreset lobby, long ownerId){
+        if(lobby.getOwner().getId() != ownerId){
+            throw new RestException("User is not lobby owner", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

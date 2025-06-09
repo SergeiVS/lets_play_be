@@ -24,14 +24,11 @@ public interface LobbyPresetControllerApi {
     @GetMapping
     public ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication);
 
-    @PutMapping
-    public ResponseEntity<UpdateLobbyTitleAndTimeResponse> updateLobbyTitleAndTime(@RequestBody
+    @PatchMapping    public ResponseEntity<UpdateLobbyTitleAndTimeResponse> updateLobbyTitleAndTime(@RequestBody
                                                                                    @NotNull
                                                                                    @Validated
-                                                                                   UpdateLobbyTitleAndTimeRequest request);
-//    @PostMapping("active")
-//    public ResponseEntity<ActiveLobbyResponse> activatePreset(ActivateLobbyPresetRequest request);
-
+                                                                                   UpdateLobbyTitleAndTimeRequest request,
+                                                                                                    Authentication auth);
 
     @PutMapping("user")
     public ResponseEntity<LobbyPresetFullResponse> addUsers(@RequestBody

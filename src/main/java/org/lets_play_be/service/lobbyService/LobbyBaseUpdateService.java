@@ -5,6 +5,7 @@ import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.lobby.LobbyBase;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
@@ -18,15 +19,15 @@ public class LobbyBaseUpdateService {
     private final LobbyPresetCRUDService presetService;
     private final LobbyActiveService activeService;
 
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
 
         validateLobbyTypeString(request.type());
 
         LobbyType type = LobbyType.valueOf(request.type().toUpperCase());
 
         return switch (type) {
-            case PRESET -> presetService.updateLobbyTitleAndTime(request);
-            case ACTIVE -> activeService.updateLobbyTitleAndTime(request);
+            case PRESET -> presetService.updateLobbyTitleAndTime(request, auth);
+            case ACTIVE -> activeService.updateLobbyTitleAndTime(request, auth);
         };
 
     }
