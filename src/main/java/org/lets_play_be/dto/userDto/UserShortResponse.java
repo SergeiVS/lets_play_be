@@ -9,7 +9,7 @@ public record UserShortResponse(
         String name
 ) implements Serializable {
 
-    public static UserShortResponse toUserShortResponse(AppUser user) {
-        return new UserShortResponse(user.getId(), user.getName());
+    public UserShortResponse(AppUser user) {
+        this(user.getId(), user.getName());
     }
 }

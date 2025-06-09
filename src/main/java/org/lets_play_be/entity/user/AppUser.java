@@ -47,6 +47,14 @@ public class AppUser {
         this.roles = new ArrayList<>();
     }
 
+    public String[] getRolesStrings(){
+        String[] rolesStringsArray = new String[roles.size()];
+        for(int i = 0; i < roles.size(); i++){
+            rolesStringsArray[i] = roles.get(i).getName();
+        }
+        return rolesStringsArray;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

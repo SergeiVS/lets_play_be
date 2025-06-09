@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.lobbyDto.ActiveLobbyResponse;
 import org.lets_play_be.dto.lobbyDto.NewActiveLobbyRequest;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
@@ -19,7 +18,6 @@ import org.lets_play_be.notification.notificationService.sseNotification.SseNoti
 import org.lets_play_be.repository.LobbyActiveRepository;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.lets_play_be.notification.NotificationFactory.createNotification;
-import static org.lets_play_be.service.lobbyService.LobbyBaseUpdateService.setNewValues;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Service
@@ -38,11 +35,11 @@ import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 public class LobbyActiveService {
 
     private final LobbyActiveRepository repository;
+    private final LobbyBaseUpdateService baseUpdateService;
     private final AppUserService userService;
     private final SseNotificationService sseNotificationService;
     private final InviteService inviteService;
     private final LobbySubjectPool subjectPool;
-    private final LobbyMappers lobbyMappers;
     private final SseLiveRecipientPool recipientPool;
 
     @Transactional
@@ -62,12 +59,11 @@ public class LobbyActiveService {
 
         setInvitesDelivered(savedLobby.getInvites());
 
-        return lobbyMappers.toActiveResponse(savedLobby);
+        return new ActiveLobbyResponse(savedLobby);
     }
 
-// TODO Add Ownership check.
     @Transactional
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+    public ActiveLobbyResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
 
         var owner = userService.getUserByEmailOrThrow(auth.getName());
 
@@ -77,11 +73,11 @@ public class LobbyActiveService {
 
         OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
 
-        setNewValues(request, lobbyForChange, newTime);
+        baseUpdateService.setNewValues(request, lobbyForChange, newTime);
 
         var savedLobby = repository.save(lobbyForChange);
 
-        return lobbyMappers.toUpdateResponse(savedLobby, savedLobby.getId());
+        return new ActiveLobbyResponse(savedLobby);
     }
 
     @Transactional
@@ -100,11 +96,11 @@ public class LobbyActiveService {
 
         subjectPool.removeSubject(lobbyId);
 
-        return lobbyMappers.toActiveResponse(lobbyForDelete);
+        return new ActiveLobbyResponse(lobbyForDelete);
     }
 
     public void isLobbyOwner(LobbyActive lobbyForDelete, Long id) {
-        if(!Objects.equals(lobbyForDelete.getOwner().getId(), id)) {
+        if (!Objects.equals(lobbyForDelete.getOwner().getId(), id)) {
             throw new IllegalArgumentException("User with Id: " + id + " is not owner of this lobby.");
         }
     }

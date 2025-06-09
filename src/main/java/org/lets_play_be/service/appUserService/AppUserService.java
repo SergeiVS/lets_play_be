@@ -12,7 +12,6 @@ import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.repository.UserAvailabilityRepository;
-import org.lets_play_be.service.mappers.AppUserMappers;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -29,12 +28,11 @@ import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av
 public class AppUserService {
 
     private final AppUserRepository userRepository;
-    private final AppUserMappers userMappers;
     private final UserAvailabilityRepository availabilityRepository;
 
     public AppUserFullResponse getAppUserFullData(String email) {
         AppUser user = getUserByEmailOrThrow(email);
-        return userMappers.toFullUserResponse(user);
+        return new AppUserFullResponse(user);
     }
 
     @Transactional
@@ -44,7 +42,7 @@ public class AppUserService {
         setNewNameToUser(request, user);
         setNewAvatarUrlToUser(request, user);
         AppUser savedUser = userRepository.save(user);
-        return userMappers.toFullUserResponse(savedUser);
+        return new AppUserFullResponse(savedUser);
     }
 
     @Transactional
@@ -53,7 +51,7 @@ public class AppUserService {
         validateUserInRequest(request.userId(), user);
         setNewAvailability(request, user);
         AppUser savedUser = userRepository.save(user);
-        return userMappers.toFullUserResponse(savedUser);
+        return new AppUserFullResponse(savedUser);
     }
 
     public AppUser getUserByEmailOrThrow(String email) {

@@ -12,7 +12,6 @@ import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.UserRoleEnum;
 import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.lets_play_be.service.appUserRoleService.AppUserRoleService;
-import org.lets_play_be.service.mappers.AppUserMappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,21 +28,15 @@ import static org.mockito.Mockito.when;
 class RegisterNewUserServiceTest {
 
     @Mock
-    private AppUserRepositoryService userRepositoryService;
-    @Mock
     private UserAvailabilityRepository availabilityRepository;
     @Mock
     private AppUserRoleService roleService;
     @Mock
     private PasswordEncoder passwordEncoderMock;
-    @Mock
-    private AppUserMappers mappers;
     @InjectMocks
     private RegisterNewUserService registerNewUserService;
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    private final AppUserMappers appUserMappers = new AppUserMappers();
 
     private AppUserFullResponse responseMocked;
 

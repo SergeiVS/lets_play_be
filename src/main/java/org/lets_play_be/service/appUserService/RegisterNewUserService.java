@@ -14,7 +14,6 @@ import org.lets_play_be.exception.RestException;
 import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.lets_play_be.service.appUserRoleService.AppUserRoleService;
-import org.lets_play_be.service.mappers.AppUserMappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ public class RegisterNewUserService {
 
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AppUserMappers mapper;
     private final AppUserRoleService roleService;
     private final UserAvailabilityRepository availabilityRepository;
 
@@ -40,7 +38,7 @@ public class RegisterNewUserService {
         AppUser userForSave = getUserForSave(request);
         AppUser savedUser = userRepository.save(userForSave);
 
-        return mapper.toFullUserResponse(savedUser);
+        return new AppUserFullResponse(savedUser);
     }
 
     private AppUser getUserForSave(NewUserRegistrationRequest request) {

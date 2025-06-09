@@ -16,28 +16,13 @@ import static org.lets_play_be.utils.ValidationUtils.validateLobbyTypeString;
 @RequiredArgsConstructor
 public class LobbyBaseUpdateService {
 
-    private final LobbyPresetCRUDService presetService;
-    private final LobbyActiveService activeService;
 
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
-
-        validateLobbyTypeString(request.type());
-
-        LobbyType type = LobbyType.valueOf(request.type().toUpperCase());
-
-        return switch (type) {
-            case PRESET -> presetService.updateLobbyTitleAndTime(request, auth);
-            case ACTIVE -> activeService.updateLobbyTitleAndTime(request, auth);
-        };
-
-    }
-
-    protected static void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase presetForChange, OffsetTime newTime) {
-        if (!request.newTitle().equals(presetForChange.getTitle())) {
-            presetForChange.setTitle(request.newTitle());
+    protected void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase lobbyBaseForChange, OffsetTime newTime) {
+        if (!request.newTitle().equals(lobbyBaseForChange.getTitle())) {
+            lobbyBaseForChange.setTitle(request.newTitle());
         }
-        if (presetForChange.getTime() != newTime) {
-            presetForChange.setTime(newTime);
+        if (lobbyBaseForChange.getTime() != newTime) {
+            lobbyBaseForChange.setTime(newTime);
         }
     }
 

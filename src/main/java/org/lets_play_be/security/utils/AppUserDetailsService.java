@@ -3,7 +3,6 @@ package org.lets_play_be.security.utils;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.AppUserRepository;
-import org.lets_play_be.service.appUserService.AppUserRepositoryService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
