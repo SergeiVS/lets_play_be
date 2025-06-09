@@ -18,4 +18,5 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     @Query("SELECT u FROM AppUser u WHERE u.id IN :ids")
     List<AppUser> getAppUsersById(List<Long> ids);
 
+
 }

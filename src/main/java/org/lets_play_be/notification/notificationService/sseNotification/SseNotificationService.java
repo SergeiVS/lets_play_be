@@ -41,7 +41,7 @@ public class SseNotificationService {
 
         final SseEmitter emitter = sseService.createSseConnection();
 
-        isRecipientNotSubscribed(recipientId);
+//        isRecipientNotSubscribed(recipientId);
 
         createSseObserver(emitter, recipientId);
 
@@ -78,7 +78,6 @@ public class SseNotificationService {
 
         recipientPool.addObserver(recipientId, emitter);
     }
-
 
     public void sendMissedNotifications(Authentication authentication) {
 

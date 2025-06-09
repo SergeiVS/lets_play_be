@@ -21,8 +21,8 @@ public class LobbySubjectPool {
         subjectPool.put(subject.getLobbyId(), subject);
     }
 
-    public void removeSubject(LobbySubject subject) {
+    public void removeSubject(long lobbyId) {
 
-        subjectPool.remove(subject.getLobbyId());
+        subjectPool.remove(lobbyId);
     }
 }

@@ -15,11 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class LobbyActiveController implements LobbyActiveControllerApi {
 
     private final LobbyActiveService lobbyService;
+
     @Override
     public ResponseEntity<ActiveLobbyResponse> addNewLobbyActive(NewActiveLobbyRequest request,
                                                                  Authentication authentication) {
         ActiveLobbyResponse response = lobbyService.createActiveLobby(request, authentication);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<ActiveLobbyResponse> deleteActiveLobby(Long lobbyId, Authentication auth) {
+        return ResponseEntity.ok(lobbyService.closeLobby(lobbyId, auth));
     }
 
 }

@@ -9,6 +9,7 @@ import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
 import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
 import org.lets_play_be.notification.dto.Notification;
 import org.lets_play_be.notification.notificationService.LobbySubject;
@@ -20,12 +21,14 @@ import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.lets_play_be.notification.NotificationFactory.createNotification;
 import static org.lets_play_be.service.lobbyService.LobbyBaseUpdateService.setNewValues;
@@ -43,7 +46,6 @@ public class LobbyActiveService {
     private final LobbyMappers lobbyMappers;
     private final SseLiveRecipientPool recipientPool;
 
-    //TODO add real Notification message on create Lobby,
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
@@ -64,7 +66,7 @@ public class LobbyActiveService {
         return lobbyMappers.toActiveResponse(savedLobby);
     }
 
-
+// TODO Add Ownership check.
     @Transactional
     public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
 
@@ -77,6 +79,33 @@ public class LobbyActiveService {
         var savedLobby = repository.save(lobbyForChange);
 
         return lobbyMappers.toUpdateResponse(savedLobby, savedLobby.getId());
+    }
+
+    //TODO Add missed Notifications send
+    @Transactional
+    public ActiveLobbyResponse closeLobby(Long lobbyId, Authentication auth) {
+        var owner = userService.getUserByEmailOrThrow(auth.getName());
+        var lobbyForDelete = getLobbyByIdOrThrow(lobbyId);
+
+        isOwner(lobbyForDelete, owner.getId());
+
+        List<Invite>invites = lobbyForDelete.getInvites();
+
+        Notification notification = createNotification(new LobbyClosedNotificationData(lobbyForDelete));
+
+        repository.delete(lobbyForDelete);
+
+        sseNotificationService.notifyLobbyMembers(lobbyForDelete.getId(), notification);
+
+        subjectPool.removeSubject(lobbyId);
+
+        return lobbyMappers.toActiveResponse(lobbyForDelete);
+    }
+
+    private void isOwner(LobbyActive lobbyForDelete, Long id) {
+        if(!Objects.equals(lobbyForDelete.getOwner().getId(), id)) {
+            throw new IllegalArgumentException("User with Id: " + id + " is not owner of this lobby.");
+        }
     }
 
 
@@ -93,7 +122,6 @@ public class LobbyActiveService {
         subjectPool.addSubject(subject);
 
         subscribeRecipients(lobby);
-
     }
 
     private LobbySubject createLobbyNotificationSubject(long lobbyId) {
