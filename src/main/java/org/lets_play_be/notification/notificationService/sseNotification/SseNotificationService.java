@@ -83,7 +83,7 @@ public class SseNotificationService {
         var recipientId = userService.getUserIdByEmailOrThrow(authentication.getName());
 
         try {
-            List<Invite> invites = inviteService.getNotDeliveredInvitesByUserIdl(recipientId);
+            List<Invite> invites = inviteService.getNotDeliveredInvitesByUserId(recipientId);
 
             NotificationObserver observer = recipientPool.getObserver(recipientId);
 

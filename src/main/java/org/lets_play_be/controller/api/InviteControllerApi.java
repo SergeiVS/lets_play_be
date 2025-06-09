@@ -11,6 +11,7 @@ import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.exception.ValidationErrorResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public interface InviteControllerApi {
     @GetMapping("lobby/{id}")
     ResponseEntity<List<InviteResponse>> getAllUserInvitesByLobby(@PathVariable("id") @NotNull long lobbyId);
 
-    @Operation(summary = "Getting All User invites")
+    @Operation(summary = "Update Invite state")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invites state was updated",
                     content = {@Content(mediaType = "application/json",
@@ -80,5 +81,26 @@ public interface InviteControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping("user")
-    ResponseEntity<InviteResponse> updateUserInviteState(@RequestBody UpdateInviteStateRequest request);
+    ResponseEntity<InviteResponse> deleteInvite(@RequestBody UpdateInviteStateRequest request);
+
+    @Operation(summary = "Deletes Invite, User should be lobby owner only")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Invite was deleted",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = InviteResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @DeleteMapping({"{id}"})
+    ResponseEntity<InviteResponse> deleteInvite(@PathVariable("id") @NotNull long inviteId, Authentication auth);
 }

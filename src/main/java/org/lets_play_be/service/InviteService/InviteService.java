@@ -9,7 +9,9 @@ import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.repository.InviteRepository;
+import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.List;
 public class InviteService {
 
     private final InviteRepository inviteRepository;
+    private final AppUserService userService;
 
     public List<Invite> createListOfNewInvites(List<AppUser> users, LobbyActive lobby, String message) {
 
@@ -38,7 +41,7 @@ public class InviteService {
         inviteRepository.save(invite);
     }
 
-    public List<Invite> getNotDeliveredInvitesByUserIdl(long userId) {
+    public List<Invite> getNotDeliveredInvitesByUserId(long userId) {
         return inviteRepository.findNotDeliveredInvitesByUserId(userId);
     }
 
@@ -59,13 +62,23 @@ public class InviteService {
 
         var invite = getInviteByIdOrElseThrow(request.inviteId());
 
-        checkUserRelationToInviteOrThrow(invite, request.userId());
+        isRecipient(invite, request.userId());
 
         setNewStateToInvite(invite, request);
 
         var savedInvite = inviteRepository.save(invite);
 
         return new InviteResponse(savedInvite);
+    }
+
+    public InviteResponse removeInvite(long inviteId, Authentication auth) {
+
+        var invite = getInviteByIdOrElseThrow(inviteId);
+        var user = userService.getUserByEmailOrThrow(auth.getName());
+        isLobbyOwner(invite, user.getId());
+        inviteRepository.delete(invite);
+
+        return new InviteResponse(invite);
     }
 
     private void setNewStateToInvite(Invite invite, UpdateInviteStateRequest request) {
@@ -95,9 +108,15 @@ public class InviteService {
         }
     }
 
-    private void checkUserRelationToInviteOrThrow(Invite invite, long userId) {
-        if (userId != invite.getRecipient().getId() && userId != invite.getLobby().getOwner().getId()) {
-            throw new RestException("User is not either lobby owner nor recipient of this invite", HttpStatus.BAD_REQUEST);
+    private void isRecipient(Invite invite, long userId) {
+        if (userId != invite.getRecipient().getId()) {
+            throw new RestException("User is not recipient of this invite", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void isLobbyOwner(Invite invite, long userId) {
+        if (userId != invite.getLobby().getOwner().getId()) {
+            throw new RestException("User is not recipient of this invite", HttpStatus.BAD_REQUEST);
         }
     }
 
