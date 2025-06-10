@@ -5,20 +5,20 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.lobbyDto.ActiveLobbyResponse;
 import org.lets_play_be.dto.lobbyDto.NewActiveLobbyRequest;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeResponse;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
-import org.lets_play_be.notification.NotificationSubject;
-import org.lets_play_be.notification.dto.MessageNotificationData;
+import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
+import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
 import org.lets_play_be.notification.dto.Notification;
+import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
+import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
 import org.lets_play_be.repository.LobbyActiveRepository;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,8 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import static org.lets_play_be.notification.NotificationFactory.createNotification;
-import static org.lets_play_be.service.lobbyService.LobbyBaseUpdateService.setNewValues;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Service
@@ -36,13 +35,13 @@ import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 public class LobbyActiveService {
 
     private final LobbyActiveRepository repository;
+    private final LobbyBaseUpdateService baseUpdateService;
     private final AppUserService userService;
+    private final SseNotificationService sseNotificationService;
     private final InviteService inviteService;
     private final LobbySubjectPool subjectPool;
     private final SseLiveRecipientPool recipientPool;
-    private final LobbyMappers lobbyMappers;
 
-    //TODO add real Notification message on create Lobby
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
@@ -54,73 +53,112 @@ public class LobbyActiveService {
 
         subscribeLobbySubjectInPool(savedLobby);
 
-        String message = "You are added to Lobby: " + savedLobby.getTitle();
+        NotificationData data = new LobbyCreatedNotificationData(savedLobby);
 
-        notifyRecipients(savedLobby.getId(), message);
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), data);
 
-        return lobbyMappers.toActiveResponse(savedLobby);
+        setInvitesDelivered(savedLobby.getInvites());
+
+        return new ActiveLobbyResponse(savedLobby);
     }
 
     @Transactional
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+    public ActiveLobbyResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+
+        var owner = userService.getUserByEmailOrThrow(auth.getName());
 
         var lobbyForChange = getLobbyByIdOrThrow(request.id());
 
+        isLobbyOwner(lobbyForChange, owner.getId());
+
         OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
 
-        setNewValues(request, lobbyForChange, newTime);
+        baseUpdateService.setNewValues(request, lobbyForChange, newTime);
 
         var savedLobby = repository.save(lobbyForChange);
 
-        return lobbyMappers.toUpdateResponse(savedLobby, savedLobby.getId());
+
+
+        return new ActiveLobbyResponse(savedLobby);
+    }
+
+    @Transactional
+    public ActiveLobbyResponse closeLobby(Long lobbyId, Authentication auth) {
+
+        var owner = userService.getUserByEmailOrThrow(auth.getName());
+
+        var lobbyForDelete = getLobbyByIdOrThrow(lobbyId);
+
+        isLobbyOwner(lobbyForDelete, owner.getId());
+
+        var data = new LobbyClosedNotificationData(lobbyForDelete);
+
+        repository.delete(lobbyForDelete);
+
+        sseNotificationService.notifyLobbyMembers(lobbyForDelete.getId(), data);
+
+        subjectPool.removeSubject(lobbyId);
+
+        return new ActiveLobbyResponse(lobbyForDelete);
+    }
+
+    public void isLobbyOwner(LobbyActive lobbyForDelete, Long id) {
+        if (!Objects.equals(lobbyForDelete.getOwner().getId(), id)) {
+            throw new IllegalArgumentException("User with Id: " + id + " is not owner of this lobby.");
+        }
     }
 
 
     public LobbyActive getLobbyByIdOrThrow(Long id) {
+
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No Lobby found with id: " + id));
     }
 
     private void subscribeLobbySubjectInPool(LobbyActive lobby) {
+
         LobbySubject subject = createLobbyNotificationSubject(lobby.getId());
 
         subjectPool.addSubject(subject);
 
         subscribeRecipients(lobby);
-
     }
 
     private LobbySubject createLobbyNotificationSubject(long lobbyId) {
         return new LobbySubject(lobbyId);
     }
 
-    private void notifyRecipients(Long lobbyId, String message) {
+    private void subscribeRecipients(LobbyActive lobby) {
 
-        NotificationSubject subject = subjectPool.getSubject(lobbyId);
+        List<Long> recipientsIds = getRecipientsIds(lobby);
 
-        MessageNotificationData notificationData = new MessageNotificationData(message);
+        for (Long recipientId : recipientsIds) {
 
-        Notification notification = createNotification(notificationData);
-
-        subject.notifyObservers(notification);
-
+            sseNotificationService.subscribeSseObserverForActiveLobby(recipientId, lobby.getId());
+        }
     }
 
-    private void subscribeRecipients(LobbyActive lobby) {
+    private List<Long> getRecipientsIds(LobbyActive lobby) {
 
         List<Long> recipientsIds = new ArrayList<>();
 
         lobby.getInvites().forEach(invite -> recipientsIds.add(invite.getRecipient().getId()));
 
-        NotificationSubject subject = subjectPool.getSubject(lobby.getId());
+        return recipientsIds;
+    }
 
-        for (Long recipientId : recipientsIds) {
+    private void setInvitesDelivered(List<Invite> invites) {
+
+        for (Invite invite : invites) {
+
+            var recipientId = invite.getRecipient().getId();
+
             if (recipientPool.isInPool(recipientId)) {
-                subject.subscribe(recipientPool.getObserver(recipientId));
+
+                inviteService.updateIsDeliveredState(true, invite);
             }
         }
     }
-
 
     private LobbyActive saveNewLobbyFromRequest(NewActiveLobbyRequest request, AppUser owner) {
 
@@ -129,6 +167,7 @@ public class LobbyActiveService {
         OffsetTime time = timeStringToOffsetTime(request.time());
 
         LobbyActive lobbyForSave = new LobbyActive(title, time, owner);
+
         List<Invite> invitesForAdd = getSavedInviteList(request, lobbyForSave);
 
         lobbyForSave.getInvites().addAll(invitesForAdd);
@@ -139,11 +178,14 @@ public class LobbyActiveService {
     private List<Invite> getSavedInviteList(NewActiveLobbyRequest request, LobbyActive lobbyForSave) {
 
         List<AppUser> users = userService.getUsersListByIds(request.userIds());
-        return inviteService.getListOfNewInvites(users, lobbyForSave, request.message());
+
+        return inviteService.createListOfNewInvites(users, lobbyForSave, request.message());
     }
 
     private void isLobbyExistingByOwnerId(AppUser owner) {
-        if (repository.existsById(owner.getId())) {
+
+        if (repository.existsLobbyActiveByOwner(owner)) {
+
             throw new IllegalArgumentException("The Lobby for given owner already exists");
         }
     }

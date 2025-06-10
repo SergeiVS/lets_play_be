@@ -1,16 +1,25 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.NotificationObserver;
 import org.lets_play_be.notification.NotificationSubject;
-import org.lets_play_be.notification.dto.Notification;
+import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
+import org.lets_play_be.notification.dto.NotificationData;
+import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
+import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.lets_play_be.notification.NotificationFactory.createNotification;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +33,14 @@ public class SseNotificationService {
 
     private final AppUserService userService;
 
+    private final InviteService inviteService;
+
 
     public SseEmitter subscribeForSse(Authentication auth) {
 
         var recipientId = userService.getUserIdByEmailOrThrow(auth.getName());
 
         final SseEmitter emitter = sseService.createSseConnection();
-
-        isRecipientNotSubscribed(recipientId);
 
         createSseObserver(emitter, recipientId);
 
@@ -41,36 +50,59 @@ public class SseNotificationService {
 
     public void subscribeSseObserverForActiveLobby(long recipientId, long lobbyId) {
 
-        isRecipientSubscribed(recipientId);
+        try {
+            if (recipientPool.isInPool(recipientId)) {
 
-        NotificationObserver observer = recipientPool.getObserver(recipientId);
+                NotificationObserver observer = recipientPool.getObserver(recipientId);
 
-        NotificationSubject subject = subjectPool.getSubject(lobbyId);
+                NotificationSubject subject = subjectPool.getSubject(lobbyId);
 
-        subject.subscribe(observer);
+                ((SseNotificationObserver) observer).addOnCloseCallback(lobbyId,
+                        ((LobbySubject) subject).removeObserver(observer));
+
+                subject.subscribe(observer);
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void notifyLobbyMembers(long lobbyId, Notification notification) {
+    public void notifyLobbyMembers(long lobbyId, NotificationData data) {
 
-        NotificationSubject subject = subjectPool.getSubject(lobbyId);
+        var subject = subjectPool.getSubject(lobbyId);
+
+        var notification = createNotification(data);
 
         subject.notifyObservers(notification);
     }
 
-    private void isRecipientNotSubscribed(Long recipientId) {
-        if (recipientPool.isInPool(recipientId)) {
-            throw new RestException("Recipient with id: " + recipientId + " is already subscribed", HttpStatus.BAD_REQUEST);
-        }
-    }
+    public void sendMissedNotifications(Authentication authentication) {
 
-    private void isRecipientSubscribed(long recipientId) {
-        if (!recipientPool.isInPool(recipientId)) {
-            throw new RestException("Recipient with id: " + recipientId + " is not subscribed", HttpStatus.BAD_REQUEST);
+        var recipientId = userService.getUserIdByEmailOrThrow(authentication.getName());
+
+        try {
+            List<Invite> invites = inviteService.getNotDeliveredInvitesByUserId(recipientId);
+
+            var observer = recipientPool.getObserver(recipientId);
+
+            for (Invite invite : invites) {
+
+                var lobby = invite.getLobby();
+                var data = new LobbyCreatedNotificationData(lobby);
+                var notification = createNotification(data);
+                observer.update(notification);
+
+                inviteService.updateIsDeliveredState(true, invite);
+            }
+        } catch (IOException e) {
+
+            throw new RestException("Failed to send missed notifications", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     private void createSseObserver(SseEmitter emitter, Long recipientId) {
 
         recipientPool.addObserver(recipientId, emitter);
+
     }
 }

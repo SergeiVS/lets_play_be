@@ -10,6 +10,8 @@ import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -36,6 +38,5 @@ public abstract class LobbyBase {
         this.time = time;
         this.owner = owner;
     }
-
 
 }

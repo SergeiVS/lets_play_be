@@ -12,7 +12,6 @@ import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.repository.LobbyActiveRepository;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.lets_play_be.service.mappers.LobbyMappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,8 +29,6 @@ class LobbyActiveServiceTest {
 
     @Mock
     InviteService inviteService;
-
-    LobbyMappers lobbyMappers;
 
     @InjectMocks
     LobbyActiveService lobbyActiveService;

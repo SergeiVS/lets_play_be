@@ -10,8 +10,8 @@ import org.lets_play_be.dto.userDto.UserDataUpdateRequest;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
+import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.repository.UserAvailabilityRepository;
-import org.lets_play_be.service.mappers.AppUserMappers;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +27,12 @@ import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av
 @RequiredArgsConstructor
 public class AppUserService {
 
-    private final AppUserRepositoryService userRepositoryService;
-    private final AppUserMappers userMappers;
+    private final AppUserRepository userRepository;
     private final UserAvailabilityRepository availabilityRepository;
 
     public AppUserFullResponse getAppUserFullData(String email) {
         AppUser user = getUserByEmailOrThrow(email);
-        return userMappers.toFullUserResponse(user);
+        return new AppUserFullResponse(user);
     }
 
     @Transactional
@@ -42,8 +41,8 @@ public class AppUserService {
         validateUserInRequest(request.userId(), user);
         setNewNameToUser(request, user);
         setNewAvatarUrlToUser(request, user);
-        AppUser savedUser = userRepositoryService.save(user);
-        return userMappers.toFullUserResponse(savedUser);
+        AppUser savedUser = userRepository.save(user);
+        return new AppUserFullResponse(savedUser);
     }
 
     @Transactional
@@ -51,25 +50,21 @@ public class AppUserService {
         AppUser user = getUserByEmailOrThrow(email);
         validateUserInRequest(request.userId(), user);
         setNewAvailability(request, user);
-        AppUser savedUser = userRepositoryService.save(user);
-        return userMappers.toFullUserResponse(savedUser);
+        AppUser savedUser = userRepository.save(user);
+        return new AppUserFullResponse(savedUser);
     }
 
     public AppUser getUserByEmailOrThrow(String email) {
-        return userRepositoryService.findByEmail(email)
+        return userRepository.findAppUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
     }
 
-    public AppUser getUserByIdOrThrow(Long id) {
-        return userRepositoryService.findById(id).orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
-    }
-
     public List<AppUser> getUsersListByIds(List<Long> ids) {
-        return userRepositoryService.getUsersByIds(ids);
+        return userRepository.findAllById(ids);
     }
 
     public Long getUserIdByEmailOrThrow(String email) {
-        return userRepositoryService.findByEmail(email)
+        return userRepository.findAppUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()))
                 .getId();
     }

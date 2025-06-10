@@ -5,28 +5,27 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
-import org.lets_play_be.dto.lobbyDto.*;
+import org.lets_play_be.dto.inviteDto.InviteResponse;
+import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.exception.ValidationErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/lobby/preset")
-public interface LobbyPresetControllerApi {
+@RequestMapping("api/v1/invite")
+public interface InviteControllerApi {
 
-    @Operation(summary = "Creating a new Preset")
+    @Operation(summary = "Getting all User invites")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Preset is created",
+            @ApiResponse(responseCode = "200", description = "Invites were found or List is empty",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = InviteResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -40,21 +39,18 @@ public interface LobbyPresetControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PostMapping
-    ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(@RequestBody
-                                                                 @Valid
-                                                                 NewLobbyRequest request,
-                                                                 Authentication authentication);
+    @GetMapping("user/{id}")
+    ResponseEntity<List<InviteResponse>> getAllUserInvitesByUser(@PathVariable("id") @NotNull long userId);
 
-    @Operation(summary = "Getting All Users Presets")
+    @Operation(summary = "Getting all invites of current lobby")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Presets are found, may return an empty list",
+            @ApiResponse(responseCode = "200", description = "Invites was found or List is empty",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = InviteResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "User not found",
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
@@ -64,43 +60,18 @@ public interface LobbyPresetControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping
-    public ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication);
+    @GetMapping("lobby/{id}")
+    ResponseEntity<List<InviteResponse>> getAllUserInvitesByLobby(@PathVariable("id") @NotNull long lobbyId);
 
-    @Operation(summary = "Updating the Presets Time and Title fields")
+    @Operation(summary = "Update Invite state")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "preset Updated",
+            @ApiResponse(responseCode = "200", description = "Invites state was updated",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
-            @ApiResponse(responseCode = "400", description = " User or Preset not found",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "User not found",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))})
-    })
-    @PatchMapping
-    public ResponseEntity<LobbyPresetFullResponse> updateLobbyTitleAndTime(@RequestBody
-                                                                           @NotNull
-                                                                           @Validated
-                                                                           UpdateLobbyTitleAndTimeRequest request,
-                                                                           Authentication auth);
-
-    @Operation(summary = "Adding Users to Presets")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Users were added",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = InviteResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "User not found",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
@@ -110,20 +81,18 @@ public interface LobbyPresetControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PutMapping("user")
-    public ResponseEntity<LobbyPresetFullResponse> addUsers(@RequestBody
-                                                            @Valid
-                                                            ChangeLobbyPresetUsersRequest request);
+    @PatchMapping("user")
+    ResponseEntity<InviteResponse> updateInviteState(@RequestBody UpdateInviteStateRequest request);
 
-    @Operation(summary = "Users deleting from preset")
+    @Operation(summary = "Update Invite state")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Users were deleted",
+            @ApiResponse(responseCode = "200", description = "Invites state was updated",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = InviteResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "User not found",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
@@ -133,20 +102,19 @@ public interface LobbyPresetControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @DeleteMapping("user")
-    public ResponseEntity<LobbyPresetFullResponse> removeUsers(@RequestBody
-                                                               @Valid
-                                                               ChangeLobbyPresetUsersRequest request);
+    @PatchMapping("user/{id}")
+    ResponseEntity<StandardStringResponse> updateInviteISeen(@PathVariable("id") long inviteId, Authentication auth);
 
-    @Operation(summary = "Deleting preset")
+
+    @Operation(summary = "Deletes Invite, User should be lobby owner only")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Preset was deleted",
+            @ApiResponse(responseCode = "200", description = "Invite was deleted",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = InviteResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "User not found",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
@@ -156,6 +124,6 @@ public interface LobbyPresetControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @DeleteMapping("{id}")
-    public ResponseEntity<StandardStringResponse> deletePreset(@PathVariable Long id);
+    @DeleteMapping({"{id}"})
+    ResponseEntity<InviteResponse> updateInviteState(@PathVariable("id") @NotNull long inviteId, Authentication auth);
 }

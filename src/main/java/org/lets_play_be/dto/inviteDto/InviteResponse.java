@@ -1,13 +1,13 @@
 package org.lets_play_be.dto.inviteDto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.notification.dto.NotificationData;
 
 import java.io.Serializable;
 
-import static org.lets_play_be.dto.userDto.UserShortResponse.toUserShortResponse;
-
+@Schema(description = "Were returned to client. Presents invite`s current state")
 public record InviteResponse(long id,
                              String lobbyTitle,
                              UserShortResponse user,
@@ -16,16 +16,14 @@ public record InviteResponse(long id,
                              int delayedFor) implements Serializable, NotificationData {
 
 
-    public InviteResponse toInviteResponse(Invite invite) {
-
-        long id = invite.getId();
-        String lobbyTitle = invite.getLobby().getTitle();
-        UserShortResponse user = toUserShortResponse(invite.getRecipient());
-        String state = invite.getState().toString();
-        String message = invite.getMessage();
-        int delayedFor = invite.getDelayedFor();
-
-        return new InviteResponse(id, lobbyTitle, user, state, message, delayedFor);
+    public InviteResponse(Invite invite) {
+        this(invite.getId(),
+                invite.getLobby().getTitle(),
+                new UserShortResponse(invite.getRecipient()),
+                invite.getState().toString(),
+                invite.getMessage(),
+                invite.getDelayedFor()
+        );
     }
 
 }

@@ -6,36 +6,37 @@ import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.*;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.exception.RestException;
+import org.lets_play_be.repository.LobbyPresetRepository;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.lets_play_be.service.mappers.LobbyMappers;
 import org.lets_play_be.utils.FormattingUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
 
-import static org.lets_play_be.service.lobbyService.LobbyBaseUpdateService.setNewValues;
 
 @Service
 @RequiredArgsConstructor
-public class LobbyPresetCRUDService {
+public class LobbyPresetService {
 
-    private final LobbyPresetRepoService repoService;
+    private final LobbyPresetRepository repository;
+    private final LobbyBaseUpdateService baseUpdateService;
     private final AppUserService appUserService;
-    private final LobbyMappers lobbyMappers;
 
     @Transactional
     public LobbyPresetFullResponse createNewLobbyPreset(NewLobbyRequest request, Authentication authentication) {
 
         LobbyPreset savedLobby = saveNewLobbyPreset(request, authentication);
 
-        return lobbyMappers.toLobbyPresetFullResponse(savedLobby);
+        return new LobbyPresetFullResponse(savedLobby);
     }
 
     public List<LobbyPresetFullResponse> getAllUserPresets(Authentication authentication) {
         AppUser owner = getOwner(authentication);
-        List<LobbyPreset> lobbies = repoService.findByOwnerId(owner.getId());
+        List<LobbyPreset> lobbies = repository.findByOwnerId(owner.getId());
         return getListOfPresetsFullResponse(lobbies);
     }
 
@@ -48,9 +49,9 @@ public class LobbyPresetCRUDService {
 
         presetForChange.getUsers().addAll(usersForAdd);
 
-        LobbyPreset savedPreset = repoService.save(presetForChange);
+        LobbyPreset savedPreset = repository.save(presetForChange);
 
-        return lobbyMappers.toLobbyPresetFullResponse(savedPreset);
+        return new LobbyPresetFullResponse(savedPreset);
     }
 
     @Transactional
@@ -60,41 +61,46 @@ public class LobbyPresetCRUDService {
 
         removeUsersFromPreset(request, presetForRemove);
 
-        LobbyPreset savedPreset = repoService.save(presetForRemove);
+        LobbyPreset savedPreset = repository.save(presetForRemove);
 
-        return lobbyMappers.toLobbyPresetFullResponse(savedPreset);
+        return new LobbyPresetFullResponse(savedPreset);
     }
 
     @Transactional
     public StandardStringResponse removeLobbyPreset(Long id) {
-        repoService.deleteById(id);
+
+        repository.deleteById(id);
 
         return new StandardStringResponse("Lobby preset with id: " + id + " is deleted");
     }
 
 
     @Transactional
-    public UpdateLobbyTitleAndTimeResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request) {
+    public LobbyPresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+
+        var owner = appUserService.getUserIdByEmailOrThrow(auth.getName());
 
         var presetForChange = getLobbyByIdOrThrow(request.id());
 
+        isLobbyOwner(presetForChange, owner);
+
         OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
 
-        setNewValues(request, presetForChange, newTime);
+        baseUpdateService.setNewValues(request, presetForChange, newTime);
 
-        var savedPreset = repoService.save(presetForChange);
+        var savedPreset = repository.save(presetForChange);
 
-        return lobbyMappers.toUpdateResponse(savedPreset, savedPreset.getId());
+        return new LobbyPresetFullResponse(savedPreset);
     }
 
     public LobbyPreset getLobbyByIdOrThrow(Long id) {
-        return repoService.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
+        return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
     }
 
     private List<LobbyPresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
         return presets
                 .stream()
-                .map(lobbyMappers::toLobbyPresetFullResponse)
+                .map(LobbyPresetFullResponse::new)
                 .toList();
     }
 
@@ -116,12 +122,18 @@ public class LobbyPresetCRUDService {
         List<AppUser> users = appUserService.getUsersListByIds(request.userIds());
 
         LobbyPreset lobbyToSave = new LobbyPreset(request.title(), time, owner, users);
-        return repoService.save(lobbyToSave);
+        return repository.save(lobbyToSave);
     }
 
     private AppUser getOwner(Authentication authentication) {
         String email = authentication.getName();
         return appUserService.getUserByEmailOrThrow(email);
+    }
+
+    private void isLobbyOwner(LobbyPreset lobby, long ownerId){
+        if(lobby.getOwner().getId() != ownerId){
+            throw new RestException("User is not lobby owner", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

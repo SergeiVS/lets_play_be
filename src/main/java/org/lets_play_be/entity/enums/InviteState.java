@@ -11,10 +11,10 @@ public enum InviteState {
 
     @Override
     public String toString() {
-        return  super.toString();
+        return super.toString();
     }
 
-    public List<String> getValuesSStringsList(){
+    public static List<String> getValuesInviteStateStringsList() {
         return Arrays.stream(InviteState.values()).map(InviteState::toString).toList();
     }
 }

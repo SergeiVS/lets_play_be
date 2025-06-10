@@ -1,5 +1,6 @@
 package org.lets_play_be.controller.api;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,7 +19,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("api/v1/user")
 public interface UserControllerApi {
-
+    @Operation(summary = "User can get his/herself data")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "get user data of authenticated user",
                     content = {@Content(mediaType = "application/json",
@@ -34,8 +35,9 @@ public interface UserControllerApi {
     @GetMapping
     ResponseEntity<AppUserFullResponse> getUserData(Principal principal);
 
+    @Operation(summary = "Updating of user Username and AvatarUrl")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "update user nickname and avatarUrl",
+            @ApiResponse(responseCode = "200", description = "user nickname and avatarUrl was updated ",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = AppUserFullResponse.class))}
             ),
@@ -50,6 +52,7 @@ public interface UserControllerApi {
     ResponseEntity<AppUserFullResponse> updateUserData(@RequestBody @Valid @NotNull UserDataUpdateRequest request,
                                                        @NotNull Principal principal);
 
+    @Operation(summary = "User can change his/her Availability")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "change user availability",
                     content = {@Content(mediaType = "application/json",

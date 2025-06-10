@@ -2,7 +2,7 @@ package org.lets_play_be.security.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.entity.user.AppUser;
-import org.lets_play_be.service.appUserService.AppUserRepositoryService;
+import org.lets_play_be.repository.AppUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,12 +14,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AppUserDetailsService implements UserDetailsService {
 
-    private final AppUserRepositoryService repositoryService;
+    private final AppUserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<AppUser> user = repositoryService.findByEmail(username);
+        Optional<AppUser> user = userRepository.findAppUserByEmail(username);
         return user.map(UserDetailsMapper::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }

@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
-import org.lets_play_be.dto.userDto.NewUserRegistrationRequest;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
+import org.lets_play_be.dto.userDto.NewUserRegistrationRequest;
 import org.lets_play_be.exception.ValidationErrorResponse;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
@@ -29,7 +29,7 @@ public interface AuthControllerApi {
             @ApiResponse(responseCode = "200", description = "Is logged in",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = LoginResponse.class))}),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
+            @ApiResponse(responseCode = "400", description = "Bad Credantials",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
             @ApiResponse(responseCode = "404", description = "User not found",
@@ -46,6 +46,7 @@ public interface AuthControllerApi {
     ResponseEntity<LoginResponse> login(
             @RequestBody @Validated @NotNull LoginRequest loginRequest, HttpServletResponse response);
 
+    @Operation(summary = "Registering a new User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Is registered",
                     content = {@Content(mediaType = "application/json",
@@ -60,11 +61,11 @@ public interface AuthControllerApi {
     @PostMapping("register")
     ResponseEntity<AppUserFullResponse> register(@RequestBody @Validated @NotNull NewUserRegistrationRequest request);
 
-
+    @Operation(summary = "logging out")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "logged out",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = AppUserFullResponse.class))}),
+                            schema = @Schema(implementation = AppUserFullResponse.class))})
     })
     @PostMapping("logout")
     void logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
