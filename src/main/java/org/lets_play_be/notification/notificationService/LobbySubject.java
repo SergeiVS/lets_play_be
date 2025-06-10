@@ -27,26 +27,28 @@ public class LobbySubject implements NotificationSubject {
 
     @Override
     public void subscribe(NotificationObserver observer) {
-        observers.add(observer);
+        this.observers.add(observer);
 
     }
 
     @Override
     public void unsubscribe(NotificationObserver observer) {
-        observers.remove(observer);
+        this.observers.remove(observer);
     }
-
 
     @Override
     public void notifyObservers(Notification notification) {
 
-        observers.parallelStream().forEach(observer -> {
+        this.observers.parallelStream().forEach(observer -> {
             try {
                 observer.update(notification);
             } catch (IOException e) {
                 throw new RestException(ErrorMessage.MESSAGE_NOT_SENT.toString(), HttpStatus.BAD_GATEWAY);
             }
         });
+    }
 
+    public Runnable removeObserver(NotificationObserver observer) {
+        return ()->unsubscribe(observer);
     }
 }

@@ -27,6 +27,7 @@ public class SseLiveRecipientPool {
     public void removeRecipient(final long recipientId) {
 
         pool.remove(recipientId);
+
     }
 
     public boolean isInPool(final long recipientId) {

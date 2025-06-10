@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 @Component
 public class LobbySubjectPool {
 
@@ -22,7 +23,7 @@ public class LobbySubjectPool {
     }
 
     public void removeSubject(long lobbyId) {
-
         subjectPool.remove(lobbyId);
     }
+
 }

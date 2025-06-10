@@ -1,6 +1,7 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
 import org.lets_play_be.notification.NotificationObserver;
 import org.lets_play_be.notification.dto.Notification;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -11,6 +12,8 @@ import java.util.Map;
 
 @Getter
 public class SseNotificationObserver implements NotificationObserver {
+
+
 
     private final SseEmitter emitter;
 
@@ -25,11 +28,8 @@ public class SseNotificationObserver implements NotificationObserver {
         emitter.send(notification);
     }
 
-    public void addOnCloseCallback(long id, Runnable runnable) {
-        onCloseCallbacks.put(id, runnable);
+    public void addOnCloseCallback(Long lobbyId, Runnable runnable) {
+        onCloseCallbacks.put(lobbyId, runnable);
     }
 
-    public void removeOnCloseCallback(long id) {
-        onCloseCallbacks.remove(id);
-    }
 }

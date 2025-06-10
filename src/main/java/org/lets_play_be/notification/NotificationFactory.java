@@ -1,5 +1,6 @@
 package org.lets_play_be.notification;
 
+import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.notification.dto.*;
 
 import java.time.OffsetDateTime;
@@ -23,6 +24,7 @@ public class NotificationFactory {
             case LobbyCreatedNotificationData ignored -> NotificationType.LOBBY_CREATED.name();
             case LobbyUpdatedNotificationData ignored -> NotificationType.LOBBY_UPDATED.name();
             case LobbyClosedNotificationData ignored -> NotificationType.LOBBY_CLOSED.name();
+            case InviteResponse ignored -> NotificationType.INVITE_UPDATED.name();
             default -> throw new IllegalStateException("Unexpected value: " + data);
         };
     }

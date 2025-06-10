@@ -2,6 +2,7 @@ package org.lets_play_be.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.controller.api.InviteControllerApi;
+import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.service.InviteService.InviteService;
@@ -28,18 +29,29 @@ public class InviteController implements InviteControllerApi {
 
     @Override
     public ResponseEntity<List<InviteResponse>> getAllUserInvitesByLobby(long lobbyId) {
+
         List<InviteResponse> response = inviteService.getAllInvitesByLobbyId(lobbyId);
         return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<InviteResponse> deleteInvite(UpdateInviteStateRequest request) {
+    public ResponseEntity<InviteResponse> updateInviteState(UpdateInviteStateRequest request) {
+
         var response = inviteService.updateInviteState(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<InviteResponse> deleteInvite(long inviteId, Authentication auth) {
+    public ResponseEntity<StandardStringResponse> updateInviteISeen(long inviteId, Authentication auth) {
+
+        inviteService.updateIsSeen(auth, inviteId);
+        var response = new StandardStringResponse("Is seen was updated to " + inviteId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<InviteResponse> updateInviteState(long inviteId, Authentication auth) {
+
         var response = inviteService.removeInvite(inviteId, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

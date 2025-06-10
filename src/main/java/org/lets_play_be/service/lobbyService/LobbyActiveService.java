@@ -11,6 +11,7 @@ import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
 import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
 import org.lets_play_be.notification.dto.Notification;
+import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
@@ -27,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.lets_play_be.notification.NotificationFactory.createNotification;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Service
@@ -53,9 +53,9 @@ public class LobbyActiveService {
 
         subscribeLobbySubjectInPool(savedLobby);
 
-        Notification notification = createNotification(new LobbyCreatedNotificationData(savedLobby));
+        NotificationData data = new LobbyCreatedNotificationData(savedLobby);
 
-        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notification);
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), data);
 
         setInvitesDelivered(savedLobby.getInvites());
 
@@ -77,22 +77,25 @@ public class LobbyActiveService {
 
         var savedLobby = repository.save(lobbyForChange);
 
+
+
         return new ActiveLobbyResponse(savedLobby);
     }
 
     @Transactional
     public ActiveLobbyResponse closeLobby(Long lobbyId, Authentication auth) {
+
         var owner = userService.getUserByEmailOrThrow(auth.getName());
 
         var lobbyForDelete = getLobbyByIdOrThrow(lobbyId);
 
         isLobbyOwner(lobbyForDelete, owner.getId());
 
-        Notification notification = createNotification(new LobbyClosedNotificationData(lobbyForDelete));
+        var data = new LobbyClosedNotificationData(lobbyForDelete);
 
         repository.delete(lobbyForDelete);
 
-        sseNotificationService.notifyLobbyMembers(lobbyForDelete.getId(), notification);
+        sseNotificationService.notifyLobbyMembers(lobbyForDelete.getId(), data);
 
         subjectPool.removeSubject(lobbyId);
 
@@ -180,7 +183,9 @@ public class LobbyActiveService {
     }
 
     private void isLobbyExistingByOwnerId(AppUser owner) {
+
         if (repository.existsLobbyActiveByOwner(owner)) {
+
             throw new IllegalArgumentException("The Lobby for given owner already exists");
         }
     }

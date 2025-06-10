@@ -17,12 +17,12 @@ import static org.lets_play_be.utils.ValidationUtils.validateLobbyTypeString;
 public class LobbyBaseUpdateService {
 
 
-    protected void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase lobbyBaseForChange, OffsetTime newTime) {
-        if (!request.newTitle().equals(lobbyBaseForChange.getTitle())) {
-            lobbyBaseForChange.setTitle(request.newTitle());
+    protected void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase presetForChange, OffsetTime newTime) {
+        if (!request.newTitle().equals(presetForChange.getTitle())) {
+            presetForChange.setTitle(request.newTitle());
         }
-        if (lobbyBaseForChange.getTime() != newTime) {
-            lobbyBaseForChange.setTime(newTime);
+        if (presetForChange.getTime() != newTime) {
+            presetForChange.setTime(newTime);
         }
     }
 

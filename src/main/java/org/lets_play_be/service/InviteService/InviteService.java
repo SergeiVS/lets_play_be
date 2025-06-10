@@ -8,6 +8,7 @@ import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
+import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
 import org.lets_play_be.repository.InviteRepository;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class InviteService {
 
     private final InviteRepository inviteRepository;
     private final AppUserService userService;
+    private final SseNotificationService notificationService;
 
     public List<Invite> createListOfNewInvites(List<AppUser> users, LobbyActive lobby, String message) {
 
@@ -35,10 +38,19 @@ public class InviteService {
         inviteRepository.save(invite);
     }
 
-    public void updateIsSeen(boolean isSeen, long inviteId) {
+    public void updateIsSeen(Authentication auth, long inviteId) {
+        var user = userService.getUserByEmailOrThrow(auth.getName());
+
         var invite = getInviteByIdOrElseThrow(inviteId);
-        invite.setSeen(isSeen);
-        inviteRepository.save(invite);
+
+        if (Objects.equals(user.getId(), invite.getRecipient().getId())) {
+
+            invite.setSeen(true);
+
+            inviteRepository.save(invite);
+        } else {
+            throw new RestException("Authenticated user is not Invite recipient", HttpStatus.BAD_REQUEST);
+        }
     }
 
     public List<Invite> getNotDeliveredInvitesByUserId(long userId) {
@@ -68,7 +80,11 @@ public class InviteService {
 
         var savedInvite = inviteRepository.save(invite);
 
-        return new InviteResponse(savedInvite);
+        var response = new InviteResponse(savedInvite);
+
+        notificationService.notifyLobbyMembers(savedInvite.getLobby().getId(), response);
+
+        return response;
     }
 
     public InviteResponse removeInvite(long inviteId, Authentication auth) {

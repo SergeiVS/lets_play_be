@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
+import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequestMapping("api/v1/invite")
 public interface InviteControllerApi {
 
-    @Operation(summary = "Getting All User invites")
+    @Operation(summary = "Getting all User invites")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invites were found or List is empty",
                     content = {@Content(mediaType = "application/json",
@@ -41,9 +42,9 @@ public interface InviteControllerApi {
     @GetMapping("user/{id}")
     ResponseEntity<List<InviteResponse>> getAllUserInvitesByUser(@PathVariable("id") @NotNull long userId);
 
-    @Operation(summary = "Getting All User invites")
+    @Operation(summary = "Getting all invites of current lobby")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Invites were found or List is empty",
+            @ApiResponse(responseCode = "200", description = "Invites was found or List is empty",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = InviteResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
@@ -81,7 +82,29 @@ public interface InviteControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping("user")
-    ResponseEntity<InviteResponse> deleteInvite(@RequestBody UpdateInviteStateRequest request);
+    ResponseEntity<InviteResponse> updateInviteState(@RequestBody UpdateInviteStateRequest request);
+
+    @Operation(summary = "Update Invite state")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Invites state was updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = InviteResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PatchMapping("user/{id}")
+    ResponseEntity<StandardStringResponse> updateInviteISeen(@PathVariable("id") long inviteId, Authentication auth);
+
 
     @Operation(summary = "Deletes Invite, User should be lobby owner only")
     @ApiResponses(value = {
@@ -102,5 +125,5 @@ public interface InviteControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping({"{id}"})
-    ResponseEntity<InviteResponse> deleteInvite(@PathVariable("id") @NotNull long inviteId, Authentication auth);
+    ResponseEntity<InviteResponse> updateInviteState(@PathVariable("id") @NotNull long inviteId, Authentication auth);
 }
