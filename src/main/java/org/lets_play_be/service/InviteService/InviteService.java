@@ -147,4 +147,15 @@ public class InviteService {
         invite.setDelayedFor(delayedFor);
     }
 
+    public List<InviteResponse> getNotDeliveredInvitesByUser(Authentication auth) {
+
+        var recipientId = userService.getUserIdByEmailOrThrow(auth.getName());
+
+        List<Invite> invites = getNotDeliveredInvitesByUserId(recipientId);
+
+        return invites.stream().map(invite -> {
+            updateIsDeliveredState(true, invite);
+            return new InviteResponse(invite);
+        }).toList();
+    }
 }

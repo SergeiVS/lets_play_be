@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -55,4 +56,12 @@ public class InviteController implements InviteControllerApi {
         var response = inviteService.removeInvite(inviteId, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<List<InviteResponse>> getMissedNotifications(Authentication auth) throws IOException {
+        List<InviteResponse> responses = inviteService.getNotDeliveredInvitesByUser(auth);
+        return ResponseEntity.ok(responses);
+    }
+
+
 }

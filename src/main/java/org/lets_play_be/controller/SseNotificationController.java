@@ -20,9 +20,4 @@ public class SseNotificationController implements SseNotificationControllerApi {
         return notificationService.subscribeForSse(auth);
     }
 
-    @Override
-    public void getMissedNotifications(Authentication authentication) throws IOException {
-        notificationService.sendMissedNotifications(authentication);
-    }
-
 }
