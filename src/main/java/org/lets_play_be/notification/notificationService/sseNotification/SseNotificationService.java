@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.NotificationObserver;
-import org.lets_play_be.notification.NotificationSubject;
 import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
 import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
@@ -53,12 +52,11 @@ public class SseNotificationService {
         try {
             if (recipientPool.isInPool(recipientId)) {
 
-                NotificationObserver observer = recipientPool.getObserver(recipientId);
+                SseNotificationObserver observer = ((SseNotificationObserver) recipientPool.getObserver(recipientId));
 
-                NotificationSubject subject = subjectPool.getSubject(lobbyId);
+                LobbySubject subject = ((LobbySubject) subjectPool.getSubject(lobbyId));
 
-                ((SseNotificationObserver) observer).addOnCloseCallback(lobbyId,
-                        ((LobbySubject) subject).removeObserver(observer));
+                observer.addOnCloseCallback(lobbyId, subject.removeObserver(observer));
 
                 subject.subscribe(observer);
             }
@@ -87,17 +85,28 @@ public class SseNotificationService {
 
             for (Invite invite : invites) {
 
-                var lobby = invite.getLobby();
-                var data = new LobbyCreatedNotificationData(lobby);
-                var notification = createNotification(data);
-                observer.update(notification);
-
-                inviteService.updateIsDeliveredState(true, invite);
+                notifyNewInviteRecipient(invite, observer);
             }
         } catch (IOException e) {
 
             throw new RestException("Failed to send missed notifications", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public void unsubscribeUserFromSubject(long userId, Long lobbyId) {
+        if (recipientPool.isInPool(userId)) {
+            SseNotificationObserver observer = ((SseNotificationObserver) recipientPool.getObserver(userId));
+            observer.unsubscribeFromSubject(lobbyId);
+            observer.removeOnCloseCallback(lobbyId);
+        }
+    }
+
+    private void notifyNewInviteRecipient(Invite invite, NotificationObserver observer) throws IOException {
+        var lobby = invite.getLobby();
+        var data = new LobbyCreatedNotificationData(lobby);
+        var notification = createNotification(data);
+        observer.update(notification);
+        inviteService.updateIsDeliveredState(true, invite);
     }
 
     private void createSseObserver(SseEmitter emitter, Long recipientId) {
