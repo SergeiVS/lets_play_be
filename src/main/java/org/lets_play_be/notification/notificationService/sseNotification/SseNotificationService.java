@@ -1,16 +1,16 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.exception.RestException;
-import org.lets_play_be.notification.NotificationObserver;
-import org.lets_play_be.notification.NotificationSubject;
-import org.lets_play_be.notification.dto.Notification;
+import org.lets_play_be.notification.dto.NotificationData;
+import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+
+import static org.lets_play_be.notification.NotificationFactory.createNotification;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +31,6 @@ public class SseNotificationService {
 
         final SseEmitter emitter = sseService.createSseConnection();
 
-        isRecipientNotSubscribed(recipientId);
-
         createSseObserver(emitter, recipientId);
 
         return emitter;
@@ -41,36 +39,42 @@ public class SseNotificationService {
 
     public void subscribeSseObserverForActiveLobby(long recipientId, long lobbyId) {
 
-        isRecipientSubscribed(recipientId);
+        try {
+            if (recipientPool.isInPool(recipientId)) {
 
-        NotificationObserver observer = recipientPool.getObserver(recipientId);
+                SseNotificationObserver observer = ((SseNotificationObserver) recipientPool.getObserver(recipientId));
 
-        NotificationSubject subject = subjectPool.getSubject(lobbyId);
+                LobbySubject subject = ((LobbySubject) subjectPool.getSubject(lobbyId));
 
-        subject.subscribe(observer);
+                observer.addOnCloseCallback(lobbyId, subject.removeObserver(observer));
+
+                subject.subscribe(observer);
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void notifyLobbyMembers(long lobbyId, Notification notification) {
+    public void notifyLobbyMembers(long lobbyId, NotificationData data) {
 
-        NotificationSubject subject = subjectPool.getSubject(lobbyId);
+        var subject = subjectPool.getSubject(lobbyId);
+
+        var notification = createNotification(data);
 
         subject.notifyObservers(notification);
     }
 
-    private void isRecipientNotSubscribed(Long recipientId) {
-        if (recipientPool.isInPool(recipientId)) {
-            throw new RestException("Recipient with id: " + recipientId + " is already subscribed", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private void isRecipientSubscribed(long recipientId) {
-        if (!recipientPool.isInPool(recipientId)) {
-            throw new RestException("Recipient with id: " + recipientId + " is not subscribed", HttpStatus.BAD_REQUEST);
+    public void unsubscribeUserFromSubject(long userId, Long lobbyId) {
+        if (recipientPool.isInPool(userId)) {
+            SseNotificationObserver observer = ((SseNotificationObserver) recipientPool.getObserver(userId));
+            observer.unsubscribeFromSubject(lobbyId);
+            observer.removeOnCloseCallback(lobbyId);
         }
     }
 
     private void createSseObserver(SseEmitter emitter, Long recipientId) {
 
         recipientPool.addObserver(recipientId, emitter);
+
     }
 }

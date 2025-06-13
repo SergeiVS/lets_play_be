@@ -4,5 +4,6 @@ public enum NotificationType {
     LOBBY_CREATED,
     LOBBY_UPDATED,
     LOBBY_CLOSED,
+    INVITE_UPDATED,
     MESSAGE
 }

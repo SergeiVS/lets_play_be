@@ -1,6 +1,22 @@
 package org.lets_play_be.notification.dto;
 
+import org.lets_play_be.entity.lobby.LobbyActive;
+
 import java.io.Serializable;
 
-public record LobbyClosedNotificationData() implements Serializable, NotificationData {
+import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
+
+public record LobbyClosedNotificationData(long lobbyId,
+                                          String ownerName,
+                                          String title,
+                                          String time) implements Serializable, NotificationData {
+
+    public LobbyClosedNotificationData(LobbyActive lobby) {
+        this(
+                lobby.getId(),
+                lobby.getOwner().getName(),
+                lobby.getTitle(),
+                timeToStringFormatter(lobby.getTime())
+        );
+    }
 }

@@ -26,7 +26,9 @@ public class SseLiveRecipientPool {
 
     public void removeRecipient(final long recipientId) {
 
-        pool.remove(recipientId);
+        SseNotificationObserver observer = (SseNotificationObserver) pool.remove(recipientId);
+        observer.getOnCloseCallbacks().values().forEach(Runnable::run);
+
     }
 
     public boolean isInPool(final long recipientId) {

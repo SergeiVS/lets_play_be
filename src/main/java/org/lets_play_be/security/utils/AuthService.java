@@ -60,13 +60,14 @@ public class AuthService {
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
         Authentication authentication;
+
         authentication = getAuthentication(loginRequest);
 
         if (authentication.isAuthenticated()) {
             return getLoginResponse(response, authentication);
         } else {
             SecurityContextHolder.getContext().setAuthentication(null);
-            throw new UsernameNotFoundException("Invalid UserRequest");
+            throw new UsernameNotFoundException("Invalid User Request");
         }
 
     }

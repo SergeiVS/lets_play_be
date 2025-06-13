@@ -1,11 +1,11 @@
 package org.lets_play_be.security.securityConfig;
 
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.security.filter.JwtAuthenticationFilter;
 import org.lets_play_be.security.handler.AppAccessDeniedHandler;
 import org.lets_play_be.security.handler.AppEntryPointHandler;
 import org.lets_play_be.security.utils.AppUserDetailsService;
-import org.lets_play_be.service.appUserService.AppUserRepositoryService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +35,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final AppUserRepositoryService repositoryService;
+    private final AppUserRepository userRepository;
     private final JwtAuthenticationFilter jwtFilter;
 
     @Bean
@@ -45,7 +45,7 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new AppUserDetailsService(repositoryService);
+        return new AppUserDetailsService(userRepository);
     }
 
     @Bean
@@ -68,7 +68,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 new AntPathRequestMatcher("/api/v1/user/**"),
-                                new AntPathRequestMatcher("/api/v1/sse")).hasAnyRole("ADMIN", "USER")
+                                new AntPathRequestMatcher("/api/v1/sse"),
+                                new AntPathRequestMatcher("/api/v1/invite")
+                        ).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(
                                 new AntPathRequestMatcher("/swagger-ui/**"),
                                 new AntPathRequestMatcher("/v3/api-docs/**"),
@@ -99,7 +101,8 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.applyPermitDefaultValues();
-        config.setAllowedOrigins(List.of("capacitor://localhost", "ionic://localhost", "http://localhost:8080", "http://localhost:4200"));
+        config.setAllowedOrigins(List.of("capacitor://localhost", "ionic://localhost", "http://localhost:8080", "http" +
+                "://localhost:4200", "http://localhost:9000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(true);

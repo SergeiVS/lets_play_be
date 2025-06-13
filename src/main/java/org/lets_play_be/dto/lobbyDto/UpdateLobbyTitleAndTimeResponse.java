@@ -9,4 +9,6 @@ public record UpdateLobbyTitleAndTimeResponse(Long id,
                                               UserShortResponse owner,
                                               String title,
                                               String time) implements Serializable {
+
+
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public record NewLobbyRequest(@NotEmpty
                               String title,
-                              @Pattern(regexp = "[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]",
+                              @Pattern(regexp = "[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-5]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]",
                                       message = "Wrong time format. Expected: HH:MM+/-HH:MM")
                               String time,
                               @NotNull

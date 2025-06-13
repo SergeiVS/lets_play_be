@@ -1,11 +1,11 @@
 package org.lets_play_be.notification.notificationService;
 
-import lombok.RequiredArgsConstructor;
 import org.lets_play_be.notification.NotificationSubject;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 @Component
 public class LobbySubjectPool {
@@ -22,7 +22,8 @@ public class LobbySubjectPool {
         subjectPool.put(subject.getLobbyId(), subject);
     }
 
-    public void removeSubject(LobbySubject subject) {
-        subjectPool.remove(subject.getLobbyId());
+    public void removeSubject(long lobbyId) {
+        subjectPool.remove(lobbyId);
     }
+
 }
