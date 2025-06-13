@@ -10,7 +10,6 @@ import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
 import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
-import org.lets_play_be.notification.dto.Notification;
 import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
@@ -155,7 +154,7 @@ public class LobbyActiveService {
 
             if (recipientPool.isInPool(recipientId)) {
 
-                inviteService.updateIsDeliveredState(true, invite);
+                inviteService.updateIsDelivered(true, invite);
             }
         }
     }

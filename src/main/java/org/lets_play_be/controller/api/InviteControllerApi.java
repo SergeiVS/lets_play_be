@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -128,19 +127,4 @@ public interface InviteControllerApi {
     @DeleteMapping({"{id}"})
     ResponseEntity<InviteResponse> updateInviteState(@PathVariable("id") @NotNull long inviteId, Authentication auth);
 
-    @Operation(summary = "Delivering of missed Invites")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Invites sent"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Server internal error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))})
-    })
-    @GetMapping("user")
-    ResponseEntity<List<InviteResponse>> getMissedNotifications(Authentication authentication) throws IOException;
 }

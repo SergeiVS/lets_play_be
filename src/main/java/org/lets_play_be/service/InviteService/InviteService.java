@@ -31,7 +31,7 @@ public class InviteService {
         return users.stream().map(user -> new Invite(user, lobby, message)).toList();
     }
 
-    public void updateIsDeliveredState(boolean isDelivered, Invite invite) {
+    public void updateIsDelivered(boolean isDelivered, Invite invite) {
 
         invite.setDelivered(isDelivered);
 
@@ -60,6 +60,11 @@ public class InviteService {
 
     public List<InviteResponse> getAllInvitesByUser(long userId) {
         List<Invite> invites = inviteRepository.findInvitesByUserId(userId);
+        invites.forEach(invite -> {
+            if (!invite.isDelivered()) {
+                updateIsDelivered(true, invite);
+            }
+        });
         return invites.stream().map(InviteResponse::new).toList();
     }
 
@@ -145,17 +150,5 @@ public class InviteService {
     private void setNewStateDelayed(Invite invite, String newState, int delayedFor) {
         invite.setState(InviteState.valueOf(newState.toUpperCase()));
         invite.setDelayedFor(delayedFor);
-    }
-
-    public List<InviteResponse> getNotDeliveredInvitesByUser(Authentication auth) {
-
-        var recipientId = userService.getUserIdByEmailOrThrow(auth.getName());
-
-        List<Invite> invites = getNotDeliveredInvitesByUserId(recipientId);
-
-        return invites.stream().map(invite -> {
-            updateIsDeliveredState(true, invite);
-            return new InviteResponse(invite);
-        }).toList();
     }
 }
