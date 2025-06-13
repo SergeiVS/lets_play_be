@@ -31,7 +31,7 @@ public class InviteService {
         return users.stream().map(user -> new Invite(user, lobby, message)).toList();
     }
 
-    public void updateIsDeliveredState(boolean isDelivered, Invite invite) {
+    public void updateIsDelivered(boolean isDelivered, Invite invite) {
 
         invite.setDelivered(isDelivered);
 
@@ -60,6 +60,11 @@ public class InviteService {
 
     public List<InviteResponse> getAllInvitesByUser(long userId) {
         List<Invite> invites = inviteRepository.findInvitesByUserId(userId);
+        invites.forEach(invite -> {
+            if (!invite.isDelivered()) {
+                updateIsDelivered(true, invite);
+            }
+        });
         return invites.stream().map(InviteResponse::new).toList();
     }
 
@@ -91,8 +96,12 @@ public class InviteService {
 
         var invite = getInviteByIdOrElseThrow(inviteId);
         var user = userService.getUserByEmailOrThrow(auth.getName());
+        var lobbyId = invite.getLobby().getId();
+
         isLobbyOwner(invite, user.getId());
         inviteRepository.delete(invite);
+
+        notificationService.unsubscribeUserFromSubject(user.getId(), lobbyId);
 
         return new InviteResponse(invite);
     }
@@ -103,25 +112,16 @@ public class InviteService {
 
         List<String> states = InviteState.getValuesInviteStateStringsList();
 
-        if (newState.equalsIgnoreCase("delayed")) {
-
-            validateDelayedFor(request);
-            invite.setState(InviteState.valueOf(newState.toUpperCase()));
-            invite.setDelayedFor(request.delayedFor());
-
-        } else if (states.contains(newState.toUpperCase())) {
-
-            invite.setState(InviteState.valueOf(newState.toUpperCase()));
-        } else {
-
+        if (!states.contains(newState.toUpperCase())) {
             throw new IllegalArgumentException("New Invite state do not meet an Enum");
         }
-    }
 
-    private static void validateDelayedFor(UpdateInviteStateRequest request) {
-        if (request.delayedFor() < 1) {
-            throw new IllegalArgumentException("By newState== delayed, value of delayedFor should be positive number");
+        if (newState.equalsIgnoreCase("delayed")) {
+            validateDelayedFor(request);
+            setNewStateDelayed(invite, newState, request.delayedFor());
         }
+
+        invite.setState(InviteState.valueOf(newState.toUpperCase()));
     }
 
     private void isRecipient(Invite invite, long userId) {
@@ -141,4 +141,14 @@ public class InviteService {
                 () -> new RestException("Invite not found", HttpStatus.BAD_REQUEST));
     }
 
+    private void validateDelayedFor(UpdateInviteStateRequest request) {
+        if (request.delayedFor() < 1) {
+            throw new IllegalArgumentException("By newState== delayed, value of delayedFor should be positive number");
+        }
+    }
+
+    private void setNewStateDelayed(Invite invite, String newState, int delayedFor) {
+        invite.setState(InviteState.valueOf(newState.toUpperCase()));
+        invite.setDelayedFor(delayedFor);
+    }
 }

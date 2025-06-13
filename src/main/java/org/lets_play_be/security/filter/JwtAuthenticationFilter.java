@@ -120,7 +120,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (request.getCookies() != null) {
             jwt = jwtService.getRefreshTokenFromCookie(request);
         }
-
         return jwt;
     }
 }

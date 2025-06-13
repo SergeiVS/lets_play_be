@@ -55,4 +55,6 @@ public class InviteController implements InviteControllerApi {
         var response = inviteService.removeInvite(inviteId, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
 }

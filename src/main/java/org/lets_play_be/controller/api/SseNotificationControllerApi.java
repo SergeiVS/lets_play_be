@@ -34,22 +34,7 @@ public interface SseNotificationControllerApi {
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     SseEmitter openSseStream(Authentication authentication) throws IOException;
 
-    @Operation(summary = "Checking for missed Notifications")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "completes without errors"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "500", description = "Server internal error",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))})
-    })
 
-    @GetMapping("user")
-    void getMissedNotifications(Authentication authentication) throws IOException;
 
 
 }

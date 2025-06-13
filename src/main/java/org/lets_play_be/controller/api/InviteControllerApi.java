@@ -126,4 +126,5 @@ public interface InviteControllerApi {
     })
     @DeleteMapping({"{id}"})
     ResponseEntity<InviteResponse> updateInviteState(@PathVariable("id") @NotNull long inviteId, Authentication auth);
+
 }

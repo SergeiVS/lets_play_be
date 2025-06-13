@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetTime;
 import java.util.List;
 
+import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
 import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av;
@@ -31,6 +32,7 @@ public class AppUserService {
     private final UserAvailabilityRepository availabilityRepository;
 
     public AppUserFullResponse getAppUserFullData(String email) {
+
         AppUser user = getUserByEmailOrThrow(email);
         return new AppUserFullResponse(user);
     }
@@ -55,7 +57,7 @@ public class AppUserService {
     }
 
     public AppUser getUserByEmailOrThrow(String email) {
-        return userRepository.findAppUserByEmail(email)
+        return userRepository.findAppUserByEmail(normalizeEmail(email))
                 .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
     }
 

@@ -29,7 +29,16 @@ public class SseNotificationObserver implements NotificationObserver {
     }
 
     public void addOnCloseCallback(Long lobbyId, Runnable runnable) {
+
         onCloseCallbacks.put(lobbyId, runnable);
+    }
+
+    public void removeOnCloseCallback(Long lobbyId) {
+        onCloseCallbacks.remove(lobbyId);
+    }
+
+    public void unsubscribeFromSubject(Long lobbyId) {
+        onCloseCallbacks.get(lobbyId).run();
     }
 
 }
