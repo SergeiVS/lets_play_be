@@ -76,8 +76,6 @@ public class LobbyActiveService {
 
         var savedLobby = repository.save(lobbyForChange);
 
-
-
         return new ActiveLobbyResponse(savedLobby);
     }
 

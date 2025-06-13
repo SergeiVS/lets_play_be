@@ -43,7 +43,7 @@ public class RegisterNewUserService {
 
     private AppUser getUserForSave(NewUserRegistrationRequest request) {
 
-        String name = request.name();
+        String name = request.name().trim();
         String email = normalizeEmail(request.email());
         String password = passwordEncoder.encode(request.password().trim());
         String avatarUrl = (request.avatarUrl().isEmpty()) ? "N/A" : request.avatarUrl().trim();
@@ -57,7 +57,7 @@ public class RegisterNewUserService {
     }
 
     private void isUserExistByEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(normalizeEmail(email))) {
             throw new RestException(ErrorMessage.USER_ALREADY_EXISTS.toString(), HttpStatus.CONFLICT);
         }
     }
