@@ -9,8 +9,10 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public interface BlacklistedTokenRepository extends JpaRepository<BlacklistedToken, Long> {
+
     Optional<Entity> getByRefreshToken(String tokenHash);
 
     @Modifying
     int removeBlacklistedTokensByExpiresAtBefore(OffsetDateTime now);
+
 }
