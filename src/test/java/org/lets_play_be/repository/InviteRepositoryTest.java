@@ -14,10 +14,8 @@ import org.springframework.context.annotation.Profile;
 
 import java.time.OffsetTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
 
 @DataJpaTest
 @Profile("test")
@@ -38,12 +36,11 @@ class InviteRepositoryTest {
     private Invite invite2;
 
 
-
     @BeforeEach
     void setUp() {
-        user1 = new AppUser("User1", "email1@email.com","password1", "N/A");
+        user1 = new AppUser("User1", "email1@email.com", "password1", "N/A");
         em.persist(user1);
-        user2 = new AppUser("User2", "email2@email.com","password2", "N/A");
+        user2 = new AppUser("User2", "email2@email.com", "password2", "N/A");
         em.persist(user2);
 
         lobby1 = new LobbyActive("Title1", OffsetTime.now().plusHours(2), user1);
@@ -51,9 +48,9 @@ class InviteRepositoryTest {
         lobby2 = new LobbyActive("Title2", OffsetTime.now().plusHours(3), user2);
         em.persist(lobby2);
 
-        invite1=new Invite(user2,lobby1,"MESSAGE1");
+        invite1 = new Invite(user2, lobby1, "MESSAGE1");
         em.persist(invite1);
-        invite2=new Invite(user1,lobby2,"MESSAGE2");
+        invite2 = new Invite(user1, lobby2, "MESSAGE2");
         em.persist(invite2);
 
         lobby1.getInvites().add(invite1);
