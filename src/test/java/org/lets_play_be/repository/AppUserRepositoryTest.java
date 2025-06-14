@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ class AppUserRepositoryTest {
 
     @BeforeEach
     void setUp() {
+
         user1 = new AppUser("User1", "email1@email.com", "password1", "");
         entityManager.persist(user1);
 
@@ -38,9 +40,9 @@ class AppUserRepositoryTest {
 
     @AfterEach
     void tearDown() {
-        entityManager.remove(user1);
-        entityManager.remove(user2);
-        entityManager.flush();
+       entityManager.remove(user1);
+       entityManager.remove(user2);
+       entityManager.flush();
     }
 
     @Test
@@ -77,6 +79,7 @@ class AppUserRepositoryTest {
 
     @Test
     void getAppUsersById() {
+
 
         long id1 = (long) entityManager.getId(user1);
         long id2 = (long) entityManager.getId(user2);
