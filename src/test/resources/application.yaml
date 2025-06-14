@@ -16,3 +16,6 @@ spring:
   h2:
     console:
       enabled: true
+
+encryption:
+    refresh-token-secret: kLh7Fgv5kLh7Fgv5kLh7Fgv5kLh7Fgv5
