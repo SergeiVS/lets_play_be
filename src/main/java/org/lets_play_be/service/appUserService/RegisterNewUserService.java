@@ -12,7 +12,7 @@ import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.UserRoleEnum;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.repository.AppUserRepository;
-import org.lets_play_be.repository.UserAvailabilityRepository;
+import org.lets_play_be.service.UserAvailabilityService;
 import org.lets_play_be.service.appUserRoleService.AppUserRoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ public class RegisterNewUserService {
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AppUserRoleService roleService;
-    private final UserAvailabilityRepository availabilityRepository;
+    private final UserAvailabilityService availabilityService;
 
     @Transactional
     public AppUserFullResponse registerNewUser(NewUserRegistrationRequest request) {
@@ -48,7 +48,7 @@ public class RegisterNewUserService {
         String password = passwordEncoder.encode(request.password().trim());
         String avatarUrl = (request.avatarUrl().isEmpty()) ? "N/A" : request.avatarUrl().trim();
         AppUserRole role = roleService.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name());
-        UserAvailability availability = availabilityRepository.save(new UserAvailability(AvailabilityEnum.AVAILABLE));
+        UserAvailability availability = availabilityService.saveAvailability(new UserAvailability(AvailabilityEnum.AVAILABLE));
 
         AppUser userForSave = new AppUser(name, email, password, avatarUrl);
         userForSave.setAvailability(availability);
