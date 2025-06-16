@@ -11,7 +11,7 @@ import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.repository.AppUserRepository;
-import org.lets_play_be.repository.UserAvailabilityRepository;
+import org.lets_play_be.service.UserAvailabilityService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av
 public class AppUserService {
 
     private final AppUserRepository userRepository;
-    private final UserAvailabilityRepository availabilityRepository;
+    private final UserAvailabilityService availabilityService;
 
     public AppUserFullResponse getAppUserFullData(String email) {
 
@@ -84,7 +84,7 @@ public class AppUserService {
         validateTimeOptionByTemp_Av(availability, fromAvailable, toAvailable);
         availability.setFromUnavailable(fromAvailable);
         availability.setToUnavailable(toAvailable);
-        UserAvailability savedAvailability = availabilityRepository.save(availability);
+        UserAvailability savedAvailability = availabilityService.saveAvailability(availability);
         user.setAvailability(savedAvailability);
     }
 
