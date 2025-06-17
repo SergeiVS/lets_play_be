@@ -65,12 +65,6 @@ public class AppUserService {
         return userRepository.findAllById(ids);
     }
 
-    public Long getUserIdByEmailOrThrow(String email) {
-        return userRepository.findAppUserByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()))
-                .getId();
-    }
-
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
         UserAvailability availability = user.getAvailability();
         String availabilityString = request.newAvailability();

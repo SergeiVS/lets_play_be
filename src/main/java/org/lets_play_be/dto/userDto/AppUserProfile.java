@@ -13,7 +13,7 @@ public record AppUserProfile(
         List<AppUserRole> roles
 ) implements Serializable {
 
-    public static AppUserProfile from(AppUser user) {
-        return new AppUserProfile(user.getId(), user.getName(), user.getEmail(), user.getRoles());
+    public AppUserProfile(AppUser user) {
+        this(user.getId(), user.getName(), user.getEmail(), user.getRoles());
     }
 }

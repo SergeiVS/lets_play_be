@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 @Transactional
 @RequiredArgsConstructor
 public class BlacklistedTokenService {
+
     private final BlacklistedTokenRepository blacklistedTokenRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(BlacklistedTokenService.class);
 

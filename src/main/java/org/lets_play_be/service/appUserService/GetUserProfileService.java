@@ -17,7 +17,7 @@ public class GetUserProfileService {
     public AppUserProfile getUserProfile(String email) {
 
         return appUserRepository.findAppUserByEmail(normalizeEmail(email))
-                .map(AppUserProfile::from)
+                .map(AppUserProfile::new)
                 .orElseThrow(() -> new UsernameNotFoundException("The user with email: " + email + " not found"));
     }
 }
