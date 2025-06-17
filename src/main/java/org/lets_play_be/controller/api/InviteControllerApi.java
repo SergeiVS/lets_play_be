@@ -84,7 +84,7 @@ public interface InviteControllerApi {
     @PatchMapping("user")
     ResponseEntity<InviteResponse> updateInviteState(@RequestBody UpdateInviteStateRequest request);
 
-    @Operation(summary = "Update Invite state")
+    @Operation(summary = "Update Invite isSeen")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invites state was updated",
                     content = {@Content(mediaType = "application/json",
