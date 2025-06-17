@@ -66,7 +66,7 @@ public interface LobbyActiveControllerApi {
     @PatchMapping
     ResponseEntity<ActiveLobbyResponse> updateLobbyActiveTitleAndTile(@RequestBody @Valid UpdateLobbyTitleAndTimeRequest request, Authentication auth);
 
-    @Operation(summary = "Adding new Active Lobby")
+    @Operation(summary = "Delete lobby by owner")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lobby were Deleted",
                     content = {@Content(mediaType = "application/json",
