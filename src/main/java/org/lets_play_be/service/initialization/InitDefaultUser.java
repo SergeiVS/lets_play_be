@@ -71,7 +71,7 @@ public class InitDefaultUser {
 
         String passwordHash = passwordEncoder.encode(password);
         AppUser testUser = new AppUser(name, email, passwordHash, avatarUrl);
-        testUser.setRoles(getAppUserRoles(roleNames));
+        testUser.getRoles().addAll(getAppUserRoles(roleNames));
 
         return testUser;
     }

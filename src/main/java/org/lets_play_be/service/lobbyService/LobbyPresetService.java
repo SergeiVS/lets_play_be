@@ -3,14 +3,15 @@ package org.lets_play_be.service.lobbyService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.StandardStringResponse;
-import org.lets_play_be.dto.lobbyDto.*;
+import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
+import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
+import org.lets_play_be.dto.lobbyDto.NewLobbyRequest;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
-import org.lets_play_be.exception.RestException;
 import org.lets_play_be.repository.LobbyPresetRepository;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.lets_play_be.utils.FormattingUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -78,17 +79,13 @@ public class LobbyPresetService {
     @Transactional
     public LobbyPresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
 
-        var owner = appUserService.getUserIdByEmailOrThrow(auth.getName());
+        AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        var presetForChange = getLobbyByIdOrThrow(request.id());
+        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.id());
 
-        isLobbyOwner(presetForChange, owner);
+        baseUpdateService.setNewValues(request, presetForChange, owner.getId());
 
-        OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
-
-        baseUpdateService.setNewValues(request, presetForChange, newTime);
-
-        var savedPreset = repository.save(presetForChange);
+        LobbyPreset savedPreset = repository.save(presetForChange);
 
         return new LobbyPresetFullResponse(savedPreset);
     }
@@ -128,12 +125,6 @@ public class LobbyPresetService {
     private AppUser getOwner(Authentication authentication) {
         String email = authentication.getName();
         return appUserService.getUserByEmailOrThrow(email);
-    }
-
-    private void isLobbyOwner(LobbyPreset lobby, long ownerId){
-        if(lobby.getOwner().getId() != ownerId){
-            throw new RestException("User is not lobby owner", HttpStatus.BAD_REQUEST);
-        }
     }
 
 }
