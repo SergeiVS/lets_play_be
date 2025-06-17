@@ -1,6 +1,7 @@
 package org.lets_play_be.service.InviteService;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.ObjectNotFoundException;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.entity.Invite.Invite;
@@ -16,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -26,45 +26,45 @@ public class InviteService {
     private final AppUserService userService;
     private final SseNotificationService notificationService;
 
-    public List<Invite> createListOfNewInvites(List<AppUser> users, LobbyActive lobby, String message) {
 
-        return users.stream().map(user -> new Invite(user, lobby, message)).toList();
-    }
+    public void updateIsDelivered(long inviteId) {
 
-    public void updateIsDelivered(boolean isDelivered, Invite invite) {
+        Invite invite = getInviteByIdOrElseThrow(inviteId);
 
-        invite.setDelivered(isDelivered);
+        invite.setDelivered(true);
 
         inviteRepository.save(invite);
     }
 
     public void updateIsSeen(Authentication auth, long inviteId) {
+
         var user = userService.getUserByEmailOrThrow(auth.getName());
 
         var invite = getInviteByIdOrElseThrow(inviteId);
 
-        if (Objects.equals(user.getId(), invite.getRecipient().getId())) {
+        isRecipient(invite, user.getId());
 
-            invite.setSeen(true);
+        invite.setSeen(true);
 
-            inviteRepository.save(invite);
-        } else {
-            throw new RestException("Authenticated user is not Invite recipient", HttpStatus.BAD_REQUEST);
+        if(!invite.isDelivered()){
+            invite.setDelivered(true);
         }
-    }
 
-    public List<Invite> getNotDeliveredInvitesByUserId(long userId) {
-        return inviteRepository.findNotDeliveredInvitesByUserId(userId);
+        inviteRepository.save(invite);
     }
-
 
     public List<InviteResponse> getAllInvitesByUser(long userId) {
+
         List<Invite> invites = inviteRepository.findInvitesByUserId(userId);
+
+        isListEmpty(invites);
+
         invites.forEach(invite -> {
             if (!invite.isDelivered()) {
-                updateIsDelivered(true, invite);
+                updateIsDelivered(invite.getId());
             }
         });
+
         return invites.stream().map(InviteResponse::new).toList();
     }
 
@@ -72,6 +72,9 @@ public class InviteService {
     public List<InviteResponse> getAllInvitesByLobbyId(long lobbyId) {
 
         List<Invite> invites = inviteRepository.findInvitesByLobbyId(lobbyId);
+
+        isListEmpty(invites);
+
         return invites.stream().map(InviteResponse::new).toList();
     }
 
@@ -99,11 +102,18 @@ public class InviteService {
         var lobbyId = invite.getLobby().getId();
 
         isLobbyOwner(invite, user.getId());
+
         inviteRepository.delete(invite);
 
         notificationService.unsubscribeUserFromSubject(user.getId(), lobbyId);
 
         return new InviteResponse(invite);
+    }
+
+    private void isListEmpty(List<Invite> invites) {
+        if (invites.isEmpty()) {
+            throw  new RestException("No invites were found", HttpStatus.NOT_FOUND);
+        }
     }
 
     private void setNewStateToInvite(Invite invite, UpdateInviteStateRequest request) {
@@ -126,7 +136,7 @@ public class InviteService {
 
     private void isRecipient(Invite invite, long userId) {
         if (userId != invite.getRecipient().getId()) {
-            throw new RestException("User is not recipient of this invite", HttpStatus.BAD_REQUEST);
+            throw new IllegalArgumentException("User is not recipient of this invite");
         }
     }
 
@@ -138,12 +148,12 @@ public class InviteService {
 
     private Invite getInviteByIdOrElseThrow(long inviteId) {
         return inviteRepository.findById(inviteId).orElseThrow(
-                () -> new RestException("Invite not found", HttpStatus.BAD_REQUEST));
+                () -> new ObjectNotFoundException("Invite with id " + inviteId + " not found", Invite.class));
     }
 
     private void validateDelayedFor(UpdateInviteStateRequest request) {
         if (request.delayedFor() < 1) {
-            throw new IllegalArgumentException("By newState== delayed, value of delayedFor should be positive number");
+            throw new IllegalArgumentException("If newState equals delayed, value of delayedFor should be positive number over 0");
         }
     }
 

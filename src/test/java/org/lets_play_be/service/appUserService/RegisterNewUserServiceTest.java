@@ -87,8 +87,7 @@ class RegisterNewUserServiceTest {
         appUserForSave.getRoles().add(role);
         appUserForSave.setAvailability(availability);
 
-        appUserSaved = new AppUser(name, email, password, avatarUrl);
-        appUserSaved.setId(1L);
+        appUserSaved = new AppUser(1L,name, email, password, avatarUrl);
         appUserSaved.getRoles().add(role);
         appUserSaved.setAvailability(availability);
 

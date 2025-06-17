@@ -1,10 +1,7 @@
 package org.lets_play_be.entity.Invite;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
@@ -16,6 +13,7 @@ import java.util.Objects;
 @Getter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Invite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +45,18 @@ public class Invite {
     private LobbyActive lobby;
 
     public Invite(AppUser recipient, LobbyActive lobby, String message) {
+        this.recipient = recipient;
+        this.state = InviteState.PENDING;
+        this.createdAt = OffsetDateTime.now();
+        this.isDelivered = false;
+        this.isSeen = false;
+        this.message = message;
+        this.lobby = lobby;
+        this.delayedFor = 0;
+    }
+
+    public Invite(long id, AppUser recipient, LobbyActive lobby, String message) {
+        this.id = id;
         this.recipient = recipient;
         this.state = InviteState.PENDING;
         this.createdAt = OffsetDateTime.now();

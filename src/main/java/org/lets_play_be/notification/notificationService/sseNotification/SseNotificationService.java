@@ -27,11 +27,11 @@ public class SseNotificationService {
 
     public SseEmitter subscribeForSse(Authentication auth) {
 
-        var recipientId = userService.getUserIdByEmailOrThrow(auth.getName());
+        var recipient = userService.getUserByEmailOrThrow(auth.getName());
 
         final SseEmitter emitter = sseService.createSseConnection();
 
-        createSseObserver(emitter, recipientId);
+        createSseObserver(emitter, recipient.getId());
 
         return emitter;
     }

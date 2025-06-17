@@ -12,6 +12,7 @@ import java.time.OffsetTime;
 @Table(name = "availability")
 @NoArgsConstructor
 public class UserAvailability {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -31,14 +32,5 @@ public class UserAvailability {
         this.availabilityType = availabilityType;
         this.fromUnavailable = OffsetTime.parse("00:00:00+00:00");
         this.toUnavailable = OffsetTime.parse("00:00:00+00:00");;
-    }
-
-    public UserAvailability(
-            AvailabilityEnum availabilityType, OffsetTime fromUnavailable,
-            OffsetTime toUnavailable, AppUser user) {
-        this.availabilityType = availabilityType;
-        this.fromUnavailable = fromUnavailable;
-        this.toUnavailable = toUnavailable;
-        this.user = user;
     }
 }

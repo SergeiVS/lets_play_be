@@ -17,7 +17,8 @@ public record InviteResponse(long id,
 
 
     public InviteResponse(Invite invite) {
-        this(invite.getId(),
+        this(
+                invite.getId(),
                 invite.getLobby().getTitle(),
                 new UserShortResponse(invite.getRecipient()),
                 invite.getState().toString(),

@@ -18,14 +18,12 @@ import org.lets_play_be.notification.notificationService.sseNotification.SseNoti
 import org.lets_play_be.repository.LobbyActiveRepository;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
@@ -64,17 +62,13 @@ public class LobbyActiveService {
     @Transactional
     public ActiveLobbyResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
 
-        var owner = userService.getUserByEmailOrThrow(auth.getName());
+        AppUser owner = userService.getUserByEmailOrThrow(auth.getName());
 
-        var lobbyForChange = getLobbyByIdOrThrow(request.id());
+        LobbyActive lobbyForChange = getLobbyByIdOrThrow(request.id());
 
-        isLobbyOwner(lobbyForChange, owner.getId());
+        baseUpdateService.setNewValues(request, lobbyForChange, owner.getId());
 
-        OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
-
-        baseUpdateService.setNewValues(request, lobbyForChange, newTime);
-
-        var savedLobby = repository.save(lobbyForChange);
+        LobbyActive savedLobby = repository.save(lobbyForChange);
 
         return new ActiveLobbyResponse(savedLobby);
     }
@@ -86,7 +80,7 @@ public class LobbyActiveService {
 
         var lobbyForDelete = getLobbyByIdOrThrow(lobbyId);
 
-        isLobbyOwner(lobbyForDelete, owner.getId());
+        baseUpdateService.isLobbyOwner(lobbyForDelete, owner.getId());
 
         var data = new LobbyClosedNotificationData(lobbyForDelete);
 
@@ -97,12 +91,6 @@ public class LobbyActiveService {
         subjectPool.removeSubject(lobbyId);
 
         return new ActiveLobbyResponse(lobbyForDelete);
-    }
-
-    public void isLobbyOwner(LobbyActive lobbyForDelete, Long id) {
-        if (!Objects.equals(lobbyForDelete.getOwner().getId(), id)) {
-            throw new IllegalArgumentException("User with Id: " + id + " is not owner of this lobby.");
-        }
     }
 
 
@@ -152,7 +140,7 @@ public class LobbyActiveService {
 
             if (recipientPool.isInPool(recipientId)) {
 
-                inviteService.updateIsDelivered(true, invite);
+                inviteService.updateIsDelivered(invite.getId());
             }
         }
     }
@@ -176,7 +164,7 @@ public class LobbyActiveService {
 
         List<AppUser> users = userService.getUsersListByIds(request.userIds());
 
-        return inviteService.createListOfNewInvites(users, lobbyForSave, request.message());
+        return users.stream().map(user -> new Invite(user, lobbyForSave, request.message())).toList();
     }
 
     private void isLobbyExistingByOwnerId(AppUser owner) {

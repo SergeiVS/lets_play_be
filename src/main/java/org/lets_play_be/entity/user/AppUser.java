@@ -3,7 +3,6 @@ package org.lets_play_be.entity.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
-import org.lets_play_be.entity.Invite.Invite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +12,15 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 @ToString
 @Table(name = "accounts")
 public class AppUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false, unique = true)
     private String name;
 
@@ -28,14 +28,17 @@ public class AppUser {
     @Email(message = "email is in wrong format")
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String password;
 
+    @Setter
     private String avatarUrl;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<AppUserRole> roles;
 
+    @Setter
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private UserAvailability availability;
 
@@ -47,9 +50,18 @@ public class AppUser {
         this.roles = new ArrayList<>();
     }
 
-    public String[] getRolesStrings(){
+    public AppUser(Long id, String name, String email, String password, String avatarUrl) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.avatarUrl = avatarUrl;
+        this.roles = new ArrayList<>();
+    }
+
+    public String[] getRolesStrings() {
         String[] rolesStringsArray = new String[roles.size()];
-        for(int i = 0; i < roles.size(); i++){
+        for (int i = 0; i < roles.size(); i++) {
             rolesStringsArray[i] = roles.get(i).getName();
         }
         return rolesStringsArray;
