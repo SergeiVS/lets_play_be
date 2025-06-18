@@ -6,8 +6,6 @@ import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.enums.InviteState;
-import org.lets_play_be.entity.lobby.LobbyActive;
-import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
 import org.lets_play_be.repository.InviteRepository;
@@ -47,6 +45,7 @@ public class InviteService {
         invite.setSeen(true);
 
         if(!invite.isDelivered()){
+
             invite.setDelivered(true);
         }
 
@@ -60,6 +59,7 @@ public class InviteService {
         isListEmpty(invites);
 
         invites.forEach(invite -> {
+
             if (!invite.isDelivered()) {
                 updateIsDelivered(invite.getId());
             }

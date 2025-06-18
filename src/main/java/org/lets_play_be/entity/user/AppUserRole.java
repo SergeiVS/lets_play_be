@@ -27,12 +27,13 @@ public class AppUserRole implements GrantedAuthority {
     @Column(name = "role_name", unique = true, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
-    private List<AppUser> users = new ArrayList<>();
+//    @ManyToMany(mappedBy = "roles")
+//    @JsonIgnore
+//    private List<AppUser> users = new ArrayList<>();
 
     public AppUserRole(String name) {
         this.name = name;
+//        users = new ArrayList<>();
     }
 
     @Override

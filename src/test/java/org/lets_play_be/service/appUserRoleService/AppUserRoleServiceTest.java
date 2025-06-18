@@ -33,7 +33,8 @@ class AppUserRoleServiceTest {
 
     @BeforeEach
     void setUp() {
-        roleAdmin = new AppUserRole(1L, UserRoleEnum.ROLE_ADMIN.name(), new ArrayList<>());
+        roleAdmin = new AppUserRole(1L, UserRoleEnum.ROLE_ADMIN.name());
+
     }
 
     @AfterEach
