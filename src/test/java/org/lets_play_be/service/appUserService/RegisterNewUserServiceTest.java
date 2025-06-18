@@ -76,7 +76,7 @@ class RegisterNewUserServiceTest {
         email = request.email();
         password = "hashedPassword";
         avatarUrl = "N/A";
-        role = new AppUserRole(1L, UserRoleEnum.ROLE_USER.name(), new ArrayList<>());
+        role = new AppUserRole(1L, UserRoleEnum.ROLE_USER.name());
         fromAvailable = timeToStringFormatter(availability.getFromUnavailable());
         toAvailable = timeToStringFormatter(availability.getFromUnavailable());
 
