@@ -21,8 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
@@ -69,8 +67,7 @@ class RegisterNewUserServiceTest {
     void setUp() {
         request = new NewUserRegistrationRequest("Name", "name@testemail.com", "password", "");
 
-        availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
-        availability.setId(1L);
+        availability = new UserAvailability(1L, AvailabilityEnum.AVAILABLE);
 
         name = request.name();
         email = request.email();
@@ -87,7 +84,7 @@ class RegisterNewUserServiceTest {
         appUserForSave.getRoles().add(role);
         appUserForSave.setAvailability(availability);
 
-        appUserSaved = new AppUser(1L,name, email, password, avatarUrl);
+        appUserSaved = new AppUser(1L, name, email, password, avatarUrl);
         appUserSaved.getRoles().add(role);
         appUserSaved.setAvailability(availability);
 
