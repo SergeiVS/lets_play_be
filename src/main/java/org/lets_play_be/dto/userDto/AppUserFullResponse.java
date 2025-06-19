@@ -4,6 +4,8 @@ import org.lets_play_be.entity.user.AppUser;
 import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
@@ -29,5 +31,4 @@ public record AppUserFullResponse(
                 timeToStringFormatter(appUser.getAvailability().getToUnavailable())
         );
     }
-
 }

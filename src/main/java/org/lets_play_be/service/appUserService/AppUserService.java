@@ -29,6 +29,7 @@ import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av
 public class AppUserService {
 
     private final AppUserRepository userRepository;
+
     private final UserAvailabilityService availabilityService;
 
     public AppUserFullResponse getAppUserFullData(String email) {
@@ -40,19 +41,31 @@ public class AppUserService {
     @Transactional
     public AppUserFullResponse updateUserData(UserDataUpdateRequest request, String email) {
         AppUser user = getUserByEmailOrThrow(email);
-        validateUserInRequest(request.userId(), user);
+
+        if (user.getName().equals(request.newName()) && user.getAvatarUrl().equals(request.newAvatarUrl())) {
+            throw new IllegalArgumentException("Request fields are identical to User actual state");
+        }
+
+        if (request.newName().isEmpty() && request.newAvatarUrl().isEmpty()) {
+            throw new IllegalArgumentException("Both request fields are empty");
+        }
+
         setNewNameToUser(request, user);
         setNewAvatarUrlToUser(request, user);
+
         AppUser savedUser = userRepository.save(user);
         return new AppUserFullResponse(savedUser);
     }
 
     @Transactional
     public AppUserFullResponse updateUserAvailability(UserAvailabilityUpdateRequest request, String email) {
+
         AppUser user = getUserByEmailOrThrow(email);
-        validateUserInRequest(request.userId(), user);
+
         setNewAvailability(request, user);
+
         AppUser savedUser = userRepository.save(user);
+
         return new AppUserFullResponse(savedUser);
     }
 
@@ -62,7 +75,13 @@ public class AppUserService {
     }
 
     public List<AppUser> getUsersListByIds(List<Long> ids) {
-        return userRepository.findAllById(ids);
+        List<AppUser> users = userRepository.findAllById(ids);
+
+        if (users.isEmpty()) {
+            throw new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString());
+        }
+
+        return users;
     }
 
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
@@ -83,23 +102,14 @@ public class AppUserService {
     }
 
     private void setNewAvatarUrlToUser(UserDataUpdateRequest request, AppUser user) {
-        if (request.newAvatarUrl() != null && !request.newAvatarUrl().isEmpty()) {
+        if (!request.newAvatarUrl().isEmpty() && !request.newAvatarUrl().equals(user.getAvatarUrl())) {
             user.setAvatarUrl(request.newAvatarUrl());
         }
     }
 
     private void setNewNameToUser(UserDataUpdateRequest request, AppUser user) {
-        if (request.newName() != null && !request.newName().isEmpty()) {
+        if (!request.newName().isEmpty() && !request.newName().equals(user.getName())) {
             user.setName(request.newName());
         }
     }
-
-    private void validateUserInRequest(Long userIdFromRequest, AppUser user) {
-        if (!user.getId().equals(userIdFromRequest)) {
-            throw new IllegalStateException("User usersId from request not match id of Principal");
-        }
-
-    }
-
-
 }
