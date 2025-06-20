@@ -12,8 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Profile;
 
-import java.util.ArrayList;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.when;
@@ -33,7 +31,7 @@ class AppUserRoleServiceTest {
 
     @BeforeEach
     void setUp() {
-        roleAdmin = new AppUserRole(1L, UserRoleEnum.ROLE_ADMIN.name());
+        roleAdmin = new AppUserRole(UserRoleEnum.ROLE_ADMIN.name());
 
     }
 
