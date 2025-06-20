@@ -1,11 +1,22 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="StartDev" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="dev" />
+    <envs>
+      <env name="AT_COOKIE_NAME" value="access-token" />
+      <env name="DATASOURCE_PASSWORD" value="admin" />
+      <env name="DATASOURCE_URL" value="jdbc:postgresql://localhost:5431/devDb" />
+      <env name="DATASOURCE_USERNAME" value="admin" />
+      <env name="JWT_AT_SECRET" value="8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb" />
+      <env name="JWT_RT_SECRET" value="kLh7Fgv5kLh7Fgv5kLh7Fgv5kLh7Fgv5" />
+      <env name="RT_COOKIE_NAME" value="refresh-token" />
+      <env name="s3_access_key" value="b76d958c5c8a8fe2752d39f12a1f6431" />
+      <env name="s3_bucket" value="images" />
+      <env name="s3_endpoint" value="https://lezjvmhgmhhuxqtbthhg.supabase.co/storage/v1/s3" />
+      <env name="s3_region" value="eu-central-1" />
+      <env name="s3_secret_key" value="ba7154a87f7fd39d88baea1e8bca72ac51818e6467d900a074c17f13ceaad53e" />
+    </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="lets_play_backend" />
-    <selectedOptions>
-      <option name="environmentVariables" />
-    </selectedOptions>
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.lets_play_be.LetsPlayBackendApplication" />
     <method v="2">
       <option name="Make" enabled="true" />

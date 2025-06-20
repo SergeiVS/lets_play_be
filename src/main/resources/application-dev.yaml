@@ -18,12 +18,12 @@ spring:
 jwt:
   at-cookie-name: ${AT_COOKIE_NAME}
   rt-cookie-name: ${RT_COOKIE_NAME}
-  jwt-secret: ${JWT_SECRET}
+  jwt-secret: ${JWT_AT_SECRET}
   at-expiration-in-ms: 900000
   rt-expiration-in-ms: 604800000
 
 encryption:
-  refresh-token-secret: ${RT_SECRET}
+  refresh-token-secret: ${JWT_RT_SECRET}
 
 springdoc:
   swagger-ui:
