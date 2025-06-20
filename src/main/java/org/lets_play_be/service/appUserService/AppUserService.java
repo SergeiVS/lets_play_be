@@ -11,7 +11,6 @@ import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.repository.AppUserRepository;
-import org.lets_play_be.service.UserAvailabilityService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +19,7 @@ import java.util.List;
 
 import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
-import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
-import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av;
+import static org.lets_play_be.utils.ValidationUtils.*;
 
 @Slf4j
 @Service
@@ -29,8 +27,6 @@ import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av
 public class AppUserService {
 
     private final AppUserRepository userRepository;
-
-    private final UserAvailabilityService availabilityService;
 
     public AppUserFullResponse getAppUserFullData(String email) {
 
@@ -75,6 +71,11 @@ public class AppUserService {
     }
 
     public List<AppUser> getUsersListByIds(List<Long> ids) {
+
+        if(ids.isEmpty()) {
+            throw new IllegalArgumentException("List of users is empty");
+        }
+
         List<AppUser> users = userRepository.findAllById(ids);
 
         if (users.isEmpty()) {
@@ -85,20 +86,32 @@ public class AppUserService {
     }
 
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
-        UserAvailability availability = user.getAvailability();
-        String availabilityString = request.newAvailability();
-        OffsetTime fromAvailable = timeStringToOffsetTime(request.newFromUnavailable());
-        OffsetTime toAvailable = timeStringToOffsetTime(request.newToUnavailable());
 
+        UserAvailability availability = user.getAvailability();
+
+        String availabilityString = request.newAvailability();
 
         validateAvailabilityString(availabilityString);
 
         availability.setAvailabilityType(AvailabilityEnum.valueOf(availabilityString.toUpperCase()));
-        validateTimeOptionByTemp_Av(availability, fromAvailable, toAvailable);
-        availability.setFromUnavailable(fromAvailable);
-        availability.setToUnavailable(toAvailable);
-        UserAvailability savedAvailability = availabilityService.saveAvailability(availability);
-        user.setAvailability(savedAvailability);
+
+        setTemporaryUnavailabilityTime(request, availability);
+
+        user.setAvailability(availability);
+    }
+
+    private void setTemporaryUnavailabilityTime(UserAvailabilityUpdateRequest request, UserAvailability availability) {
+
+        if(availability.getAvailabilityType().equals(AvailabilityEnum.TEMPORARILY_UNAVAILABLE)){
+
+            OffsetTime fromUnavailable = timeStringToOffsetTime(request.newFromUnavailable());
+            OffsetTime toUnavailable = timeStringToOffsetTime(request.newToUnavailable());
+
+            isFromTimeBeforeTo(fromUnavailable, toUnavailable);
+
+            availability.setFromUnavailable(fromUnavailable);
+            availability.setToUnavailable(toUnavailable);
+        }
     }
 
     private void setNewAvatarUrlToUser(UserDataUpdateRequest request, AppUser user) {
