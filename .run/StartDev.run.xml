@@ -3,6 +3,9 @@
     <option name="ACTIVE_PROFILES" value="dev" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="lets_play_backend" />
+    <selectedOptions>
+      <option name="environmentVariables" />
+    </selectedOptions>
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.lets_play_be.LetsPlayBackendApplication" />
     <method v="2">
       <option name="Make" enabled="true" />
