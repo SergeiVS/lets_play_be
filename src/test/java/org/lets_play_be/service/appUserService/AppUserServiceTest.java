@@ -51,7 +51,7 @@ class AppUserServiceTest {
 
     @BeforeEach
     void setUp() {
-        role = new AppUserRole(1L, UserRoleEnum.ROLE_USER.name());
+        role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
 
         userAvailability1 = new UserAvailability(1L, AvailabilityEnum.AVAILABLE);
         userAvailability2 = new UserAvailability(2L, AvailabilityEnum.AVAILABLE);
