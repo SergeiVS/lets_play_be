@@ -34,7 +34,7 @@ class GetUserProfileServiceTest {
 
     @BeforeEach
     void setUp() {
-        role = new AppUserRole(1L, UserRoleEnum.ROLE_USER.name());
+        role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
         user = new AppUser(1L, "User1", "email@email.com", "password", "");
         user.getRoles().add(role);
     }
