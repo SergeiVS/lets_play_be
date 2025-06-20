@@ -2,9 +2,9 @@ spring:
   application:
     name: Lets Play Backend
   datasource:
-    url: jdbc:postgresql://localhost:5431/devDb
-    username: admin
-    password: admin
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -16,14 +16,14 @@ spring:
       ddl-auto: update
 
 jwt:
-  at-cookie-name: access-token
-  rt-cookie-name: refresh-token
-  jwt-secret: 8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb
+  at-cookie-name: ${AT_COOKIE_NAME}
+  rt-cookie-name: ${RT_COOKIE_NAME}
+  jwt-secret: ${JWT_SECRET}
   at-expiration-in-ms: 900000
   rt-expiration-in-ms: 604800000
 
 encryption:
-  refresh-token-secret: kLh7Fgv5kLh7Fgv5kLh7Fgv5kLh7Fgv5
+  refresh-token-secret: ${RT_SECRET}
 
 springdoc:
   swagger-ui:
