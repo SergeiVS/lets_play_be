@@ -1,23 +1,19 @@
 package org.lets_play_be.dto.userDto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import org.springframework.format.annotation.NumberFormat;
 
 import java.io.Serializable;
 
-public record UserAvailabilityUpdateRequest(@NotNull(message = "Field usersId should be filled")
-                                            @NumberFormat
-                                            @Schema(example = "UNAVAILABLE")
-                                            Long userId,
-                                            @NotEmpty(message = "Field availability should be filled")
+public record UserAvailabilityUpdateRequest(@NotEmpty(message = "Field availability should be filled")
                                             String newAvailability,
-                                            @Pattern(regexp = "[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]",
+                                            @NotNull(message = "Field could not be  null")
+                                            @Pattern(regexp = "(?:2[0-3]|[01]\\d|\\d)}:[0-5]{1}\\d{1}:[0-5]{1}\\d{1}[+|-]?0\\d|1[0-4]:[0-5][0-9]",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
                                             String newFromUnavailable,
-                                            @Pattern(regexp = "[0-2]{1}\\d{1}:[0-6]{1}\\d{1}:[0-6]{1}\\d{1}[+|-][0-1][0-9]:[0-5][0-9]",
+                                            @NotNull(message = "Field could not be  null")
+                                            @Pattern(regexp = "(?:2[0-3]|[01]\\d|\\d)}:[0-5]{1}\\d{1}:[0-5]{1}\\d{1}[+|-]?0\\d|1[0-4]:[0-5][0-9]",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
                                             String newToUnavailable
 ) implements Serializable {
