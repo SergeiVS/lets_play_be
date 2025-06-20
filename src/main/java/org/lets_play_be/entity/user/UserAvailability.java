@@ -29,11 +29,11 @@ public class UserAvailability {
     @Setter
     private OffsetTime toUnavailable;
 
+
     public UserAvailability(AvailabilityEnum availabilityType) {
         this.availabilityType = availabilityType;
         this.fromUnavailable = OffsetTime.parse("00:00:00+00:00");
         this.toUnavailable = OffsetTime.parse("00:00:00+00:00");
-        ;
     }
 
     public UserAvailability(long id, AvailabilityEnum availabilityType) {
@@ -41,7 +41,6 @@ public class UserAvailability {
         this.availabilityType = availabilityType;
         this.fromUnavailable = OffsetTime.parse("00:00:00+00:00");
         this.toUnavailable = OffsetTime.parse("00:00:00+00:00");
-        ;
     }
 
 }

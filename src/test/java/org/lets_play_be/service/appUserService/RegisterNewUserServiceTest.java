@@ -14,7 +14,6 @@ import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.repository.AppUserRepository;
-import org.lets_play_be.service.UserAvailabilityService;
 import org.lets_play_be.service.appUserRoleService.AppUserRoleService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,15 +23,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @RequiredArgsConstructor
 class RegisterNewUserServiceTest {
 
-    @Mock
-    private UserAvailabilityService availabilityServiceMock;
     @Mock
     private AppUserRoleService roleServiceMock;
     @Mock
@@ -67,7 +63,7 @@ class RegisterNewUserServiceTest {
     void setUp() {
         request = new NewUserRegistrationRequest("Name", "name@testemail.com", "password", "");
 
-        availability = new UserAvailability(1L, AvailabilityEnum.AVAILABLE);
+        availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
 
         name = request.name();
         email = request.email();
@@ -109,7 +105,6 @@ class RegisterNewUserServiceTest {
         when(repositoryMock.existsByEmail("name@testemail.com")).thenReturn(false);
         when(repositoryMock.existsByName("Name")).thenReturn(false);
         when(passwordEncoderMock.encode("password")).thenReturn("hashedPassword");
-        when(availabilityServiceMock.saveAvailability(any(UserAvailability.class))).thenReturn(availability);
         when(roleServiceMock.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name())).thenReturn(role);
         when(repositoryMock.save(appUserForSave)).thenReturn(appUserSaved);
 
@@ -122,6 +117,7 @@ class RegisterNewUserServiceTest {
         assertThat(result.avatarUrl()).isEqualTo(responseMocked.avatarUrl());
         assertThat(result.roles().length).isEqualTo(1);
         assertThat(result.roles()[0]).isEqualTo(role.getName());
+        assertThat(result.availability()).isEqualTo(responseMocked.availability());
         assertThat(result.fromAvailable()).isEqualTo(responseMocked.fromAvailable());
         assertThat(result.toAvailable()).isEqualTo(responseMocked.toAvailable());
 
