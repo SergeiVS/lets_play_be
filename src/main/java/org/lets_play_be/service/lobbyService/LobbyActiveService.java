@@ -10,7 +10,6 @@ import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
 import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
-import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
@@ -42,17 +41,17 @@ public class LobbyActiveService {
     @Transactional
     public ActiveLobbyResponse createActiveLobby(NewActiveLobbyRequest request, Authentication authentication) {
 
-        var owner = userService.getUserByEmailOrThrow(authentication.getName());
+        AppUser owner = userService.getUserByEmailOrThrow(authentication.getName());
 
         isLobbyExistingByOwnerId(owner);
 
-        var savedLobby = saveNewLobbyFromRequest(request, owner);
+        LobbyActive savedLobby = saveNewLobbyFromRequest(request, owner);
 
         subscribeLobbySubjectInPool(savedLobby);
 
-        NotificationData data = new LobbyCreatedNotificationData(savedLobby);
+        var notificationData = new LobbyCreatedNotificationData(savedLobby);
 
-        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), data);
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
 
         setInvitesDelivered(savedLobby.getInvites());
 
@@ -117,9 +116,11 @@ public class LobbyActiveService {
 
         List<Long> recipientsIds = getRecipientsIds(lobby);
 
-        for (Long recipientId : recipientsIds) {
+        for (long recipientId : recipientsIds) {
 
+            if(recipientPool.isInPool(recipientId)) {
             sseNotificationService.subscribeSseObserverForActiveLobby(recipientId, lobby.getId());
+            }
         }
     }
 
@@ -153,14 +154,14 @@ public class LobbyActiveService {
 
         LobbyActive lobbyForSave = new LobbyActive(title, time, owner);
 
-        List<Invite> invitesForAdd = getSavedInviteList(request, lobbyForSave);
+        List<Invite> newInvitesList = getNewInvitesList(request, lobbyForSave);
 
-        lobbyForSave.getInvites().addAll(invitesForAdd);
+        lobbyForSave.getInvites().addAll(newInvitesList);
 
         return repository.save(lobbyForSave);
     }
 
-    private List<Invite> getSavedInviteList(NewActiveLobbyRequest request, LobbyActive lobbyForSave) {
+    private List<Invite> getNewInvitesList(NewActiveLobbyRequest request, LobbyActive lobbyForSave) {
 
         List<AppUser> users = userService.getUsersListByIds(request.userIds());
 

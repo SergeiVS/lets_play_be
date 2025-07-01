@@ -335,4 +335,20 @@ class AppUserServiceTest {
 
         verify(repository, times(1)).findAllById(ids);
     }
+
+    @Test
+    void getUsersListByIds_Throws_ShorterList_Received() {
+
+        List<Long> ids = listOf(1L, 2L, 3L);
+
+        List<AppUser> receivedList = List.of(user1, user2);
+
+        when(repository.findAllById(ids)).thenReturn(receivedList);
+
+        assertThrowsExactly(UsernameNotFoundException.class,
+                () -> appUserService.getUsersListByIds(ids),
+                "Request contains " + (ids.size() - receivedList.size()) + " invalid users Ids");
+
+        verify(repository, times(1)).findAllById(ids);
+    }
 }

@@ -6,6 +6,7 @@ import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.user.AppUser;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
@@ -41,5 +42,17 @@ public record InvitedUserResponse(
                 InviteState.ACCEPTED.toString(),
                 0
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InvitedUserResponse that)) return false;
+        return userId == that.userId && delayedFor == that.delayedFor && Objects.equals(name, that.name) && Objects.equals(inviteState, that.inviteState) && Objects.equals(availability, that.availability) && Objects.equals(unavailableTo, that.unavailableTo) && Objects.equals(unavailableFrom, that.unavailableFrom);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, name, availability, unavailableFrom, unavailableTo, inviteState, delayedFor);
     }
 }
