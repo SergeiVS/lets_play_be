@@ -1,9 +1,7 @@
 package org.lets_play_be.entity.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 
 import java.time.OffsetTime;

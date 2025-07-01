@@ -19,7 +19,8 @@ import java.util.List;
 
 import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
-import static org.lets_play_be.utils.ValidationUtils.*;
+import static org.lets_play_be.utils.ValidationUtils.isFromTimeBeforeTo;
+import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
 
 @Slf4j
 @Service
@@ -72,7 +73,7 @@ public class AppUserService {
 
     public List<AppUser> getUsersListByIds(List<Long> ids) {
 
-        if(ids.isEmpty()) {
+        if (ids.isEmpty()) {
             throw new IllegalArgumentException("List of users is empty");
         }
 
@@ -82,6 +83,9 @@ public class AppUserService {
             throw new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString());
         }
 
+        if (users.size() != ids.size()) {
+            throw new UsernameNotFoundException("Request contains " + (ids.size() - users.size()) + " invalid users Ids");
+        }
         return users;
     }
 
@@ -102,7 +106,7 @@ public class AppUserService {
 
     private void setTemporaryUnavailabilityTime(UserAvailabilityUpdateRequest request, UserAvailability availability) {
 
-        if(availability.getAvailabilityType().equals(AvailabilityEnum.TEMPORARILY_UNAVAILABLE)){
+        if (availability.getAvailabilityType().equals(AvailabilityEnum.TEMPORARILY_UNAVAILABLE)) {
 
             OffsetTime fromUnavailable = timeStringToOffsetTime(request.newFromUnavailable());
             OffsetTime toUnavailable = timeStringToOffsetTime(request.newToUnavailable());
