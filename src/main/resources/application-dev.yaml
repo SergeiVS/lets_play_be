@@ -2,9 +2,9 @@ spring:
   application:
     name: Lets Play Backend
   datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    url: ENC(42mYfP71218hcmOgqz7EiTeJTPri+6KsP7vGdJEurVRmRqkkNGzglz6l4QJHE9uee3CaBDy0y7DEbyrIIfAGJAyschD9al4IUrRlJn5fRss=)
+    username: admin
+    password: ENC(BiogqQxjTSve6jecAJhE6V3N53rfptCarjILmy4ibTCrna2LF/g0jlvd0Wehpg2U)
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -16,14 +16,13 @@ spring:
       ddl-auto: update
 
 jwt:
-  at-cookie-name: ${AT_COOKIE_NAME}
-  rt-cookie-name: ${RT_COOKIE_NAME}
-  jwt-secret: ${JWT_SECRET}
+  at-cookie-name: access-token
+  rt-cookie-name: refresh-token
+  jwt-secret: ENC(pkZLnSSbt2DhWlA1HAtBnWaixiNmeQ2bEagZkH25J8qedMYQCp/uheZaXGzBs8A4jPBo7YHqfewxzoT1/8xCRMai9UumK0gUSp0do3DCfTEh1VJkj4GNrf/J/abEk3KL)
   at-expiration-in-ms: 900000
   rt-expiration-in-ms: 604800000
-
 encryption:
-  refresh-token-secret: ${RT_SECRET}
+  refresh-token-secret: ENC(N+f+Hog49IvomX78ZmB7SWCMgluqwHdjqdKJPyDhdpzImkBLIZ8piuCdXpTkIuDN/hEbfYiUCL/OA/EN2SnuK6L7lwz28O4lIOreIeJIVaY=)
 
 springdoc:
   swagger-ui:
@@ -33,3 +32,8 @@ springdoc:
     path: /v3/api-docs
     enabled: true
   show-login-endpoint: true
+jasypt:
+  encryptor:
+    iv-generator-classname: org.jasypt.iv.RandomIvGenerator
+    algorithm: PBEWITHHMACSHA512ANDAES_256
+    password: ${JASYPT_ENCRYPTOR_PASSWORD}
