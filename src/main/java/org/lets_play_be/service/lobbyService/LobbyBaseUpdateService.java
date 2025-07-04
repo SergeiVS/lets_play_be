@@ -14,7 +14,7 @@ import java.util.Objects;
 public class LobbyBaseUpdateService {
 
 
-    protected void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase lobbyForChange, long ownerId) {
+    public void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase lobbyForChange, long ownerId) {
 
         isLobbyOwner(lobbyForChange, ownerId);
 

@@ -63,7 +63,7 @@ public class LobbyActiveService {
 
         AppUser owner = userService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyActive lobbyForChange = getLobbyByIdOrThrow(request.id());
+        LobbyActive lobbyForChange = getLobbyByIdOrThrow(request.lobbyId());
 
         baseUpdateService.setNewValues(request, lobbyForChange, owner.getId());
 
@@ -96,7 +96,7 @@ public class LobbyActiveService {
     public LobbyActive getLobbyByIdOrThrow(Long id) {
 
         return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No Lobby found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("No Lobby found with lobbyId: " + id));
     }
 
     private void subscribeLobbySubjectInPool(LobbyActive lobby) {

@@ -72,7 +72,7 @@ public class LobbyPresetService {
 
         repository.deleteById(id);
 
-        return new StandardStringResponse("Lobby preset with id: " + id + " is deleted");
+        return new StandardStringResponse("Lobby preset with lobbyId: " + id + " is deleted");
     }
 
 
@@ -81,7 +81,7 @@ public class LobbyPresetService {
 
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.id());
+        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.lobbyId());
 
         baseUpdateService.setNewValues(request, presetForChange, owner.getId());
 

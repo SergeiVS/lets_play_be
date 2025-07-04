@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.OffsetTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lets_play_be.utils.FormattingUtils.getTimeFormatter;
+import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Slf4j
 @Component
@@ -40,8 +40,8 @@ public class InitDefaultUser {
             if (!userRepository.existsByEmail(user.getEmail())) {
 
                 UserAvailability availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
-                availability.setFromUnavailable(OffsetTime.parse("000000+0000", getTimeFormatter()));
-                availability.setToUnavailable(OffsetTime.parse("000000+0000", getTimeFormatter()));
+                availability.setFromUnavailable(timeStringToOffsetTime("00:00:00+00:00"));
+                availability.setToUnavailable(timeStringToOffsetTime("00:00:00+00:00"));
                 user.setAvailability(availability);
                 AppUser savedUser = userRepository.save(user);
 
