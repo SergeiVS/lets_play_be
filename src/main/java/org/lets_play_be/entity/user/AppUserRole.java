@@ -58,7 +58,7 @@ public class AppUserRole implements GrantedAuthority {
     @Override
     public String toString() {
         return "AppUserRole{" +
-                "lobbyId=" + id +
+                "roleId=" + id +
                 ", name='" + name +
                 '}';
     }
