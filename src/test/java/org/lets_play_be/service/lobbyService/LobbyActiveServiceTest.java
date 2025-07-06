@@ -18,6 +18,7 @@ import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
 import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
+import org.lets_play_be.notification.dto.LobbyUpdatedNotificationData;
 import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
@@ -303,6 +304,7 @@ class LobbyActiveServiceTest {
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).findById(updateTitleTimeRequest.lobbyId());
         verify(baseUpdateService, times(1)).setNewValues(updateTitleTimeRequest, savedLobby, owner.getId());
+        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), any(LobbyUpdatedNotificationData.class));
         verify(repository, times(1)).save(savedLobby);
     }
 
@@ -316,6 +318,7 @@ class LobbyActiveServiceTest {
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(0)).findById(any());
         verify(baseUpdateService, times(0)).setNewValues(any(), any(), anyLong());
+        verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(LobbyUpdatedNotificationData.class));
         verify(repository, times(0)).save(any());
     }
 
@@ -330,6 +333,7 @@ class LobbyActiveServiceTest {
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).findById(updateTitleTimeRequest.lobbyId());
         verify(baseUpdateService, times(0)).setNewValues(any(), any(), anyLong());
+        verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(LobbyUpdatedNotificationData.class));
         verify(repository, times(0)).save(any());
     }
 
@@ -341,12 +345,13 @@ class LobbyActiveServiceTest {
         when(repository.findById(updateTitleTimeRequest.lobbyId())).thenReturn(Optional.ofNullable(savedLobby));
         doCallRealMethod().when(baseUpdateService).isLobbyOwner(savedLobby, user1.getId());
         doCallRealMethod().when(baseUpdateService).setNewValues(updateTitleTimeRequest, savedLobby, user1.getId());
-
+        verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(LobbyUpdatedNotificationData.class));
         assertThrows(IllegalArgumentException.class, () -> lobbyActiveService.updateLobbyTitleAndTime(updateTitleTimeRequest, auth));
 
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).findById(updateTitleTimeRequest.lobbyId());
         verify(baseUpdateService, times(1)).setNewValues(any(), any(), anyLong());
+
         verify(repository, times(0)).save(any());
     }
 

@@ -10,6 +10,7 @@ import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
 import org.lets_play_be.notification.dto.LobbyCreatedNotificationData;
+import org.lets_play_be.notification.dto.LobbyUpdatedNotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
@@ -69,6 +70,10 @@ public class LobbyActiveService {
 
         LobbyActive savedLobby = repository.save(lobbyForChange);
 
+        var notificationData = new LobbyUpdatedNotificationData(savedLobby);
+
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
+
         return new ActiveLobbyResponse(savedLobby);
     }
 
@@ -81,9 +86,9 @@ public class LobbyActiveService {
 
         baseUpdateService.isLobbyOwner(lobbyForDelete, owner.getId());
 
-        var data = new LobbyClosedNotificationData(lobbyForDelete);
-
         repository.delete(lobbyForDelete);
+
+        var data = new LobbyClosedNotificationData(lobbyForDelete);
 
         sseNotificationService.notifyLobbyMembers(lobbyForDelete.getId(), data);
 
