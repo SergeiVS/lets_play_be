@@ -36,6 +36,12 @@ public class AppUserRole implements GrantedAuthority {
         users = new ArrayList<>();
     }
 
+    public AppUserRole(Long id, String name) {
+        this.id = id;
+        this.name = name;
+        users = new ArrayList<>();
+    }
+
     @Override
     public String getAuthority() {
         return this.name;
@@ -47,12 +53,12 @@ public class AppUserRole implements GrantedAuthority {
         if (this == o) return true;
         if (o == null || o.getClass() != this.getClass()) return false;
         AppUserRole that = (AppUserRole) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+        return Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(name);
     }
 
     @Override

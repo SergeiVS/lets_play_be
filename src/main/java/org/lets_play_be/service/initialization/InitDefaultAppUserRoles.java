@@ -12,6 +12,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class InitDefaultAppUserRoles {
+
     private final AppUserRoleRepository repository;
     private final AppUserRoleMapping appUserRoleMapping;
 
