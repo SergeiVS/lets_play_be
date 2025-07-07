@@ -9,8 +9,8 @@ import org.lets_play_be.notification.dto.Notification;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 public class LobbySubject implements NotificationSubject {
@@ -18,11 +18,11 @@ public class LobbySubject implements NotificationSubject {
 
     private final long lobbyId;
 
-    private final List<NotificationObserver> observers;
+    private final Set<NotificationObserver> observers;
 
     public LobbySubject(long lobbyId) {
         this.lobbyId = lobbyId;
-        this.observers = new ArrayList<>();
+        this.observers = new HashSet<>();
     }
 
     @Override

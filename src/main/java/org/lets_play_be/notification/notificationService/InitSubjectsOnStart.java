@@ -19,10 +19,15 @@ public class InitSubjectsOnStart {
 
     @PostConstruct
     public void init() {
+
         List<Long> lobbyIds = repository.findAllLobbyIds();
+
         lobbyIds.forEach(lobbyId -> {
             pool.addSubject(new LobbySubject(lobbyId));
-            log.info("Subject created: {}", pool.getSubject(lobbyId).toString());
+
+            if(pool.getSubject(lobbyId) instanceof LobbySubject subject) {
+                log.info("Subject created for Lobby with Id: {}", subject.getLobbyId());
+            }
         });
     }
 }

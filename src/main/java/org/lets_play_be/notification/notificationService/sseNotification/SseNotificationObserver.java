@@ -1,7 +1,6 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
-import lombok.Getter;
-import org.hibernate.annotations.OnDelete;
+import lombok.Data;
 import org.lets_play_be.notification.NotificationObserver;
 import org.lets_play_be.notification.dto.Notification;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -9,11 +8,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-@Getter
+@Data
 public class SseNotificationObserver implements NotificationObserver {
-
-
 
     private final SseEmitter emitter;
 
@@ -41,4 +39,15 @@ public class SseNotificationObserver implements NotificationObserver {
         onCloseCallbacks.get(lobbyId).run();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SseNotificationObserver observer)) return false;
+        return Objects.equals(getEmitter(), observer.getEmitter());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getEmitter());
+    }
 }
