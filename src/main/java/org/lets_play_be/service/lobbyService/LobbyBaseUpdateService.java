@@ -3,11 +3,12 @@ package org.lets_play_be.service.lobbyService;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
 import org.lets_play_be.entity.lobby.LobbyBase;
-import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.Objects;
+
+import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class LobbyBaseUpdateService {
 
         isLobbyOwner(lobbyForChange, ownerId);
 
-        OffsetTime newTime = FormattingUtils.timeStringToOffsetTime(request.newTime());
+        OffsetTime newTime = timeStringToOffsetTime(request.newTime());
 
         if (!request.newTitle().equals(lobbyForChange.getTitle())) {
             lobbyForChange.setTitle(request.newTitle());

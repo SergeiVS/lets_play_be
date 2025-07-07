@@ -69,7 +69,8 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 new AntPathRequestMatcher("/api/v1/user/**"),
                                 new AntPathRequestMatcher("/api/v1/sse"),
-                                new AntPathRequestMatcher("/api/v1/invite")
+                                new AntPathRequestMatcher("/api/v1/invite"),
+                                new AntPathRequestMatcher("/api/v1/auth/loout")
                         ).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(
                                 new AntPathRequestMatcher("/swagger-ui/**"),

@@ -38,11 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try {
-            if (isRequestToSwagger(request)) {
-                log.info("Request from Swagger");
-                return;
-            }
-
             handleFilterInternal(request);
         } catch (JwtException e) {
             logJwtException(e);
@@ -84,10 +79,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isValidTokenAndNotAuthenticated(String jwt, UserDetails userDetails) {
         return jwtService.validateToken(jwt, userDetails) && SecurityContextHolder.getContext().getAuthentication() == null;
-    }
-
-    private boolean isRequestToSwagger(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/swagger-ui") || request.getRequestURI().startsWith("/v3/api-docs");
     }
 
     private void logJwtException(JwtException e) {

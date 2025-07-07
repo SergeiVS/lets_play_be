@@ -63,9 +63,7 @@ public interface AuthControllerApi {
 
     @Operation(summary = "logging out")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "logged out",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = AppUserFullResponse.class))})
+            @ApiResponse(responseCode = "200", description = "User is logged out")
     })
     @PostMapping("logout")
     void logout(HttpServletRequest request, HttpServletResponse response, Principal principal);

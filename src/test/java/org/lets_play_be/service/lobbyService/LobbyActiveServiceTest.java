@@ -345,18 +345,19 @@ class LobbyActiveServiceTest {
         when(repository.findById(updateTitleTimeRequest.lobbyId())).thenReturn(Optional.ofNullable(savedLobby));
         doCallRealMethod().when(baseUpdateService).isLobbyOwner(savedLobby, user1.getId());
         doCallRealMethod().when(baseUpdateService).setNewValues(updateTitleTimeRequest, savedLobby, user1.getId());
-        verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(LobbyUpdatedNotificationData.class));
+
         assertThrows(IllegalArgumentException.class, () -> lobbyActiveService.updateLobbyTitleAndTime(updateTitleTimeRequest, auth));
 
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).findById(updateTitleTimeRequest.lobbyId());
         verify(baseUpdateService, times(1)).setNewValues(any(), any(), anyLong());
-
+        verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(LobbyUpdatedNotificationData.class));
         verify(repository, times(0)).save(any());
     }
 
     @Test
     void closeLobby_Success() {
+
         var notificationData = new LobbyClosedNotificationData(savedLobby);
 
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
@@ -379,6 +380,7 @@ class LobbyActiveServiceTest {
 
     @Test
     void closeLobby_Owner_Not_Found() {
+
         var notificationData = new LobbyClosedNotificationData(savedLobby);
 
         when(userService.getUserByEmailOrThrow(auth.getName())).thenThrow(new UsernameNotFoundException(anyString()));
