@@ -8,19 +8,20 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: sa
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
-  h2:
-    console:
-      enabled: true
-  batch:
-    jdbc:
-      schema: data-users.sql
+
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: create-drop
+#  h2:
+#    console:
+#      enabled: true
+
+jwt:
+    at-cookie-name: access-token
+    rt-cookie-name: refresh-token
+    jwt-secret: jwtSecret
+    at-expiration-in-ms: 900000
+    rt-expiration-in-ms: 604800000
 encryption:
-    refresh-token-secret: refreshsecre
+    refresh-token-secret: refreshJwtSecret
