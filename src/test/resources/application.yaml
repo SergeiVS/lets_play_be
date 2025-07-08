@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: Lets Play Backend
+  profiles:
+    active: test
+  datasource:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+  batch:
+    jdbc:
+      schema: data-users.sql
+encryption:
+    refresh-token-secret: refreshsecre

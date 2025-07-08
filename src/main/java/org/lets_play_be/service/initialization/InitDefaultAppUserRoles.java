@@ -18,9 +18,11 @@ public class InitDefaultAppUserRoles {
     @PostConstruct
     public void init() {
         for (UserRoleEnum roleEnum : UserRoleEnum.values()) {
-            Optional<AppUserRole> roleByName = repository.findByNameIgnoreCase(roleEnum.name());
-            if (roleByName.isPresent()) {
-                AppUserRole role = roleByName.get();
+
+            Optional<AppUserRole> roleOpt = repository.findByNameIgnoreCase(roleEnum.name());
+
+            if (roleOpt.isPresent()) {
+                AppUserRole role = roleOpt.get();
                 appUserRoleMapping.put(roleEnum, role);
             } else {
                 AppUserRole role = new AppUserRole(roleEnum.name());

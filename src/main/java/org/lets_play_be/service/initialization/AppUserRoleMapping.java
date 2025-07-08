@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AppUserRoleMapping {
+
     private final Map<UserRoleEnum, AppUserRole> userRoleMap = new ConcurrentHashMap<>(UserRoleEnum.values().length);
 
     void put(UserRoleEnum roleEnum, AppUserRole appUserRole){

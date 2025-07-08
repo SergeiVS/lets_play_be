@@ -11,7 +11,6 @@ import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.repository.AppUserRepository;
-import org.lets_play_be.repository.UserAvailabilityRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +19,8 @@ import java.util.List;
 
 import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
+import static org.lets_play_be.utils.ValidationUtils.isFromTimeBeforeTo;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
-import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av;
 
 @Slf4j
 @Service
@@ -29,7 +28,6 @@ import static org.lets_play_be.utils.ValidationUtils.validateTimeOptionByTemp_Av
 public class AppUserService {
 
     private final AppUserRepository userRepository;
-    private final UserAvailabilityRepository availabilityRepository;
 
     public AppUserFullResponse getAppUserFullData(String email) {
 
@@ -40,19 +38,31 @@ public class AppUserService {
     @Transactional
     public AppUserFullResponse updateUserData(UserDataUpdateRequest request, String email) {
         AppUser user = getUserByEmailOrThrow(email);
-        validateUserInRequest(request.userId(), user);
+
+        if (user.getName().equals(request.newName()) && user.getAvatarUrl().equals(request.newAvatarUrl())) {
+            throw new IllegalArgumentException("Request fields are identical to User actual state");
+        }
+
+        if (request.newName().isEmpty() && request.newAvatarUrl().isEmpty()) {
+            throw new IllegalArgumentException("Both request fields are empty");
+        }
+
         setNewNameToUser(request, user);
         setNewAvatarUrlToUser(request, user);
+
         AppUser savedUser = userRepository.save(user);
         return new AppUserFullResponse(savedUser);
     }
 
     @Transactional
     public AppUserFullResponse updateUserAvailability(UserAvailabilityUpdateRequest request, String email) {
+
         AppUser user = getUserByEmailOrThrow(email);
-        validateUserInRequest(request.userId(), user);
+
         setNewAvailability(request, user);
+
         AppUser savedUser = userRepository.save(user);
+
         return new AppUserFullResponse(savedUser);
     }
 
@@ -62,50 +72,61 @@ public class AppUserService {
     }
 
     public List<AppUser> getUsersListByIds(List<Long> ids) {
-        return userRepository.findAllById(ids);
-    }
 
-    public Long getUserIdByEmailOrThrow(String email) {
-        return userRepository.findAppUserByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()))
-                .getId();
+        if (ids.isEmpty()) {
+            throw new IllegalArgumentException("List of users is empty");
+        }
+
+        List<AppUser> users = userRepository.findAllById(ids);
+
+        if (users.isEmpty()) {
+            throw new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString());
+        }
+
+        if (users.size() != ids.size()) {
+            throw new UsernameNotFoundException("Request contains " + (ids.size() - users.size()) + " invalid users Ids");
+        }
+        return users;
     }
 
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
-        UserAvailability availability = user.getAvailability();
-        String availabilityString = request.newAvailability();
-        OffsetTime fromAvailable = timeStringToOffsetTime(request.newFromUnavailable());
-        OffsetTime toAvailable = timeStringToOffsetTime(request.newToUnavailable());
 
+        UserAvailability availability = user.getAvailability();
+
+        String availabilityString = request.newAvailability();
 
         validateAvailabilityString(availabilityString);
 
         availability.setAvailabilityType(AvailabilityEnum.valueOf(availabilityString.toUpperCase()));
-        validateTimeOptionByTemp_Av(availability, fromAvailable, toAvailable);
-        availability.setFromUnavailable(fromAvailable);
-        availability.setToUnavailable(toAvailable);
-        UserAvailability savedAvailability = availabilityRepository.save(availability);
-        user.setAvailability(savedAvailability);
+
+        setTemporaryUnavailabilityTime(request, availability);
+
+        user.setAvailability(availability);
+    }
+
+    private void setTemporaryUnavailabilityTime(UserAvailabilityUpdateRequest request, UserAvailability availability) {
+
+        if (availability.getAvailabilityType().equals(AvailabilityEnum.TEMPORARILY_UNAVAILABLE)) {
+
+            OffsetTime fromUnavailable = timeStringToOffsetTime(request.newFromUnavailable());
+            OffsetTime toUnavailable = timeStringToOffsetTime(request.newToUnavailable());
+
+            isFromTimeBeforeTo(fromUnavailable, toUnavailable);
+
+            availability.setFromUnavailable(fromUnavailable);
+            availability.setToUnavailable(toUnavailable);
+        }
     }
 
     private void setNewAvatarUrlToUser(UserDataUpdateRequest request, AppUser user) {
-        if (request.newAvatarUrl() != null && !request.newAvatarUrl().isEmpty()) {
+        if (!request.newAvatarUrl().isEmpty() && !request.newAvatarUrl().equals(user.getAvatarUrl())) {
             user.setAvatarUrl(request.newAvatarUrl());
         }
     }
 
     private void setNewNameToUser(UserDataUpdateRequest request, AppUser user) {
-        if (request.newName() != null && !request.newName().isEmpty()) {
+        if (!request.newName().isEmpty() && !request.newName().equals(user.getName())) {
             user.setName(request.newName());
         }
     }
-
-    private void validateUserInRequest(Long userIdFromRequest, AppUser user) {
-        if (!user.getId().equals(userIdFromRequest)) {
-            throw new IllegalStateException("User usersId from request not match id of Principal");
-        }
-
-    }
-
-
 }

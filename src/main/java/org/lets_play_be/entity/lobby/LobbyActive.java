@@ -30,6 +30,12 @@ public class LobbyActive extends LobbyBase {
         setType(LobbyType.ACTIVE);
         this.invites = new ArrayList<>();
     }
+    public LobbyActive(long id, String title, OffsetTime time, AppUser owner) {
+        super(title, time, owner);
+        setType(LobbyType.ACTIVE);
+        this.id = id;
+        this.invites = new ArrayList<>();
+    }
 
     @Override
     public boolean equals(Object o) {
