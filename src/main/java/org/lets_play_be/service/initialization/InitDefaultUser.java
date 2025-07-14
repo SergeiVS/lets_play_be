@@ -23,7 +23,7 @@ import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Slf4j
 @Component
-@Profile("dev")
+@Profile({"dev", "test"})
 @RequiredArgsConstructor
 @DependsOn("initDefaultAppUserRoles")
 public class InitDefaultUser {
