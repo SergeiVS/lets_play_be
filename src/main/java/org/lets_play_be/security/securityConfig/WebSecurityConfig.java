@@ -70,16 +70,19 @@ public class WebSecurityConfig {
                                 new AntPathRequestMatcher("/api/v1/user/**"),
                                 new AntPathRequestMatcher("/api/v1/sse"),
                                 new AntPathRequestMatcher("/api/v1/invite"),
-                                new AntPathRequestMatcher("/api/v1/auth/loout")
+                                new AntPathRequestMatcher("/api/v1/auth/logout"),
+                                new AntPathRequestMatcher("/api/v1/lobby/**", "POST"),
+                                new AntPathRequestMatcher("/api/v1/lobby/**", "PATCH"),
+                                new AntPathRequestMatcher("/api/v1/lobby/**", "DELETE")
                         ).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(
                                 new AntPathRequestMatcher("/swagger-ui/**"),
                                 new AntPathRequestMatcher("/v3/api-docs/**"),
                                 new AntPathRequestMatcher("/v3/api-docs.yaml"),
                                 new AntPathRequestMatcher("/swagger-ui.html"),
-                                new AntPathRequestMatcher("/api/v1/auth/login", "POST"),
-                                new AntPathRequestMatcher("/api/v1/auth/refresh", "POST"),
-                                new AntPathRequestMatcher("/api/v1/auth/register", "POST")
+                                new AntPathRequestMatcher("/api/v1/auth/login"),
+                                new AntPathRequestMatcher("/api/v1/auth/refresh"),
+                                new AntPathRequestMatcher("/api/v1/auth/register")
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

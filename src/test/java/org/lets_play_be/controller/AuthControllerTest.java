@@ -213,12 +213,11 @@ class AuthControllerTest {
         }
     }
 
-//
-//
-//    @Test
-//    void refreshAccessToken() {
-//
-//    }
+
+    @Test
+    void refreshAccessToken() {
+
+    }
 
     private AppUser getUserFromByEmail(String email) {
         return (AppUser) em.createQuery("SELECT u FROM AppUser as u WHERE u.email = ?1")

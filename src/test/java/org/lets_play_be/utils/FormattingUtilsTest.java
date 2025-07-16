@@ -37,8 +37,8 @@ class FormattingUtilsTest {
     }
     @ParameterizedTest
     @ValueSource(strings = {"24:00:30+01:00", "00:60:30+01:00", "00:59:60+01:00", "00:59:60+15:00"})
-    void timeStringToOffsetTime_Trows_AssertionError(String timeString) {
+    void timeStringToOffsetTime_Trows_IllegalArgumentException(String timeString) {
 
-        assertThrows(AssertionError.class, () -> FormattingUtils.timeStringToOffsetTime(timeString));
+        assertThrows(IllegalArgumentException.class, () -> FormattingUtils.timeStringToOffsetTime(timeString));
     }
 }

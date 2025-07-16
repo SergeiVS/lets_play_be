@@ -38,16 +38,6 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateAccessToken(String email, List<AppUserRole> userRoles) {
-        Date expireAt = new Date(System.currentTimeMillis() + config.getAtExpirationInMs());
-        return generateJwtToken(email, expireAt, userRoles);
-    }
-
-    public String generateRefreshToken(String email, List<AppUserRole> userRoles) {
-        Date expireAt = new Date(System.currentTimeMillis() + config.getRtExpirationInMs());
-        return generateJwtToken(email, expireAt, userRoles);
-    }
-
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -89,6 +79,16 @@ public class JwtService {
 
     public Date extractExpiration(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    private String generateAccessToken(String email, List<AppUserRole> userRoles) {
+        Date expireAt = new Date(System.currentTimeMillis() + config.getAtExpirationInMs());
+        return generateJwtToken(email, expireAt, userRoles);
+    }
+
+    private String generateRefreshToken(String email, List<AppUserRole> userRoles) {
+        Date expireAt = new Date(System.currentTimeMillis() + config.getRtExpirationInMs());
+        return generateJwtToken(email, expireAt, userRoles);
     }
 
     private String generateJwtToken(String subject, Date exparationDate, List<AppUserRole> roles) {

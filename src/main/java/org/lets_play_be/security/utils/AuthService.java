@@ -22,10 +22,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -36,26 +34,19 @@ import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 public class AuthService {
 
     private final AuthenticationManager authManager;
+
     private final BlacklistedTokenRepository blacklistedTokenRepository;
+
     private final AppUserService userService;
+
     private final SseLiveRecipientPool recipientPool;
 
     private final JwtService jwtService;
+
     private final GetUserProfileService getUserProfileService;
+
     private final AppUserDetailsService userDetailsService;
 
-    public void logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
-
-        final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
-
-        final var expiry = getTokenExpirationFromToken(refreshToken);
-
-        final var user = userService.getUserByEmailOrThrow(principal.getName());
-
-        removeSseRecipient(user);
-
-        cleanTokens(response, user, refreshToken, expiry);
-    }
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
@@ -67,9 +58,23 @@ public class AuthService {
             return getLoginResponse(response, authentication);
         } else {
             SecurityContextHolder.getContext().setAuthentication(null);
-            throw new UsernameNotFoundException("Invalid User Request");
+            throw new RestException("Invalid User Request", HttpStatus.UNAUTHORIZED);
         }
+    }
 
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+
+        final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
+
+        assert refreshToken != null : "Refresh token is null";
+
+        final var expiry = getTokenExpirationFromToken(refreshToken);
+
+        final var user = userService.getUserByEmailOrThrow(auth.getName());
+
+        removeSseRecipient(user);
+
+        cleanTokens(response, user, refreshToken, expiry);
     }
 
     public LoginResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {

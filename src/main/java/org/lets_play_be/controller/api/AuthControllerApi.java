@@ -15,10 +15,10 @@ import org.lets_play_be.exception.ValidationErrorResponse;
 import org.lets_play_be.security.model.LoginRequest;
 import org.lets_play_be.security.model.LoginResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -66,7 +66,7 @@ public interface AuthControllerApi {
             @ApiResponse(responseCode = "200", description = "User is logged out")
     })
     @PostMapping("logout")
-    void logout(HttpServletRequest request, HttpServletResponse response, Principal principal);
+    void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth);
 
     @Operation(summary = "Refresh access token if expire")
     @ApiResponses(value = {
