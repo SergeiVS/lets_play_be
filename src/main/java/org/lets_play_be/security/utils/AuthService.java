@@ -34,31 +34,31 @@ import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 public class AuthService {
 
     private final AuthenticationManager authManager;
-
     private final BlacklistedTokenRepository blacklistedTokenRepository;
-
     private final AppUserService userService;
-
     private final SseLiveRecipientPool recipientPool;
-
     private final JwtService jwtService;
-
     private final GetUserProfileService getUserProfileService;
-
     private final AppUserDetailsService userDetailsService;
 
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
-        Authentication authentication;
+        Authentication auth;
 
-        authentication = getAuthentication(loginRequest);
+        auth = getAuthentication(loginRequest);
 
-        if (authentication.isAuthenticated()) {
-            return getLoginResponse(response, authentication);
+        if (auth.isAuthenticated()) {
+
+            var accessTokenCookie = setResponseCookies(response, auth);
+            var tokenExpiration = getTokenExpirationFromToken(accessTokenCookie.getValue());
+
+            return new LoginResponse(tokenExpiration.toString());
+
         } else {
             SecurityContextHolder.getContext().setAuthentication(null);
-            throw new RestException("Invalid User Request", HttpStatus.UNAUTHORIZED);
+
+            throw new RestException("User is not authenticated", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -68,65 +68,63 @@ public class AuthService {
 
         assert refreshToken != null : "Refresh token is null";
 
-        final var expiry = getTokenExpirationFromToken(refreshToken);
-
+        final var tokenExpiration = getTokenExpirationFromToken(refreshToken);
         final var user = userService.getUserByEmailOrThrow(auth.getName());
 
         removeSseRecipient(user);
 
-        cleanTokens(response, user, refreshToken, expiry);
+        cleanTokens(response, user, refreshToken, tokenExpiration);
     }
 
     public LoginResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
-        final String refreshToken = jwtService.getAccessTokenFromCookie(request);
-
+        final String refreshToken = jwtService.getRefreshTokenFromCookie(request);
         final String userEmail = jwtService.getUsernameFromToken(refreshToken);
-
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
+        isTokenValid(refreshToken, userDetails);
         isTokenExpired(refreshToken);
 
-        isTokenValid(refreshToken, userDetails);
+        var atCookie = getNewAtCookie(userEmail);
 
-        setNewATIntoCookie(response, userEmail);
+        response.addHeader(HttpHeaders.SET_COOKIE, atCookie.toString());
 
-        return new LoginResponse(jwtService.extractExpiration(jwtService.getAccessTokenFromCookie(request)).toString());
+        var tokenExpiration = getTokenExpirationFromToken(atCookie.getValue());
+
+        return new LoginResponse(tokenExpiration.toString());
     }
 
-    private void setNewATIntoCookie(HttpServletResponse response, String userEmail) {
+    private ResponseCookie getNewAtCookie(String userEmail) {
+
         final AppUserProfile profile = getUserProfileService.getUserProfile(userEmail);
-        final ResponseCookie cookie = jwtService.generateAccessTokenCookie(userEmail, profile.roles());
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return jwtService.generateAccessTokenCookie(userEmail, profile.roles());
     }
 
     private void isTokenValid(String refreshToken, UserDetails userDetails) {
+
         if (!jwtService.validateToken(refreshToken, userDetails)) {
             throw new RestException("Refresh token is not valid", HttpStatus.FORBIDDEN);
         }
     }
 
     private void isTokenExpired(String refreshToken) {
+
         if (jwtService.isTokenExpired(refreshToken)) {
             throw new RestException("Refresh token expired", HttpStatus.FORBIDDEN);
         }
     }
 
-    private LoginResponse getLoginResponse(HttpServletResponse response, Authentication authentication) {
+    private ResponseCookie setResponseCookies(HttpServletResponse response, Authentication authentication) {
 
         AppUserProfile userProfile = getUserProfileService.getUserProfile(authentication.getName());
         ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(userProfile.email(), userProfile.roles());
         ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
+
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
-        OffsetDateTime tokenExpiration = getTokenExpiration(accessTokenCookie);
-
-        return new LoginResponse(tokenExpiration.toString());
-    }
-
-    private OffsetDateTime getTokenExpiration(ResponseCookie accessTokenCookie) {
-        return getTokenExpirationFromToken(accessTokenCookie.getValue());
+        return accessTokenCookie;
     }
 
     private OffsetDateTime getTokenExpirationFromToken(String token) {
@@ -142,15 +140,19 @@ public class AuthService {
 
         try {
             authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
         } catch (BadCredentialsException e) {
+
             throw new RestException(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         return authentication;
     }
 
     private void removeSseRecipient(AppUser user) {
-        if (recipientPool.isInPool(user.getId())){
+        if (recipientPool.isInPool(user.getId())) {
             recipientPool.removeRecipient(user.getId());
         }
     }
@@ -161,7 +163,6 @@ public class AuthService {
 
         response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanAccessTokenCookie().toString());
         response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanRefreshTokenCookie().toString());
-
     }
 
 }
