@@ -3,7 +3,6 @@ package org.lets_play_be.security.utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.dto.userDto.AppUserProfile;
 import org.lets_play_be.entity.BlacklistedToken;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
@@ -44,9 +43,7 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
-        Authentication auth;
-
-        auth = getAuthentication(loginRequest);
+        var auth = getAuthentication(loginRequest);
 
         if (auth.isAuthenticated()) {
 
@@ -78,9 +75,9 @@ public class AuthService {
 
     public LoginResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
-        final String refreshToken = jwtService.getRefreshTokenFromCookie(request);
-        final String userEmail = jwtService.getUsernameFromToken(refreshToken);
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+        final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
+        final var userEmail = jwtService.getUsernameFromToken(refreshToken);
+        final var userDetails = userDetailsService.loadUserByUsername(userEmail);
 
         isTokenValid(refreshToken, userDetails);
         isTokenExpired(refreshToken);
@@ -96,7 +93,7 @@ public class AuthService {
 
     private ResponseCookie getNewAtCookie(String userEmail) {
 
-        final AppUserProfile profile = getUserProfileService.getUserProfile(userEmail);
+        final var profile = getUserProfileService.getUserProfile(userEmail);
 
         return jwtService.generateAccessTokenCookie(userEmail, profile.roles());
     }
@@ -117,9 +114,9 @@ public class AuthService {
 
     private ResponseCookie setResponseCookies(HttpServletResponse response, Authentication authentication) {
 
-        AppUserProfile userProfile = getUserProfileService.getUserProfile(authentication.getName());
-        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(userProfile.email(), userProfile.roles());
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
+        var userProfile = getUserProfileService.getUserProfile(authentication.getName());
+        var accessTokenCookie = jwtService.generateAccessTokenCookie(userProfile.email(), userProfile.roles());
+        var refreshTokenCookie = jwtService.generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
@@ -135,8 +132,8 @@ public class AuthService {
     private Authentication getAuthentication(LoginRequest loginRequest) {
 
         Authentication authentication;
-        String email = normalizeEmail(loginRequest.email());
-        String password = loginRequest.password().trim();
+        var email = normalizeEmail(loginRequest.email());
+        var password = loginRequest.password().trim();
 
         try {
             authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
@@ -152,6 +149,7 @@ public class AuthService {
     }
 
     private void removeSseRecipient(AppUser user) {
+
         if (recipientPool.isInPool(user.getId())) {
             recipientPool.removeRecipient(user.getId());
         }
