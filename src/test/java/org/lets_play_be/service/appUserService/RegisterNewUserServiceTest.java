@@ -33,30 +33,23 @@ class RegisterNewUserServiceTest {
     private AppUserRoleService roleServiceMock;
     @Mock
     private PasswordEncoder passwordEncoderMock;
-
     @Mock
     private AppUserRepository repositoryMock;
     @InjectMocks
     private RegisterNewUserService registerNewUserService;
 
     private AppUserFullResponse responseMocked;
-
     private NewUserRegistrationRequest request;
-
     private UserAvailability availability;
-
     private AppUser appUserForSave;
-
     private AppUser appUserSaved;
-
     private AppUserRole role;
-
-    String name;
-    String email;
-    String password;
-    String avatarUrl;
-    String fromAvailable;
-    String toAvailable;
+    private String name;
+    private String email;
+    private String password;
+    private String avatarUrl;
+    private String fromAvailable;
+    private String toAvailable;
 
 
     @BeforeEach
@@ -83,7 +76,6 @@ class RegisterNewUserServiceTest {
         appUserSaved = new AppUser(1L, name, email, password, avatarUrl);
         appUserSaved.getRoles().add(role);
         appUserSaved.setAvailability(availability);
-
     }
 
 
@@ -95,7 +87,6 @@ class RegisterNewUserServiceTest {
         appUserForSave = null;
         appUserSaved = null;
         role = null;
-
     }
 
 
@@ -108,7 +99,6 @@ class RegisterNewUserServiceTest {
         when(roleServiceMock.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name())).thenReturn(role);
         when(repositoryMock.save(appUserForSave)).thenReturn(appUserSaved);
 
-//
         AppUserFullResponse result = registerNewUserService.registerNewUser(request);
 
         assertThat(result.userId()).isEqualTo(responseMocked.userId());
@@ -126,8 +116,6 @@ class RegisterNewUserServiceTest {
         verify(passwordEncoderMock, times(1)).encode("password");
         verify(roleServiceMock, times(1)).getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name());
         verify(repositoryMock, times(1)).save(appUserForSave);
-
-
     }
 
 

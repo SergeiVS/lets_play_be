@@ -1,6 +1,5 @@
 package org.lets_play_be.repository;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Profile;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,9 +63,9 @@ class BlacklistedTokenRepositoryTest {
     @Test
     void getByRefreshToken() {
 
-        Optional<Entity> result1 = repository.getByRefreshToken(token1);
-        Optional<Entity> result2 = repository.getByRefreshToken(token2);
-        Optional<Entity> resultFalse = repository.getByRefreshToken("FalseToken");
+        var result1 = repository.getByRefreshToken(token1);
+        var result2 = repository.getByRefreshToken(token2);
+        var resultFalse = repository.getByRefreshToken("FalseToken");
 
         assertTrue(result1.isPresent());
         assertTrue(result2.isPresent());

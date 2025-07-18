@@ -41,9 +41,7 @@ class AppUserServiceTest {
 
     AppUser user1;
     AppUser user2;
-
     AppUserRole role;
-
     UserAvailability userAvailability1;
     UserAvailability userAvailability2;
 

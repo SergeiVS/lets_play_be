@@ -80,7 +80,6 @@ public class AuthService {
         final var userDetails = userDetailsService.loadUserByUsername(userEmail);
 
         isTokenValid(refreshToken, userDetails);
-        isTokenExpired(refreshToken);
 
         var atCookie = getNewAtCookie(userEmail);
 
@@ -100,15 +99,14 @@ public class AuthService {
 
     private void isTokenValid(String refreshToken, UserDetails userDetails) {
 
-        if (!jwtService.validateToken(refreshToken, userDetails)) {
-            throw new RestException("Refresh token is not valid", HttpStatus.FORBIDDEN);
-        }
-    }
+        try {
+            var isValid = jwtService.validateToken(refreshToken, userDetails);
 
-    private void isTokenExpired(String refreshToken) {
-
-        if (jwtService.isTokenExpired(refreshToken)) {
-            throw new RestException("Refresh token expired", HttpStatus.FORBIDDEN);
+            if (!isValid) {
+                throw new RestException("Refresh token is not valid", HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            throw new RestException(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 

@@ -1,11 +1,13 @@
 package org.lets_play_be.security.utils;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.repository.BlacklistedTokenRepository;
 import org.lets_play_be.security.securityConfig.JwtProperties;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtService {
 
     private final JwtProperties config;
@@ -39,12 +42,23 @@ public class JwtService {
     }
 
     public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try {
+            return extractExpiration(token).before(new Date());
+
+        } catch (Exception e) {
+            throw new JwtException("Token is expired");
+        }
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final var username = getUsernameFromToken(token);
+        var isValid = username.equals(userDetails.getUsername());
+
+        if (!isValid) {
+            log.error("Token id not valid");
+        }
+
+        return (isValid && !isTokenExpired(token));
     }
 
     public boolean isRefreshTokenBlacklisted(String token) {
@@ -62,11 +76,24 @@ public class JwtService {
     }
 
     public String getRefreshTokenFromCookie(HttpServletRequest request) {
-        return getCookieValueByName(request, config.getRtCookieName());
+
+        var refreshToken = getCookieValueByName(request, config.getRtCookieName());
+
+        if (refreshToken != null) {
+            return refreshToken;
+        } else {
+            throw new JwtException("Refresh token not found");
+        }
     }
 
     public String getAccessTokenFromCookie(HttpServletRequest request) {
-        return getCookieValueByName(request, config.getAtCookieName());
+        var accessToken = getCookieValueByName(request, config.getAtCookieName());
+
+        if (accessToken != null) {
+            return accessToken;
+        } else {
+            throw new JwtException("Access token not found");
+        }
     }
 
     public ResponseCookie cleanRefreshTokenCookie() {

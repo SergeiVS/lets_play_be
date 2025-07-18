@@ -1,5 +1,6 @@
 package org.lets_play_be.security.utils;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +74,7 @@ class AuthServiceTest {
     MockHttpServletRequest httpRequest;
     MockHttpServletResponse httpResponse;
     Date expiresAt;
-    OffsetDateTime exparitionOffset;
+    OffsetDateTime expirationOffset;
     String exparitionString;
 
     @BeforeEach
@@ -103,8 +104,8 @@ class AuthServiceTest {
         httpRequest.setCookies(new Cookie(accessTokenCookie.getName(), "access-token")
                 , new Cookie(refreshTokenCookie.getName(), "refresh-token"));
         expiresAt = new Date();
-        exparitionOffset = expiresAt.toInstant().atOffset(ZoneOffset.of("+01:00"));
-        exparitionString = exparitionOffset.toString();
+        expirationOffset = expiresAt.toInstant().atOffset(ZoneOffset.of("+01:00"));
+        exparitionString = expirationOffset.toString();
     }
 
     @AfterEach
@@ -277,7 +278,6 @@ class AuthServiceTest {
         when(jwtService.getRefreshTokenFromCookie(httpRequest)).thenReturn(refreshToken);
         when(jwtService.getUsernameFromToken(refreshToken)).thenReturn(user.getEmail());
         when(userDetailsService.loadUserByUsername(user.getEmail())).thenReturn(userDetails);
-        when(jwtService.isTokenExpired(refreshToken)).thenReturn(false);
         when(jwtService.validateToken(refreshToken, userDetails)).thenReturn(true);
         when(userProfileService.getUserProfile(user.getEmail())).thenReturn(profile);
         when(jwtService.generateAccessTokenCookie(user.getEmail(), profile.roles()))
@@ -301,7 +301,6 @@ class AuthServiceTest {
         verify(userProfileService, times(1)).getUserProfile(user.getEmail());
         verify(userDetailsService, times(1)).loadUserByUsername(user.getEmail());
         verify(jwtService, times(1)).validateToken(refreshToken, userDetails);
-        verify(jwtService, times(1)).isTokenExpired(refreshToken);
         verify(jwtService, times(1)).generateAccessTokenCookie(user.getEmail(), profile.roles());
         verify(jwtService, times(1)).extractExpiration(anyString());
     }
@@ -323,14 +322,13 @@ class AuthServiceTest {
         verify(jwtService, times(1)).getUsernameFromToken(anyString());
         verify(userDetailsService, times(1)).loadUserByUsername(user.getEmail());
         verify(jwtService, times(1)).validateToken(refreshToken, userDetails);
-        verify(jwtService, times(0)).isTokenExpired(refreshToken);
         verify(userProfileService, times(0)).getUserProfile(user.getEmail());
         verify(jwtService, times(0)).generateAccessTokenCookie(user.getEmail(), profile.roles());
         verify(jwtService, times(0)).extractExpiration(anyString());
     }
 
     @Test
-    void refreshAccessToken_ThrowsRestException_TokenExpired() {
+    void refreshAccessToken_ThrowsRestException_ValidateTokenTrows() {
         String refreshToken = "refresh-token";
         httpRequest.setCookies(new Cookie("access-token", "access-token")
                 , new Cookie("refresh-token", "refresh-token"));
@@ -338,16 +336,14 @@ class AuthServiceTest {
         when(jwtService.getRefreshTokenFromCookie(httpRequest)).thenReturn(refreshToken);
         when(jwtService.getUsernameFromToken(refreshToken)).thenReturn(user.getEmail());
         when(userDetailsService.loadUserByUsername(user.getEmail())).thenReturn(userDetails);
-        when(jwtService.validateToken(refreshToken, userDetails)).thenReturn(true);
-        when(jwtService.isTokenExpired(refreshToken)).thenReturn(true);
+        when(jwtService.validateToken(refreshToken, userDetails)).thenThrow(JwtException.class);
 
-        assertThrows(RestException.class, () -> authService.refreshAccessToken(httpRequest, httpResponse), "Refresh token expired");
+        assertThrows(RestException.class, () -> authService.refreshAccessToken(httpRequest, httpResponse));
 
         verify(jwtService, times(1)).getRefreshTokenFromCookie(httpRequest);
         verify(jwtService, times(1)).getUsernameFromToken(anyString());
         verify(userDetailsService, times(1)).loadUserByUsername(user.getEmail());
         verify(jwtService, times(1)).validateToken(refreshToken, userDetails);
-        verify(jwtService, times(1)).isTokenExpired(refreshToken);
         verify(userProfileService, times(0)).getUserProfile(user.getEmail());
         verify(jwtService, times(0)).generateAccessTokenCookie(user.getEmail(), profile.roles());
         verify(jwtService, times(0)).extractExpiration(anyString());
