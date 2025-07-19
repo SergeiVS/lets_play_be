@@ -40,13 +40,12 @@ public class LobbyActive extends LobbyBase {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || o.getClass() != this.getClass()) return false;
-        LobbyActive that = (LobbyActive) o;
-        return Objects.equals(getTitle(), that.getTitle());
+        if (!(o instanceof LobbyActive that)) return false;
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getTitle());
+        return Objects.hashCode(getId());
     }
 }

@@ -63,11 +63,15 @@ public class LobbyActiveService {
 
         AppUser owner = userService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyActive lobbyForChange = getLobbyByIdOrThrow(request.id());
+        LobbyActive lobbyForChange = getLobbyByIdOrThrow(request.lobbyId());
 
         baseUpdateService.setNewValues(request, lobbyForChange, owner.getId());
 
         LobbyActive savedLobby = repository.save(lobbyForChange);
+
+        var notificationData = new LobbyUpdatedNotificationData(savedLobby);
+
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
 
         return new ActiveLobbyResponse(savedLobby);
     }
@@ -81,9 +85,9 @@ public class LobbyActiveService {
 
         baseUpdateService.isLobbyOwner(lobbyForDelete, owner.getId());
 
-        var data = new LobbyClosedNotificationData(lobbyForDelete);
-
         repository.delete(lobbyForDelete);
+
+        var data = new LobbyClosedNotificationData(lobbyForDelete);
 
         sseNotificationService.notifyLobbyMembers(lobbyForDelete.getId(), data);
 
@@ -96,7 +100,7 @@ public class LobbyActiveService {
     public LobbyActive getLobbyByIdOrThrow(Long id) {
 
         return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No Lobby found with id: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("No Lobby found with lobbyId: " + id));
     }
 
     private void subscribeLobbySubjectInPool(LobbyActive lobby) {

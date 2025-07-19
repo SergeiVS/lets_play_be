@@ -12,9 +12,9 @@ import org.lets_play_be.security.utils.AuthService;
 import org.lets_play_be.service.appUserService.RegisterNewUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,8 +36,8 @@ public class AuthController implements AuthControllerApi {
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
-        authService.logout(request, response, principal);
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+        authService.logout(request, response, auth);
     }
 
     @Override

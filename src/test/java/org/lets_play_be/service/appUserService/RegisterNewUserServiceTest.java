@@ -21,7 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 import static org.mockito.Mockito.*;
 
@@ -33,59 +35,52 @@ class RegisterNewUserServiceTest {
     private AppUserRoleService roleServiceMock;
     @Mock
     private PasswordEncoder passwordEncoderMock;
-
     @Mock
     private AppUserRepository repositoryMock;
     @InjectMocks
     private RegisterNewUserService registerNewUserService;
 
     private AppUserFullResponse responseMocked;
-
     private NewUserRegistrationRequest request;
-
     private UserAvailability availability;
-
     private AppUser appUserForSave;
-
     private AppUser appUserSaved;
-
     private AppUserRole role;
-
-    String name;
-    String email;
-    String password;
-    String avatarUrl;
-    String fromAvailable;
-    String toAvailable;
 
 
     @BeforeEach
     void setUp() {
         request = new NewUserRegistrationRequest("Name", "name@testemail.com", "password", "");
-
         availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
-
-        name = request.name();
-        email = request.email();
-        password = "hashedPassword";
-        avatarUrl = "N/A";
+      
+        String name = request.name();
+        String email = request.email();
+        String password = "hashedPassword";
+        String avatarUrl = "N/A";
+        String fromAvailable = timeToStringFormatter(availability.getFromUnavailable());
+        String toAvailable = timeToStringFormatter(availability.getFromUnavailable());
+        
         role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
-        fromAvailable = timeToStringFormatter(availability.getFromUnavailable());
-        toAvailable = timeToStringFormatter(availability.getFromUnavailable());
-
         responseMocked = new AppUserFullResponse(1L, "Name", "name@testemail.com", avatarUrl,
                 new String[]{role.getName()}, "AVAILABLE", fromAvailable, toAvailable);
-
         appUserForSave = new AppUser(name, email, password, avatarUrl);
         appUserForSave.getRoles().add(role);
         appUserForSave.setAvailability(availability);
-
         appUserSaved = new AppUser(1L, name, email, password, avatarUrl);
         appUserSaved.getRoles().add(role);
         appUserSaved.setAvailability(availability);
-
     }
 
+
+    @AfterEach
+    void tearDown() {
+        responseMocked = null;
+        request = null;
+        availability = null;
+        appUserForSave = null;
+        appUserSaved = null;
+        role = null;
+    }
 
     @AfterEach
     void tearDown() {
@@ -98,7 +93,6 @@ class RegisterNewUserServiceTest {
 
     }
 
-
     @Test
     void registerNewUserPositive() {
 
@@ -108,7 +102,6 @@ class RegisterNewUserServiceTest {
         when(roleServiceMock.getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name())).thenReturn(role);
         when(repositoryMock.save(appUserForSave)).thenReturn(appUserSaved);
 
-//
         AppUserFullResponse result = registerNewUserService.registerNewUser(request);
 
         assertThat(result.userId()).isEqualTo(responseMocked.userId());
@@ -126,8 +119,6 @@ class RegisterNewUserServiceTest {
         verify(passwordEncoderMock, times(1)).encode("password");
         verify(roleServiceMock, times(1)).getRoleByNameOrThrow(UserRoleEnum.ROLE_USER.name());
         verify(repositoryMock, times(1)).save(appUserForSave);
-
-
     }
 
 

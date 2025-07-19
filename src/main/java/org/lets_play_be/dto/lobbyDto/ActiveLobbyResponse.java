@@ -12,7 +12,7 @@ import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
 @Schema(description = "Will sent to client as current Lobby state presentation")
 public record ActiveLobbyResponse(long id,
-                                  String date,
+                                  String time,
                                   InvitedUserResponse owner,
                                   String lobbyType,
                                   String title,
@@ -32,11 +32,13 @@ public record ActiveLobbyResponse(long id,
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ActiveLobbyResponse response)) return false;
-        return id == response.id && Objects.equals(date, response.date) && Objects.equals(title, response.title) && Objects.equals(lobbyType, response.lobbyType) && Objects.equals(owner, response.owner) && Objects.equals(invitedUsers, response.invitedUsers);
+
+        return id == response.id && Objects.equals(time, response.time) && Objects.equals(title, response.title) && Objects.equals(lobbyType, response.lobbyType) && Objects.equals(owner, response.owner) && Objects.equals(invitedUsers, response.invitedUsers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, date, owner, lobbyType, title, invitedUsers);
+
+        return Objects.hash(id, time, owner, lobbyType, title, invitedUsers);
     }
 }

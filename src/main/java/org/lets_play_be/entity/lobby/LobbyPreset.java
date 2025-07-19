@@ -34,19 +34,15 @@ public class LobbyPreset extends LobbyBase {
         this.users = users;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || o.getClass() != this.getClass()) return false;
-        LobbyPreset that = (LobbyPreset) o;
-        return Objects.equals(id, that.id);
+        if (!(o instanceof LobbyPreset that)) return false;
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode(getId());
     }
-
-
 }

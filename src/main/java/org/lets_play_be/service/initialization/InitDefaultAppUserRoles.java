@@ -2,8 +2,8 @@ package org.lets_play_be.service.initialization;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.entity.enums.UserRoleEnum;
+import org.lets_play_be.entity.user.AppUserRole;
 import org.lets_play_be.repository.AppUserRoleRepository;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +12,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class InitDefaultAppUserRoles {
+
     private final AppUserRoleRepository repository;
     private final AppUserRoleMapping appUserRoleMapping;
 
@@ -30,8 +31,5 @@ public class InitDefaultAppUserRoles {
                 appUserRoleMapping.put(roleEnum, savedRole);
             }
         }
-
     }
-
-
 }

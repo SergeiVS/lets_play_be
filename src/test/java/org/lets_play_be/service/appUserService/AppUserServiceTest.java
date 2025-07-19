@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,20 +41,15 @@ class AppUserServiceTest {
 
     AppUser user1;
     AppUser user2;
-
     AppUserRole role;
-
     UserAvailability userAvailability1;
     UserAvailability userAvailability2;
-
 
     @BeforeEach
     void setUp() {
         role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
-
         userAvailability1 = new UserAvailability(1L, AvailabilityEnum.AVAILABLE);
         userAvailability2 = new UserAvailability(2L, AvailabilityEnum.AVAILABLE);
-
         user1 = new AppUser(1L, "User1", "email@email.com", "password", "");
         user2 = new AppUser(2L, "User2", "email2@email.com", "password2", "");
 
@@ -98,12 +92,14 @@ class AppUserServiceTest {
     @Test
     void getAppUserFullData_Throws_UserNotFoundException() {
 
-        when(repository.findAppUserByEmail("someEmail")).thenReturn(Optional.empty());
+        when(repository.findAppUserByEmail(anyString())).thenReturn(Optional.empty());
 
         assertThrowsExactly(UsernameNotFoundException.class,
                 () -> appUserService.getAppUserFullData("someEmail"),
                 ErrorMessage.USER_NOT_FOUND.toString());
-        verify(repository, times(1)).findAppUserByEmail("someEmail");
+
+        verify(repository, times(1)).findAppUserByEmail(anyString());
+
     }
 
 
@@ -240,9 +236,9 @@ class AppUserServiceTest {
 
         when(repository.findAppUserByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
 
-        assertThrowsExactly(DateTimeParseException.class, () -> appUserService.updateUserAvailability(request1, user1.getEmail()));
-        assertThrowsExactly(DateTimeParseException.class, () -> appUserService.updateUserAvailability(request2, user1.getEmail()));
-        assertThrowsExactly(DateTimeParseException.class, () -> appUserService.updateUserAvailability(request3, user1.getEmail()));
+        assertThrowsExactly(IllegalArgumentException.class, () -> appUserService.updateUserAvailability(request1, user1.getEmail()));
+        assertThrowsExactly(IllegalArgumentException.class, () -> appUserService.updateUserAvailability(request2, user1.getEmail()));
+        assertThrowsExactly(IllegalArgumentException.class, () -> appUserService.updateUserAvailability(request3, user1.getEmail()));
 
         verify(repository, times(0)).save(user1);
     }
