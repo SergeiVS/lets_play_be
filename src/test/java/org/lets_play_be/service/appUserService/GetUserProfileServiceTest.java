@@ -29,7 +29,6 @@ class GetUserProfileServiceTest {
     GetUserProfileService service;
 
     AppUser user;
-
     AppUserRole role;
 
     @BeforeEach

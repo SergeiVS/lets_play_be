@@ -1,14 +1,15 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.service.appUserService.AppUserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 
 import static org.lets_play_be.notification.NotificationFactory.createNotification;
 
@@ -42,31 +43,35 @@ public class SseNotificationService {
         try {
             if (recipientPool.isInPool(recipientId)) {
 
-                SseNotificationObserver observer = ((SseNotificationObserver) recipientPool.getObserver(recipientId));
+                var observer = ((SseNotificationObserver) recipientPool.getObserver(recipientId));
 
-                LobbySubject subject = ((LobbySubject) subjectPool.getSubject(lobbyId));
+                var subject = ((LobbySubject) subjectPool.getSubject(lobbyId));
 
                 observer.addOnCloseCallback(lobbyId, subject.removeObserver(observer));
 
                 subject.subscribe(observer);
             }
         } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+            throw new RestException("Subscription for Lobby failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public void notifyLobbyMembers(long lobbyId, NotificationData data) {
+        try {
+            var subject = subjectPool.getSubject(lobbyId);
 
-        var subject = subjectPool.getSubject(lobbyId);
+            var notification = createNotification(data);
 
-        var notification = createNotification(data);
+            subject.notifyObservers(notification);
 
-        subject.notifyObservers(notification);
+        } catch (RuntimeException e) {
+            throw new RestException("Members Notification failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public void unsubscribeUserFromSubject(long userId, Long lobbyId) {
         if (recipientPool.isInPool(userId)) {
-            SseNotificationObserver observer = ((SseNotificationObserver) recipientPool.getObserver(userId));
+            var observer = ((SseNotificationObserver) recipientPool.getObserver(userId));
             observer.unsubscribeFromSubject(lobbyId);
             observer.removeOnCloseCallback(lobbyId);
         }

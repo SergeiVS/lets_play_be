@@ -2,12 +2,14 @@ package org.lets_play_be.notification;
 
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.notification.dto.*;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.lets_play_be.utils.FormattingUtils.dateTimeToStringFormatter;
 
+@Service
 public class NotificationFactory {
 
     public static Notification createNotification(NotificationData data) {

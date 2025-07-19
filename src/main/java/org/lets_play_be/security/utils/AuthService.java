@@ -3,7 +3,6 @@ package org.lets_play_be.security.utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.dto.userDto.AppUserProfile;
 import org.lets_play_be.entity.BlacklistedToken;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
@@ -22,10 +21,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -39,89 +36,90 @@ public class AuthService {
     private final BlacklistedTokenRepository blacklistedTokenRepository;
     private final AppUserService userService;
     private final SseLiveRecipientPool recipientPool;
-
     private final JwtService jwtService;
     private final GetUserProfileService getUserProfileService;
     private final AppUserDetailsService userDetailsService;
 
-    public void logout(HttpServletRequest request, HttpServletResponse response, Principal principal) {
-
-        final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
-
-        final var expiry = getTokenExpirationFromToken(refreshToken);
-
-        final var user = userService.getUserByEmailOrThrow(principal.getName());
-
-        removeSseRecipient(user);
-
-        cleanTokens(response, user, refreshToken, expiry);
-    }
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 
-        Authentication authentication;
+        var auth = getAuthentication(loginRequest);
 
-        authentication = getAuthentication(loginRequest);
+        if (auth.isAuthenticated()) {
 
-        if (authentication.isAuthenticated()) {
-            return getLoginResponse(response, authentication);
+            var accessTokenCookie = setResponseCookies(response, auth);
+            var tokenExpiration = getTokenExpirationFromToken(accessTokenCookie.getValue());
+
+            return new LoginResponse(tokenExpiration.toString());
+
         } else {
             SecurityContextHolder.getContext().setAuthentication(null);
-            throw new UsernameNotFoundException("Invalid User Request");
-        }
 
+            throw new RestException("User is not authenticated", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+
+        final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
+
+        assert refreshToken != null : "Refresh token is null";
+
+        final var tokenExpiration = getTokenExpirationFromToken(refreshToken);
+        final var user = userService.getUserByEmailOrThrow(auth.getName());
+
+        removeSseRecipient(user);
+
+        cleanTokens(response, user, refreshToken, tokenExpiration);
     }
 
     public LoginResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
-        final String refreshToken = jwtService.getAccessTokenFromCookie(request);
-
-        final String userEmail = jwtService.getUsernameFromToken(refreshToken);
-
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-
-        isTokenExpired(refreshToken);
+        final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
+        final var userEmail = jwtService.getUsernameFromToken(refreshToken);
+        final var userDetails = userDetailsService.loadUserByUsername(userEmail);
 
         isTokenValid(refreshToken, userDetails);
 
-        setNewATIntoCookie(response, userEmail);
+        var atCookie = getNewAtCookie(userEmail);
 
-        return new LoginResponse(jwtService.extractExpiration(jwtService.getAccessTokenFromCookie(request)).toString());
-    }
+        response.addHeader(HttpHeaders.SET_COOKIE, atCookie.toString());
 
-    private void setNewATIntoCookie(HttpServletResponse response, String userEmail) {
-        final AppUserProfile profile = getUserProfileService.getUserProfile(userEmail);
-        final ResponseCookie cookie = jwtService.generateAccessTokenCookie(userEmail, profile.roles());
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-    }
-
-    private void isTokenValid(String refreshToken, UserDetails userDetails) {
-        if (!jwtService.validateToken(refreshToken, userDetails)) {
-            throw new RestException("Refresh token is not valid", HttpStatus.FORBIDDEN);
-        }
-    }
-
-    private void isTokenExpired(String refreshToken) {
-        if (jwtService.isTokenExpired(refreshToken)) {
-            throw new RestException("Refresh token expired", HttpStatus.FORBIDDEN);
-        }
-    }
-
-    private LoginResponse getLoginResponse(HttpServletResponse response, Authentication authentication) {
-
-        AppUserProfile userProfile = getUserProfileService.getUserProfile(authentication.getName());
-        ResponseCookie accessTokenCookie = jwtService.generateAccessTokenCookie(userProfile.email(), userProfile.roles());
-        ResponseCookie refreshTokenCookie = jwtService.generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
-        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-
-        OffsetDateTime tokenExpiration = getTokenExpiration(accessTokenCookie);
+        var tokenExpiration = getTokenExpirationFromToken(atCookie.getValue());
 
         return new LoginResponse(tokenExpiration.toString());
     }
 
-    private OffsetDateTime getTokenExpiration(ResponseCookie accessTokenCookie) {
-        return getTokenExpirationFromToken(accessTokenCookie.getValue());
+    private ResponseCookie getNewAtCookie(String userEmail) {
+
+        final var profile = getUserProfileService.getUserProfile(userEmail);
+
+        return jwtService.generateAccessTokenCookie(userEmail, profile.roles());
+    }
+
+    private void isTokenValid(String refreshToken, UserDetails userDetails) {
+
+        try {
+            var isValid = jwtService.validateToken(refreshToken, userDetails);
+
+            if (!isValid) {
+                throw new RestException("Refresh token is not valid", HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            throw new RestException(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private ResponseCookie setResponseCookies(HttpServletResponse response, Authentication authentication) {
+
+        var userProfile = getUserProfileService.getUserProfile(authentication.getName());
+        var accessTokenCookie = jwtService.generateAccessTokenCookie(userProfile.email(), userProfile.roles());
+        var refreshTokenCookie = jwtService.generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+        return accessTokenCookie;
     }
 
     private OffsetDateTime getTokenExpirationFromToken(String token) {
@@ -132,20 +130,25 @@ public class AuthService {
     private Authentication getAuthentication(LoginRequest loginRequest) {
 
         Authentication authentication;
-        String email = normalizeEmail(loginRequest.email());
-        String password = loginRequest.password().trim();
+        var email = normalizeEmail(loginRequest.email());
+        var password = loginRequest.password().trim();
 
         try {
             authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
         } catch (BadCredentialsException e) {
+
             throw new RestException(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         return authentication;
     }
 
     private void removeSseRecipient(AppUser user) {
-        if (recipientPool.isInPool(user.getId())){
+
+        if (recipientPool.isInPool(user.getId())) {
             recipientPool.removeRecipient(user.getId());
         }
     }
@@ -156,7 +159,6 @@ public class AuthService {
 
         response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanAccessTokenCookie().toString());
         response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanRefreshTokenCookie().toString());
-
     }
 
 }

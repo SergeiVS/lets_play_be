@@ -23,18 +23,15 @@ public class SseLiveRecipientPool {
         pool.put(recipientId, observer);
     }
 
-
     public void removeRecipient(final long recipientId) {
 
         SseNotificationObserver observer = (SseNotificationObserver) pool.remove(recipientId);
         observer.getOnCloseCallbacks().values().forEach(Runnable::run);
-
     }
 
     public boolean isInPool(final long recipientId) {
         return pool.containsKey(recipientId);
     }
-
 
     public NotificationObserver getObserver(final long recipientId) {
 
@@ -51,7 +48,7 @@ public class SseLiveRecipientPool {
 
             removeRecipient(recipientId);
 
-            throw new RestException("Sse connection error. " + throwable.getMessage(), HttpStatus.BAD_GATEWAY);
+            throw new RestException("Sse connection error. " + throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         });
     }
 }

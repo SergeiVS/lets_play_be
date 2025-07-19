@@ -9,12 +9,12 @@ public enum UserRoleEnum {
    ROLE_ADMIN,
    ROLE_USER;
 
-   private static final List<UserRoleEnum> VALUES = Arrays.asList(values());
+   private static final List<UserRoleEnum> ROLE_ENUMS = Arrays.asList(values());
 
    public static Optional<UserRoleEnum> findRole(String name) {
        if (name == null) return Optional.empty();
 
-       return VALUES.stream()
+       return ROLE_ENUMS.stream()
                .filter(role -> role.name()
                        .equalsIgnoreCase(name))
                .findFirst();

@@ -10,6 +10,7 @@ public record LobbyUpdatedNotificationData(long lobbyId,
                                            String ownerName,
                                            String title,
                                            String time) implements Serializable, NotificationData {
+
     public LobbyUpdatedNotificationData(LobbyActive lobby) {
         this(
                 lobby.getId(),

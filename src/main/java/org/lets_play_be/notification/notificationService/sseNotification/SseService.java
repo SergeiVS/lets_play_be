@@ -21,10 +21,10 @@ public class SseService {
         try {
             Notification notification = createNotification(new MessageNotificationData("Connection build"));
             emitter.send(notification);
-
         } catch (Exception e) {
-            throw new RestException("Sse connection creating is failed", HttpStatus.BAD_GATEWAY);
+            throw new RestException("Sse connection creating is failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         return emitter;
     }
 }

@@ -148,7 +148,7 @@ public class InviteService {
 
     private Invite getInviteByIdOrElseThrow(long inviteId) {
         return inviteRepository.findById(inviteId).orElseThrow(
-                () -> new ObjectNotFoundException("Invite with id " + inviteId + " not found", Invite.class));
+                () -> new ObjectNotFoundException("Invite with lobbyId " + inviteId + " not found", Invite.class));
     }
 
     private void validateDelayedFor(UpdateInviteStateRequest request) {

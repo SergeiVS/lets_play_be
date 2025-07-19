@@ -11,12 +11,13 @@ import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.LobbyPresetRepository;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.lets_play_be.utils.FormattingUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
+
+import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 
 @Service
@@ -35,9 +36,11 @@ public class LobbyPresetService {
         return new LobbyPresetFullResponse(savedLobby);
     }
 
-    public List<LobbyPresetFullResponse> getAllUserPresets(Authentication authentication) {
-        AppUser owner = getOwner(authentication);
+    public List<LobbyPresetFullResponse> getAllUserPresets(Authentication auth) {
+
+        AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
         List<LobbyPreset> lobbies = repository.findByOwnerId(owner.getId());
+
         return getListOfPresetsFullResponse(lobbies);
     }
 
@@ -72,7 +75,7 @@ public class LobbyPresetService {
 
         repository.deleteById(id);
 
-        return new StandardStringResponse("Lobby preset with id: " + id + " is deleted");
+        return new StandardStringResponse("Lobby preset with lobbyId: " + id + " is deleted");
     }
 
 
@@ -81,7 +84,7 @@ public class LobbyPresetService {
 
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.id());
+        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.lobbyId());
 
         baseUpdateService.setNewValues(request, presetForChange, owner.getId());
 
@@ -91,10 +94,12 @@ public class LobbyPresetService {
     }
 
     public LobbyPreset getLobbyByIdOrThrow(Long id) {
+
         return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
     }
 
     private List<LobbyPresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
+
         return presets
                 .stream()
                 .map(LobbyPresetFullResponse::new)
@@ -102,29 +107,29 @@ public class LobbyPresetService {
     }
 
     private static void removeUsersFromPreset(ChangeLobbyPresetUsersRequest request, LobbyPreset presetForRemove) {
+
         presetForRemove.getUsers().removeIf(user -> request.usersId().contains(user.getId()));
     }
 
     private List<AppUser> getUsersForAdd(LobbyPreset presetForChange, List<Long> usersId) {
+
         for (AppUser user : presetForChange.getUsers()) {
             usersId.remove(user.getId());
         }
+
         return appUserService.getUsersListByIds(usersId);
     }
 
-    private LobbyPreset saveNewLobbyPreset(NewLobbyRequest request, Authentication authentication) {
+    private LobbyPreset saveNewLobbyPreset(NewLobbyRequest request, Authentication auth) {
 
-        AppUser owner = getOwner(authentication);
-        OffsetTime time = FormattingUtils.timeStringToOffsetTime(request.time());
+        AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
+
+        OffsetTime time = timeStringToOffsetTime(request.time());
+
         List<AppUser> users = appUserService.getUsersListByIds(request.userIds());
 
         LobbyPreset lobbyToSave = new LobbyPreset(request.title(), time, owner, users);
+
         return repository.save(lobbyToSave);
     }
-
-    private AppUser getOwner(Authentication authentication) {
-        String email = authentication.getName();
-        return appUserService.getUserByEmailOrThrow(email);
-    }
-
 }

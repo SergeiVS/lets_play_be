@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class LobbySubjectPool {
 
-    private final Map<Long, NotificationSubject> subjectPool = new ConcurrentHashMap<Long, NotificationSubject>();
+    private final Map<Long, NotificationSubject> subjectPool = new ConcurrentHashMap<>();
 
     public NotificationSubject getSubject(long lobbyId) {
 
