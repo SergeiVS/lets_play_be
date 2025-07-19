@@ -24,10 +24,10 @@ public class LobbyBaseUpdateService {
         if (!request.newTitle().equals(lobbyForChange.getTitle())) {
             lobbyForChange.setTitle(request.newTitle());
         }
+
         if (lobbyForChange.getTime() != newTime) {
             lobbyForChange.setTime(newTime);
         }
-
     }
 
     public void isLobbyOwner(LobbyBase lobby, Long ownerId) {

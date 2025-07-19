@@ -14,6 +14,6 @@ public interface BlacklistedTokenRepository extends JpaRepository<BlacklistedTok
 
 
     @Modifying
-    int removeBlacklistedTokensByExpiresAtBefore(OffsetDateTime now)
+    int removeBlacklistedTokensByExpiresAtBefore(OffsetDateTime now);
 
 }
