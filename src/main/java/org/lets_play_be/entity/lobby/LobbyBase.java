@@ -22,21 +22,16 @@ import java.util.List;
 public abstract class LobbyBase {
 
     private String title;
-
     @Setter(AccessLevel.PROTECTED)
     private LobbyType type;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "owner_id")
     private AppUser owner;
-
     private OffsetTime time;
-
 
     public LobbyBase(String title, OffsetTime time, AppUser owner) {
         this.title = title;
         this.time = time;
         this.owner = owner;
     }
-
 }

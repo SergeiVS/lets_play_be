@@ -22,16 +22,4 @@ class UserControllerTest {
                 .andExpect(status().isUnauthorized());
 
     }
-
-    @Test
-    void getUserData() {
-    }
-
-    @Test
-    void updateUserData() {
-    }
-
-    @Test
-    void updateUserAvailability() {
-    }
 }

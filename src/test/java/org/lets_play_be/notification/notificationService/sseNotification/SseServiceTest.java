@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SseServiceTest {
@@ -25,6 +26,8 @@ class SseServiceTest {
     @Test
     void createSseConnection() {
         SseEmitter result = sseService.createSseConnection();
+
         assertNotNull(result);
+        assertInstanceOf(SseEmitter.class, result);
     }
 }

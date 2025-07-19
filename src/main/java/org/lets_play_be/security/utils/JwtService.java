@@ -1,9 +1,6 @@
 package org.lets_play_be.security.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +40,8 @@ public class JwtService {
 
     public boolean isTokenExpired(String token) {
         try {
-            return extractExpiration(token).before(new Date());
 
+            return extractExpiration(token).before(new Date());
         } catch (Exception e) {
             throw new JwtException("Token is expired");
         }

@@ -1,5 +1,6 @@
 package org.lets_play_be.utils;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -14,6 +15,16 @@ class FormattingUtilsTest {
         String normalizedEmail = "test@test.com";
 
         assertEquals(normalizedEmail, normalizeEmail(email));
+    }
+
+    @Test
+    void timeToStringFormatter_Throws_TimeIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> FormattingUtils.timeToStringFormatter(null));
+    }
+
+    @Test
+    void dateTimeToStringFormatter_Throws_TimeDateIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> FormattingUtils.dateTimeToStringFormatter(null));
     }
 
     @ParameterizedTest
@@ -35,10 +46,17 @@ class FormattingUtilsTest {
         assertEquals(timeString.substring(8), String.valueOf(result.getOffset()));
 
     }
+
     @ParameterizedTest
-    @ValueSource(strings = {"24:00:30+01:00", "00:60:30+01:00", "00:59:60+01:00", "00:59:60+15:00"})
-    void timeStringToOffsetTime_Trows_IllegalArgumentException(String timeString) {
+    @ValueSource(strings = {"24:00:30+01:00", "00:60:30+01:00", "00:59:60+01:00", "00:59:60+15:00", "", " "})
+    void timeStringToOffsetTime_Trows_IllegalArgumentException_WrongFormat(String timeString) {
 
         assertThrows(IllegalArgumentException.class, () -> FormattingUtils.timeStringToOffsetTime(timeString));
+    }
+
+    @Test
+    void timeStringToOffsetTime_Trows_IllegalArgumentException_EmptyOrNull() {
+
+        assertThrows(IllegalArgumentException.class, () -> FormattingUtils.timeStringToOffsetTime(null));
     }
 }

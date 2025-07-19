@@ -49,6 +49,6 @@ public class LobbySubject implements NotificationSubject {
     }
 
     public Runnable removeObserver(NotificationObserver observer) {
-        return ()->unsubscribe(observer);
+        return () -> unsubscribe(observer);
     }
 }

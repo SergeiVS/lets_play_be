@@ -35,7 +35,7 @@ class AuthControllerTest {
     @Autowired
     EntityManager em;
 
-    static ObjectMapper mapper = new ObjectMapper();
+    static final ObjectMapper mapper = new ObjectMapper();
 
 
     @Nested
@@ -211,12 +211,6 @@ class AuthControllerTest {
 
             assertThat(actualSortedResponse).isEqualTo(expectedResponse);
         }
-    }
-
-
-    @Test
-    void refreshAccessToken() {
-
     }
 
     private AppUser getUserFromByEmail(String email) {

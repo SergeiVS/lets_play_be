@@ -8,6 +8,6 @@ import java.io.IOException;
 public interface NotificationObserver {
 
     void update(Notification notification) throws IOException;
-};
+}
 
 

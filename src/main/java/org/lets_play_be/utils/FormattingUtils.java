@@ -22,7 +22,7 @@ public class FormattingUtils {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_TIME;
 
         if (localTime == null) {
-            throw new IllegalStateException("Time is null");
+            throw new IllegalArgumentException("Time is null");
         }
 
         return formatter.format(localTime);
@@ -32,14 +32,14 @@ public class FormattingUtils {
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         if (dateTime == null) {
-            throw new IllegalStateException("Time is null");
+            throw new IllegalArgumentException("Time is null");
         }
         return formatter.format(dateTime);
     }
 
     public static OffsetTime timeStringToOffsetTime(String timeString) {
 
-        if (timeString == null || timeString.isEmpty()) {
+        if (timeString == null || timeString.isEmpty()|| timeString.matches("\\s*")) {
             throw new IllegalArgumentException("timeString is null or empty");
         }
 

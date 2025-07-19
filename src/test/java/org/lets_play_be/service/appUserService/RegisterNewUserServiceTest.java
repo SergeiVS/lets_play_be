@@ -44,12 +44,6 @@ class RegisterNewUserServiceTest {
     private AppUser appUserForSave;
     private AppUser appUserSaved;
     private AppUserRole role;
-    private String name;
-    private String email;
-    private String password;
-    private String avatarUrl;
-    private String fromAvailable;
-    private String toAvailable;
 
 
     @BeforeEach
@@ -58,13 +52,13 @@ class RegisterNewUserServiceTest {
 
         availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
 
-        name = request.name();
-        email = request.email();
-        password = "hashedPassword";
-        avatarUrl = "N/A";
+        String name = request.name();
+        String email = request.email();
+        String password = "hashedPassword";
+        String avatarUrl = "N/A";
         role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
-        fromAvailable = timeToStringFormatter(availability.getFromUnavailable());
-        toAvailable = timeToStringFormatter(availability.getFromUnavailable());
+        String fromAvailable = timeToStringFormatter(availability.getFromUnavailable());
+        String toAvailable = timeToStringFormatter(availability.getFromUnavailable());
 
         responseMocked = new AppUserFullResponse(1L, "Name", "name@testemail.com", avatarUrl,
                 new String[]{role.getName()}, "AVAILABLE", fromAvailable, toAvailable);

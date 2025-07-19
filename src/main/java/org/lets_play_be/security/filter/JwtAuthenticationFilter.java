@@ -38,34 +38,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try {
+            if (isRequestToSwagger(request)) {
+                log.info("Request from Swagger");
+                return;
+            }
+
             handleFilterInternal(request);
         } catch (JwtException e) {
             logJwtException(e);
         } catch (IllegalArgumentException e) {
-            log.error("Jwt token is empty: {}", e.getMessage());
+            log.error("Jwt token is not valid: {}", e.getMessage());
         } finally {
             filterChain.doFilter(request, response);
         }
     }
 
     private void handleFilterInternal(HttpServletRequest request) {
-        String jwt = getAtJwtFromCookie(request);
-        String refreshJwt = getRefreshJwtFromCookie(request);
 
-        if (jwt == null || refreshJwt == null) return;
+        var accessJwt = getAtJwtFromCookie(request);
+        var refreshJwt = getRefreshJwtFromCookie(request);
 
-        String username = jwtService.getUsernameFromToken(jwt);
+        if (accessJwt == null || refreshJwt == null) return;
+
+        String username = jwtService.getUsernameFromToken(accessJwt);
 
         if (username == null) return;
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        if (!isRefreshTokenBlacklisted(refreshJwt) && isValidTokenAndNotAuthenticated(jwt, userDetails)) {
+        if (!isRefreshTokenBlacklisted(refreshJwt) && isValidTokenAndNotAuthenticated(accessJwt, userDetails)) {
             validateCredentials(request, userDetails);
         }
     }
 
     private void validateCredentials(HttpServletRequest request, UserDetails userDetails) {
+
         var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -112,5 +119,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwt = jwtService.getRefreshTokenFromCookie(request);
         }
         return jwt;
+    }
+
+    private boolean isRequestToSwagger(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/swagger-ui") || request.getRequestURI().startsWith("/v3/api-docs");
     }
 }
