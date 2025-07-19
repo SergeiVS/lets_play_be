@@ -34,6 +34,7 @@ public class AppUserRole implements GrantedAuthority {
     public AppUserRole(String name) {
         this.name = name;
         users = new ArrayList<>();
+
     }
 
     public AppUserRole(Long id, String name) {

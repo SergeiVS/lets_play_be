@@ -10,12 +10,12 @@ import java.util.Objects;
 
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
+
 @Service
 @RequiredArgsConstructor
 public class LobbyBaseUpdateService {
-
-
-    public void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase lobbyForChange, long ownerId) {
+  
+        public void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase lobbyForChange, long ownerId) {
 
         isLobbyOwner(lobbyForChange, ownerId);
 
@@ -26,7 +26,6 @@ public class LobbyBaseUpdateService {
         }
         if (lobbyForChange.getTime() != newTime) {
             lobbyForChange.setTime(newTime);
-
         }
 
     }

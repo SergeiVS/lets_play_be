@@ -45,14 +45,11 @@ class AppUserServiceTest {
     UserAvailability userAvailability1;
     UserAvailability userAvailability2;
 
-
     @BeforeEach
     void setUp() {
         role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
-
         userAvailability1 = new UserAvailability(1L, AvailabilityEnum.AVAILABLE);
         userAvailability2 = new UserAvailability(2L, AvailabilityEnum.AVAILABLE);
-
         user1 = new AppUser(1L, "User1", "email@email.com", "password", "");
         user2 = new AppUser(2L, "User2", "email2@email.com", "password2", "");
 
@@ -94,12 +91,15 @@ class AppUserServiceTest {
 
     @Test
     void getAppUserFullData_Throws_UserNotFoundException() {
+
         when(repository.findAppUserByEmail(anyString())).thenReturn(Optional.empty());
 
         assertThrowsExactly(UsernameNotFoundException.class,
                 () -> appUserService.getAppUserFullData("someEmail"),
                 ErrorMessage.USER_NOT_FOUND.toString());
+
         verify(repository, times(1)).findAppUserByEmail(anyString());
+
     }
 
 

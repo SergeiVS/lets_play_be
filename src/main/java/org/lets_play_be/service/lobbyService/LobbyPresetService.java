@@ -132,5 +132,4 @@ public class LobbyPresetService {
 
         return repository.save(lobbyToSave);
     }
-
 }

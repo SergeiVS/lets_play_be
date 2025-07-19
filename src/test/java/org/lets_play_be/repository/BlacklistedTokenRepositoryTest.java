@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Profile;
 
 import java.time.OffsetDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -41,11 +40,10 @@ class BlacklistedTokenRepositoryTest {
 
         user2 = new AppUser("User2", "email2@email.com", "password2", "url");
         em.persist(user2);
-
+      
         expiresAt = OffsetDateTime.now().plusDays(1);
         token1 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3NTI2ODk2MTIsImV4cCI6MTc4NDIyNTYxMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkVtYWlsIjoianJvY2tldEBleGFtcGxlLmNvbSIsIlJvbGUiOiJVU0VSIn0.SEaiOYj9iwx2-7uTO9GV0r5tMNnE--vgidJeuia7row";
         token2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3NTI2ODk2MTIsImV4cCI6MTc4NDIyNTYxMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkVtYWlsIjoianJvY2tldDJAZXhhbXBsZS5jb20iLCJSb2xlIjoiVVNFUiJ9.QFaRIbrD0yNNzT2uSWjXQmsQN5kZwnJ99Ona_jZVrRc";
-
         blacklistedToken1 = new BlacklistedToken(user1, token1, expiresAt);
         em.persist(blacklistedToken1);
 
@@ -62,6 +60,7 @@ class BlacklistedTokenRepositoryTest {
 
     @Test
     void getByRefreshToken() {
+
 
         var result1 = repository.getByRefreshToken(token1);
         var result2 = repository.getByRefreshToken(token2);

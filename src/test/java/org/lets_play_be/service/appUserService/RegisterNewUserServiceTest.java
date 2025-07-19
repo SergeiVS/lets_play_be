@@ -21,7 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 import static org.mockito.Mockito.*;
 
@@ -49,24 +51,21 @@ class RegisterNewUserServiceTest {
     @BeforeEach
     void setUp() {
         request = new NewUserRegistrationRequest("Name", "name@testemail.com", "password", "");
-
         availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
-
+      
         String name = request.name();
         String email = request.email();
         String password = "hashedPassword";
         String avatarUrl = "N/A";
-        role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
         String fromAvailable = timeToStringFormatter(availability.getFromUnavailable());
         String toAvailable = timeToStringFormatter(availability.getFromUnavailable());
-
+        
+        role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
         responseMocked = new AppUserFullResponse(1L, "Name", "name@testemail.com", avatarUrl,
                 new String[]{role.getName()}, "AVAILABLE", fromAvailable, toAvailable);
-
         appUserForSave = new AppUser(name, email, password, avatarUrl);
         appUserForSave.getRoles().add(role);
         appUserForSave.setAvailability(availability);
-
         appUserSaved = new AppUser(1L, name, email, password, avatarUrl);
         appUserSaved.getRoles().add(role);
         appUserSaved.setAvailability(availability);
@@ -83,6 +82,16 @@ class RegisterNewUserServiceTest {
         role = null;
     }
 
+    @AfterEach
+    void tearDown() {
+        responseMocked = null;
+        request = null;
+        availability = null;
+        appUserForSave = null;
+        appUserSaved = null;
+        role = null;
+
+    }
 
     @Test
     void registerNewUserPositive() {

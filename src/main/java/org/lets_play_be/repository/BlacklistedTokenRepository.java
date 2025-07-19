@@ -9,9 +9,11 @@ import java.util.Optional;
 
 public interface BlacklistedTokenRepository extends JpaRepository<BlacklistedToken, Long> {
 
+
     Optional<BlacklistedToken> getByRefreshToken(String tokenHash);
 
+
     @Modifying
-    int removeBlacklistedTokensByExpiresAtBefore(OffsetDateTime now);
+    int removeBlacklistedTokensByExpiresAtBefore(OffsetDateTime now)
 
 }
