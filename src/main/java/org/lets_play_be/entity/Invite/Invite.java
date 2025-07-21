@@ -40,7 +40,7 @@ public class Invite {
     @Setter
     private int delayedFor;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lobby_active_id")
     private LobbyActive lobby;
 
