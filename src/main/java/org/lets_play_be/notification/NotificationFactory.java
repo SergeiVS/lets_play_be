@@ -15,18 +15,19 @@ public class NotificationFactory {
     public static Notification createNotification(NotificationData data) {
         UUID uuid = UUID.randomUUID();
         String createdAt = dateTimeToStringFormatter(OffsetDateTime.now());
-        String type = getNotificationType(data);
+        var type = getNotificationType(data);
+
         return new Notification(uuid, createdAt, type, data);
     }
 
-    private static String getNotificationType(NotificationData data) {
+    private static NotificationType getNotificationType(NotificationData data) {
 
         return switch (data) {
-            case MessageNotificationData ignored -> NotificationType.MESSAGE.name();
-            case LobbyCreatedNotificationData ignored -> NotificationType.LOBBY_CREATED.name();
-            case LobbyUpdatedNotificationData ignored -> NotificationType.LOBBY_UPDATED.name();
-            case LobbyClosedNotificationData ignored -> NotificationType.LOBBY_CLOSED.name();
-            case InviteResponse ignored -> NotificationType.INVITE_UPDATED.name();
+            case MessageNotificationData ignored -> NotificationType.MESSAGE;
+            case LobbyCreatedNotificationData ignored -> NotificationType.LOBBY_CREATED;
+            case LobbyUpdatedNotificationData ignored -> NotificationType.LOBBY_UPDATED;
+            case LobbyClosedNotificationData ignored -> NotificationType.LOBBY_CLOSED;
+            case InviteResponse ignored -> NotificationType.INVITE_UPDATED;
             default -> throw new IllegalStateException("Unexpected value: " + data);
         };
     }
