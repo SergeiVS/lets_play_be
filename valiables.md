@@ -1,7 +1,0 @@
-AT_COOKIE_NAME=access-token
-DATASOURCE_PASSWORD=admin
-DATASOURCE_URL=jdbc:postgresql://localhost:5431/devDb 
-DATASOURCE_USERNAME=admin
-JWT_AT_SECRET=8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb
- JWT_RT_SECRET=kLh7Fgv5kLh7Fgv5kLh7Fgv5kLh7Fgv5
-RT_COOKIE_NAME=refresh-token
