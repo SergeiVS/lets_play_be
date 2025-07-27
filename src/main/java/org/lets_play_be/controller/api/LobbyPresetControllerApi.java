@@ -45,7 +45,7 @@ public interface LobbyPresetControllerApi {
                                                                  @Valid
                                                                  NewLobbyRequest request,
                                                                  Authentication authentication);
-
+    @Deprecated
     @Operation(summary = "Getting All Users Presets")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Presets are found, may return an empty list",
@@ -66,6 +66,27 @@ public interface LobbyPresetControllerApi {
     })
     @GetMapping
     ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication);
+
+    @Operation(summary = "Getting saved users lobby preset. If not found returns new blank lobby preset")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Preset were found or created",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping("/{userId}")
+    ResponseEntity<LobbyPresetFullResponse> getUsersLobbyPreset(@PathVariable @NotNull long userId, Authentication auth);
 
     @Operation(summary = "Updating the Presets Time and Title fields")
     @ApiResponses(value = {

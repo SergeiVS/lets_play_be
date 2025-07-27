@@ -36,12 +36,33 @@ public class LobbyPresetService {
         return new LobbyPresetFullResponse(savedLobby);
     }
 
+    @Deprecated
     public List<LobbyPresetFullResponse> getAllUserPresets(Authentication auth) {
 
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
         List<LobbyPreset> lobbies = repository.findByOwnerId(owner.getId());
 
         return getListOfPresetsFullResponse(lobbies);
+    }
+
+    public LobbyPresetFullResponse getUsersLobbyPreset(long userId, Authentication auth) {
+        var owner = appUserService.getUserByEmailOrThrow(auth.getName());
+
+        if(owner.getId()!=userId) throw new IllegalArgumentException("Id don't match authenticated User id");
+
+        var preset = repository.findUniqueByOwnerId(owner.getId());
+
+        if(preset.isEmpty()){
+            var savedBlankPreset = getSavedBlankPreset(owner);
+            return new LobbyPresetFullResponse(savedBlankPreset);
+        }
+
+        return new LobbyPresetFullResponse(preset.get());
+    }
+
+    private LobbyPreset getSavedBlankPreset(AppUser owner) {
+        var blankPreset = new LobbyPreset(owner);
+        return repository.save(blankPreset);
     }
 
     @Transactional

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.lets_play_be.controller.api.LobbyPresetControllerApi;
 import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.*;
-import org.lets_play_be.service.lobbyService.LobbyBaseUpdateService;
 import org.lets_play_be.service.lobbyService.LobbyPresetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.util.List;
 public class LobbyPresetController implements LobbyPresetControllerApi {
 
     private final LobbyPresetService lobbyPresetService;
-    private final LobbyBaseUpdateService lobbyBaseUpdateService;
 
     @Override
     public ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(NewLobbyRequest request,
@@ -27,10 +25,18 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Deprecated
     @Override
     public ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication) {
         List<LobbyPresetFullResponse> responseList = lobbyPresetService.getAllUserPresets(authentication);
         return new ResponseEntity<>(responseList, HttpStatus.OK);
+    }
+
+
+    @Override
+    public ResponseEntity<LobbyPresetFullResponse> getUsersLobbyPreset(long userId, Authentication auth) {
+        LobbyPresetFullResponse response = lobbyPresetService.getUsersLobbyPreset(userId, auth);
+        return ResponseEntity.ok(response);
     }
 
     @Override

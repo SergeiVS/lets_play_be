@@ -6,6 +6,7 @@ import org.lets_play_be.entity.lobby.LobbyPreset;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
@@ -28,5 +29,18 @@ public record LobbyPresetFullResponse(
                 timeToStringFormatter(lobby.getTime()),
                 lobby.getUsers().stream().map(UserShortResponse::new).toList()
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LobbyPresetFullResponse response = (LobbyPresetFullResponse) o;
+        return Objects.equals(id, response.id) && Objects.equals(type, response.type) && Objects.equals(time, response.time) && Objects.equals(title, response.title) && Objects.equals(owner, response.owner);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type, owner, title, time);
     }
 }
