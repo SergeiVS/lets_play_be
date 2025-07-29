@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
-import org.lets_play_be.entity.Invite.Invite;
+import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.lobby.LobbyActive;
 import org.lets_play_be.entity.user.AppUser;
@@ -272,7 +272,7 @@ class InviteServiceTest {
 
         assertThrowsExactly(IllegalArgumentException.class,
                 () -> inviteService.updateInviteState(request),
-                "New Invite state do not meet an Enum");
+                "New invite state do not meet an Enum");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());
         verify(repositoryMock, times(0)).save(invite1);

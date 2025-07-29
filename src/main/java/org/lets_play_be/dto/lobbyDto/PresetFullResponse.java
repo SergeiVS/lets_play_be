@@ -11,7 +11,7 @@ import java.util.Objects;
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
 @Schema(description = "Sent to client as presentation of lobby current state")
-public record LobbyPresetFullResponse(
+public record PresetFullResponse(
         Long id,
         String type,
         UserShortResponse owner,
@@ -20,7 +20,7 @@ public record LobbyPresetFullResponse(
         List<UserShortResponse> users
 ) implements Serializable {
 
-    public LobbyPresetFullResponse(LobbyPreset lobby) {
+    public PresetFullResponse(LobbyPreset lobby) {
         this(
                 lobby.getId(),
                 lobby.getType().toString(),
@@ -35,7 +35,7 @@ public record LobbyPresetFullResponse(
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LobbyPresetFullResponse response = (LobbyPresetFullResponse) o;
+        PresetFullResponse response = (PresetFullResponse) o;
         return Objects.equals(id, response.id) && Objects.equals(type, response.type) && Objects.equals(time, response.time) && Objects.equals(title, response.title) && Objects.equals(owner, response.owner);
     }
 

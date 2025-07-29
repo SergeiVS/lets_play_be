@@ -28,14 +28,14 @@ public class InviteController implements InviteControllerApi {
     }
 
     @Override
-    public ResponseEntity<List<InviteResponse>> getAllUserInvitesByLobby(long lobbyId) {
+    public ResponseEntity<List<InviteResponse>> getAllInvitesByLobby(long lobbyId) {
 
         List<InviteResponse> response = inviteService.getAllInvitesByLobbyId(lobbyId);
         return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<InviteResponse> updateInviteState(UpdateInviteStateRequest request) {
+    public ResponseEntity<InviteResponse> deleteInvite(UpdateInviteStateRequest request) {
 
         var response = inviteService.updateInviteState(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -50,7 +50,7 @@ public class InviteController implements InviteControllerApi {
     }
 
     @Override
-    public ResponseEntity<InviteResponse> updateInviteState(long inviteId, Authentication auth) {
+    public ResponseEntity<InviteResponse> deleteInvite(long inviteId, Authentication auth) {
 
         var response = inviteService.removeInvite(inviteId, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);

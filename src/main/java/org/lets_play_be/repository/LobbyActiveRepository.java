@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LobbyActiveRepository extends JpaRepository<LobbyActive, Long> {
 
@@ -13,4 +14,6 @@ public interface LobbyActiveRepository extends JpaRepository<LobbyActive, Long> 
 
     @Query("SELECT l.id FROM LobbyActive l")
     List<Long> findAllLobbyIds();
+
+    Optional<LobbyActive> findLobbyActiveByOwnerId(long ownerId);
 }

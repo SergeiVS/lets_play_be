@@ -41,10 +41,10 @@ public interface LobbyPresetControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping
-    ResponseEntity<LobbyPresetFullResponse> createNewLobbyPreset(@RequestBody
+    ResponseEntity<PresetFullResponse> createNewLobbyPreset(@RequestBody
                                                                  @Valid
-                                                                 NewLobbyRequest request,
-                                                                 Authentication authentication);
+                                                                 NewPresetRequest request,
+                                                            Authentication authentication);
     @Deprecated
     @Operation(summary = "Getting All Users Presets")
     @ApiResponses(value = {
@@ -65,7 +65,7 @@ public interface LobbyPresetControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping
-    ResponseEntity<List<LobbyPresetFullResponse>> getAllUserLobbyPresets(Authentication authentication);
+    ResponseEntity<List<PresetFullResponse>> getAllUserLobbyPresets(Authentication authentication);
 
     @Operation(summary = "Getting saved users lobby preset. If not found returns new blank lobby preset")
     @ApiResponses(value = {
@@ -86,7 +86,7 @@ public interface LobbyPresetControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/{userId}")
-    ResponseEntity<LobbyPresetFullResponse> getUsersLobbyPreset(@PathVariable @NotNull long userId, Authentication auth);
+    ResponseEntity<PresetFullResponse> getUsersLobbyPreset(@PathVariable @NotNull long userId, Authentication auth);
 
     @Operation(summary = "Updating the Presets Time and Title fields")
     @ApiResponses(value = {
@@ -107,11 +107,11 @@ public interface LobbyPresetControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping
-    ResponseEntity<LobbyPresetFullResponse> updateLobbyTitleAndTime(@RequestBody
+    ResponseEntity<PresetFullResponse> updateLobbyTitleAndTime(@RequestBody
                                                                     @NotNull
                                                                     @Validated
                                                                     UpdateLobbyTitleAndTimeRequest request,
-                                                                    Authentication auth);
+                                                               Authentication auth);
 
     @Operation(summary = "Adding Users to Presets")
     @ApiResponses(value = {
@@ -132,9 +132,9 @@ public interface LobbyPresetControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PutMapping("user")
-    ResponseEntity<LobbyPresetFullResponse> addUsers(@RequestBody
+    ResponseEntity<PresetFullResponse> addUsers(@RequestBody
                                                      @Valid
-                                                     ChangeLobbyPresetUsersRequest request);
+                                                ChangePresetUsersRequest request);
 
     @Operation(summary = "Users deleting from preset")
     @ApiResponses(value = {
@@ -155,9 +155,9 @@ public interface LobbyPresetControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping("user")
-    ResponseEntity<LobbyPresetFullResponse> removeUsers(@RequestBody
+    ResponseEntity<PresetFullResponse> removeUsers(@RequestBody
                                                         @Valid
-                                                        ChangeLobbyPresetUsersRequest request);
+                                                   ChangePresetUsersRequest request);
 
     @Operation(summary = "Deleting preset")
     @ApiResponses(value = {

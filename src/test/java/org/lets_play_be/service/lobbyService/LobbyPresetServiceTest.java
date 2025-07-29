@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
+import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
@@ -78,7 +78,7 @@ class LobbyPresetServiceTest {
         when(presetRepository.findUniqueByOwnerId(owner.getId())).thenReturn(Optional.ofNullable(preset));
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
 
-        var expectedResponse = new LobbyPresetFullResponse(preset);
+        var expectedResponse = new PresetFullResponse(preset);
         var userShot1 = new UserShortResponse(user1);
         var userShot2 = new UserShortResponse(user2);
 
@@ -102,7 +102,7 @@ class LobbyPresetServiceTest {
         when(presetRepository.save(any(LobbyPreset.class))).thenReturn(blankPreset);
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
 
-        var expectedResponse = new LobbyPresetFullResponse(blankPreset);
+        var expectedResponse = new PresetFullResponse(blankPreset);
 
         var result = presetService.getUsersLobbyPreset(owner.getId(), auth);
 
@@ -170,6 +170,6 @@ class LobbyPresetServiceTest {
     }
 
     @Test
-    void getLobbyByIdOrThrow() {
+    void getPresetByIdOrThrow() {
     }
 }
