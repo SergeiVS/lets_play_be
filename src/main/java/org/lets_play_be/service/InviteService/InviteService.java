@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.ObjectNotFoundException;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
-import org.lets_play_be.entity.Invite.Invite;
 import org.lets_play_be.entity.enums.InviteState;
+import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
 import org.lets_play_be.repository.InviteRepository;
@@ -44,7 +44,7 @@ public class InviteService {
 
         invite.setSeen(true);
 
-        if(!invite.isDelivered()){
+        if (!invite.isDelivered()) {
 
             invite.setDelivered(true);
         }
@@ -112,7 +112,7 @@ public class InviteService {
 
     private void isListEmpty(List<Invite> invites) {
         if (invites.isEmpty()) {
-            throw  new RestException("No invites were found", HttpStatus.NOT_FOUND);
+            throw new RestException("No invites were found", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -123,7 +123,7 @@ public class InviteService {
         List<String> states = InviteState.getValuesInviteStateStringsList();
 
         if (!states.contains(newState.toUpperCase())) {
-            throw new IllegalArgumentException("New Invite state do not meet an Enum");
+            throw new IllegalArgumentException("New invite state do not meet an Enum");
         }
 
         if (newState.equalsIgnoreCase("delayed")) {
@@ -148,7 +148,7 @@ public class InviteService {
 
     private Invite getInviteByIdOrElseThrow(long inviteId) {
         return inviteRepository.findById(inviteId).orElseThrow(
-                () -> new ObjectNotFoundException("Invite with lobbyId " + inviteId + " not found", Invite.class));
+                () -> new ObjectNotFoundException("invite with lobbyId " + inviteId + " not found", Invite.class));
     }
 
     private void validateDelayedFor(UpdateInviteStateRequest request) {

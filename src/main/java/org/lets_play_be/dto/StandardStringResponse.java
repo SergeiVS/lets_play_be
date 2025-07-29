@@ -1,4 +1,6 @@
 package org.lets_play_be.dto;
 
-public record StandardStringResponse(String message) {
+import jakarta.validation.constraints.NotEmpty;
+
+public record StandardStringResponse(@NotEmpty String message) {
 }

@@ -61,9 +61,9 @@ public interface InviteControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("lobby/{id}")
-    ResponseEntity<List<InviteResponse>> getAllUserInvitesByLobby(@PathVariable("id") @NotNull long lobbyId);
+    ResponseEntity<List<InviteResponse>> getAllInvitesByLobby(@PathVariable("id") @NotNull long lobbyId);
 
-    @Operation(summary = "Update Invite state")
+    @Operation(summary = "Update invite state")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invites state was updated",
                     content = {@Content(mediaType = "application/json",
@@ -82,9 +82,9 @@ public interface InviteControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping("user")
-    ResponseEntity<InviteResponse> updateInviteState(@RequestBody UpdateInviteStateRequest request);
+    ResponseEntity<InviteResponse> deleteInvite(@RequestBody UpdateInviteStateRequest request);
 
-    @Operation(summary = "Update Invite isSeen")
+    @Operation(summary = "Update invite isSeen")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invites state was updated",
                     content = {@Content(mediaType = "application/json",
@@ -106,9 +106,9 @@ public interface InviteControllerApi {
     ResponseEntity<StandardStringResponse> updateInviteISeen(@PathVariable("id") long inviteId, Authentication auth);
 
 
-    @Operation(summary = "Deletes Invite, User should be lobby owner only")
+    @Operation(summary = "Deletes invite, User should be lobby owner only")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Invite was deleted",
+            @ApiResponse(responseCode = "200", description = "invite was deleted",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = InviteResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
@@ -125,6 +125,6 @@ public interface InviteControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping({"{id}"})
-    ResponseEntity<InviteResponse> updateInviteState(@PathVariable("id") @NotNull long inviteId, Authentication auth);
+    ResponseEntity<InviteResponse> deleteInvite(@PathVariable("id") @NotNull long inviteId, Authentication auth);
 
 }

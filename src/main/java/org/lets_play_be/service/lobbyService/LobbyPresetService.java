@@ -3,9 +3,9 @@ package org.lets_play_be.service.lobbyService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.StandardStringResponse;
-import org.lets_play_be.dto.lobbyDto.ChangeLobbyPresetUsersRequest;
-import org.lets_play_be.dto.lobbyDto.LobbyPresetFullResponse;
-import org.lets_play_be.dto.lobbyDto.NewLobbyRequest;
+import org.lets_play_be.dto.lobbyDto.ChangePresetUsersRequest;
+import org.lets_play_be.dto.lobbyDto.NewPresetRequest;
+import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
@@ -29,14 +29,15 @@ public class LobbyPresetService {
     private final AppUserService appUserService;
 
     @Transactional
-    public LobbyPresetFullResponse createNewLobbyPreset(NewLobbyRequest request, Authentication authentication) {
+    public PresetFullResponse createNewLobbyPreset(NewPresetRequest request, Authentication authentication) {
 
         LobbyPreset savedLobby = saveNewLobbyPreset(request, authentication);
 
-        return new LobbyPresetFullResponse(savedLobby);
+        return new PresetFullResponse(savedLobby);
     }
 
-    public List<LobbyPresetFullResponse> getAllUserPresets(Authentication auth) {
+    @Deprecated
+    public List<PresetFullResponse> getAllUserPresets(Authentication auth) {
 
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
         List<LobbyPreset> lobbies = repository.findByOwnerId(owner.getId());
@@ -44,10 +45,25 @@ public class LobbyPresetService {
         return getListOfPresetsFullResponse(lobbies);
     }
 
-    @Transactional
-    public LobbyPresetFullResponse addNewUsersToLobbyPreset(ChangeLobbyPresetUsersRequest request) {
+    public PresetFullResponse getUsersLobbyPreset(long userId, Authentication auth) {
+        var owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.lobbyId());
+        if (owner.getId() != userId) throw new IllegalArgumentException("Id don't match authenticated User id");
+
+        var preset = repository.findUniqueByOwnerId(owner.getId());
+
+        if (preset.isEmpty()) {
+            var savedBlankPreset = getSavedBlankPreset(owner);
+            return new PresetFullResponse(savedBlankPreset);
+        }
+
+        return new PresetFullResponse(preset.get());
+    }
+
+    @Transactional
+    public PresetFullResponse addNewUsersToLobbyPreset(ChangePresetUsersRequest request) {
+
+        LobbyPreset presetForChange = getPresetByIdOrThrow(request.lobbyId());
 
         List<AppUser> usersForAdd = getUsersForAdd(presetForChange, request.usersId());
 
@@ -55,19 +71,19 @@ public class LobbyPresetService {
 
         LobbyPreset savedPreset = repository.save(presetForChange);
 
-        return new LobbyPresetFullResponse(savedPreset);
+        return new PresetFullResponse(savedPreset);
     }
 
     @Transactional
-    public LobbyPresetFullResponse removeUserFromPreset(ChangeLobbyPresetUsersRequest request) {
+    public PresetFullResponse removeUserFromPreset(ChangePresetUsersRequest request) {
 
-        LobbyPreset presetForRemove = getLobbyByIdOrThrow(request.lobbyId());
+        LobbyPreset presetForRemove = getPresetByIdOrThrow(request.lobbyId());
 
         removeUsersFromPreset(request, presetForRemove);
 
         LobbyPreset savedPreset = repository.save(presetForRemove);
 
-        return new LobbyPresetFullResponse(savedPreset);
+        return new PresetFullResponse(savedPreset);
     }
 
     @Transactional
@@ -80,33 +96,43 @@ public class LobbyPresetService {
 
 
     @Transactional
-    public LobbyPresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+    public PresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
 
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyPreset presetForChange = getLobbyByIdOrThrow(request.lobbyId());
+        LobbyPreset presetForChange = getPresetByIdOrThrow(request.lobbyId());
 
         baseUpdateService.setNewValues(request, presetForChange, owner.getId());
 
         LobbyPreset savedPreset = repository.save(presetForChange);
 
-        return new LobbyPresetFullResponse(savedPreset);
+        return new PresetFullResponse(savedPreset);
     }
 
-    public LobbyPreset getLobbyByIdOrThrow(Long id) {
+    public LobbyPreset getPresetByIdOrThrow(Long id) {
 
         return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
     }
 
-    private List<LobbyPresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
+    public LobbyPreset getPresetByOwnerIdOrThrow(long ownerId) {
+
+        return repository.findUniqueByOwnerId(ownerId).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
+    }
+
+    private LobbyPreset getSavedBlankPreset(AppUser owner) {
+        var blankPreset = new LobbyPreset(owner);
+        return repository.save(blankPreset);
+    }
+
+    private List<PresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
 
         return presets
                 .stream()
-                .map(LobbyPresetFullResponse::new)
+                .map(PresetFullResponse::new)
                 .toList();
     }
 
-    private static void removeUsersFromPreset(ChangeLobbyPresetUsersRequest request, LobbyPreset presetForRemove) {
+    private static void removeUsersFromPreset(ChangePresetUsersRequest request, LobbyPreset presetForRemove) {
 
         presetForRemove.getUsers().removeIf(user -> request.usersId().contains(user.getId()));
     }
@@ -120,7 +146,7 @@ public class LobbyPresetService {
         return appUserService.getUsersListByIds(usersId);
     }
 
-    private LobbyPreset saveNewLobbyPreset(NewLobbyRequest request, Authentication auth) {
+    private LobbyPreset saveNewLobbyPreset(NewPresetRequest request, Authentication auth) {
 
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 

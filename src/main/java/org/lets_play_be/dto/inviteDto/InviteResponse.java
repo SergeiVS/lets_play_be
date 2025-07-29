@@ -2,7 +2,7 @@ package org.lets_play_be.dto.inviteDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.lets_play_be.dto.userDto.UserShortResponse;
-import org.lets_play_be.entity.Invite.Invite;
+import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.notification.dto.NotificationData;
 
 import java.io.Serializable;

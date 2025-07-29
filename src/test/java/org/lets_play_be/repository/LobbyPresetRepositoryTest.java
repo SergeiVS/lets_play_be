@@ -3,6 +3,8 @@ package org.lets_play_be.repository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @Profile("test")
@@ -53,6 +55,7 @@ class LobbyPresetRepositoryTest {
         em.clear();
     }
 
+    @Deprecated
     @Test
     void findByOwnerId() {
         List<LobbyPreset> result1 = repository.findByOwnerId(user1.getId());
@@ -65,5 +68,23 @@ class LobbyPresetRepositoryTest {
         assertThat(result2.size()).isEqualTo(1);
         assertThat(result2.getFirst()).isEqualTo(preset2);
         assertThat(result2.contains(preset1)).isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1L, 2L})
+    void findUniqueByOwnerId_LobbyFound() {
+        List<LobbyPreset> presets = List.of(preset1, preset2);
+
+        var optPresent = repository.findUniqueByOwnerId(user1.getId());
+
+        assertTrue(optPresent.isPresent());
+        assertThat(presets).contains(optPresent.get());
+    }
+
+    @Test
+    void findUniqueByOwnerId_LobbyNotFound() {
+        var optPresent = repository.findUniqueByOwnerId(3L);
+
+        assertTrue(optPresent.isEmpty());
     }
 }

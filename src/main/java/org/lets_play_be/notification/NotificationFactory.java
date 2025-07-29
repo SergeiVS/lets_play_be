@@ -27,6 +27,7 @@ public class NotificationFactory {
             case LobbyUpdatedNotificationData ignored -> NotificationType.LOBBY_UPDATED.name();
             case LobbyClosedNotificationData ignored -> NotificationType.LOBBY_CLOSED.name();
             case InviteResponse ignored -> NotificationType.INVITE_UPDATED.name();
+            case NewUserInvitedNotificationData ignored -> NotificationType.LOBBY_NEW_USERS_INVITED.name();
             default -> throw new IllegalStateException("Unexpected value: " + data);
         };
     }

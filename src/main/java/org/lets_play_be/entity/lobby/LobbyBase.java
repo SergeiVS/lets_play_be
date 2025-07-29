@@ -5,13 +5,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
-import org.hibernate.annotations.NaturalId;
 import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Getter
@@ -25,7 +22,7 @@ public abstract class LobbyBase {
     @Setter(AccessLevel.PROTECTED)
     private LobbyType type;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "owner_id")
+    @JoinColumn(nullable = false, name = "owner_id", unique = true)
     private AppUser owner;
     private OffsetTime time;
 

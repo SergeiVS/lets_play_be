@@ -1,4 +1,4 @@
-package org.lets_play_be.entity.Invite;
+package org.lets_play_be.entity.invite;
 
 import jakarta.persistence.*;
 import lombok.*;

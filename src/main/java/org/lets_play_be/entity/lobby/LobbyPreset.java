@@ -1,13 +1,13 @@
 package org.lets_play_be.entity.lobby;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +32,19 @@ public class LobbyPreset extends LobbyBase {
         super(title, time, owner);
         setType(LobbyType.PRESET);
         this.users = users;
+    }
+
+    public LobbyPreset(AppUser owner) {
+        super("", OffsetTime.now(), owner);
+        setType(LobbyType.PRESET);
+        this.users = new ArrayList<>();
+    }
+
+    public LobbyPreset(long id, String title, OffsetTime time, AppUser owner) {
+        super(title, time, owner);
+        setType(LobbyType.PRESET);
+        this.id = id;
+        this.users = new ArrayList<>();
     }
 
     @Override
