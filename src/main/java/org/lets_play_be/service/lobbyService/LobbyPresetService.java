@@ -65,11 +65,9 @@ public class LobbyPresetService {
 
         LobbyPreset presetForChange = getPresetByIdOrThrow(request.lobbyId());
 
-        List<AppUser> usersForAdd = getUsersForAdd(presetForChange, request.usersId());
+        List<AppUser> usersForAdd = appUserService.getUsersListByIds(request.usersId());
 
-        presetForChange.getUsers().addAll(usersForAdd);
-
-        LobbyPreset savedPreset = repository.save(presetForChange);
+        LobbyPreset savedPreset = saveNewUsersToPreset(presetForChange, usersForAdd);
 
         return new PresetFullResponse(savedPreset);
     }
@@ -132,18 +130,19 @@ public class LobbyPresetService {
                 .toList();
     }
 
+    private LobbyPreset saveNewUsersToPreset(LobbyPreset presetForChange, List<AppUser> usersForAdd) {
+        usersForAdd.forEach(appUser -> {
+            if (!presetForChange.getUsers().contains(appUser)) {
+                presetForChange.getUsers().add(appUser);
+            }
+        });
+
+        return repository.save(presetForChange);
+    }
+
     private static void removeUsersFromPreset(ChangePresetUsersRequest request, LobbyPreset presetForRemove) {
 
         presetForRemove.getUsers().removeIf(user -> request.usersId().contains(user.getId()));
-    }
-
-    private List<AppUser> getUsersForAdd(LobbyPreset presetForChange, List<Long> usersId) {
-
-        for (AppUser user : presetForChange.getUsers()) {
-            usersId.remove(user.getId());
-        }
-
-        return appUserService.getUsersListByIds(usersId);
     }
 
     private LobbyPreset saveNewLobbyPreset(NewPresetRequest request, Authentication auth) {

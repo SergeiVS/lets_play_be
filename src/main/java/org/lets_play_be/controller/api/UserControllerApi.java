@@ -15,10 +15,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/user")
 public interface UserControllerApi {
+
+    @Operation(summary = "User can get data of all users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "get all users data",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AppUserFullResponse.class))}
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping
+    ResponseEntity<List<AppUserFullResponse>> getAllUsers();
+
     @Operation(summary = "User can get his/herself data")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "get user data of authenticated user",
@@ -32,7 +47,7 @@ public interface UserControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping
+    @GetMapping("user")
     ResponseEntity<AppUserFullResponse> getUserData(Principal principal);
 
     @Operation(summary = "Updating of user Username and AvatarUrl")

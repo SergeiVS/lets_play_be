@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.internal.util.collections.CollectionHelper.listOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -70,7 +71,34 @@ class AppUserServiceTest {
     }
 
     @Test
-    void getAppUserFullData() {
+    void getAllUsers_Success_Users_Found() {
+
+        when(repository.findAll()).thenReturn(Arrays.asList(user1, user2));
+
+        var expectedResult1 = new AppUserFullResponse(user1);
+        var expectedResult2 = new AppUserFullResponse(user2);
+
+        var resultsList = appUserService.getAllUsers();
+
+        assertThat(resultsList).hasSize(2).contains(expectedResult1, expectedResult2);
+
+        verify(repository, times(1)).findAll();
+    }
+
+    @Test
+    void getAllUsers_Success_Users_Not_Found() {
+
+        when(repository.findAll()).thenReturn(new ArrayList<>());
+
+        var result = appUserService.getAllUsers();
+
+        assertThat(result).hasSize(0);
+
+        verify(repository, times(1)).findAll();
+    }
+
+    @Test
+    void getAppUserFullData_Success() {
 
         when(repository.findAppUserByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
 
@@ -99,16 +127,17 @@ class AppUserServiceTest {
                 ErrorMessage.USER_NOT_FOUND.toString());
 
         verify(repository, times(1)).findAppUserByEmail(anyString());
-
     }
 
 
     @Test
     void updateUserData_All_Fields_Filled_Success() {
-        UserDataUpdateRequest request = new UserDataUpdateRequest("newName", "newUrl");
+        var newName = "newName";
+        var newUrl = "newUrl";
+        UserDataUpdateRequest request = new UserDataUpdateRequest(newName, newUrl);
 
-        var changedUser = new AppUser(user1.getId(), "newName",
-                user1.getEmail(), user1.getPassword(), "newUrl",
+        var changedUser = new AppUser(user1.getId(), newName,
+                user1.getEmail(), user1.getPassword(), newUrl,
                 user1.getRoles(), user1.getAvailability());
 
         AppUserFullResponse expectedResponse = new AppUserFullResponse(changedUser);
