@@ -29,6 +29,13 @@ public class AppUserService {
 
     private final AppUserRepository userRepository;
 
+    public List<AppUserFullResponse> getAllUsers() {
+
+        var users = userRepository.findAll();
+
+        return users.stream().map(AppUserFullResponse::new).toList();
+    }
+
     public AppUserFullResponse getAppUserFullData(String email) {
 
         AppUser user = getUserByEmailOrThrow(email);

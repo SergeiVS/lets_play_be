@@ -17,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file: "variables.env"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/devDb
       - SPRING_DATASOURCE_PASSWORD=admin
