@@ -6,6 +6,8 @@ import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.notificationService.LobbySubject;
 import org.lets_play_be.notification.notificationService.LobbySubjectPool;
 import org.lets_play_be.service.appUserService.AppUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -17,22 +19,26 @@ import static org.lets_play_be.notification.NotificationFactory.createNotificati
 @RequiredArgsConstructor
 public class SseNotificationService {
 
+    private final static Logger log = LoggerFactory.getLogger(SseNotificationService.class);
+
     private final SseService sseService;
-
-    private final SseLiveRecipientPool recipientPool;
-
-    private final LobbySubjectPool subjectPool;
-
     private final AppUserService userService;
+    private final SseLiveRecipientPool recipientPool;
+    private final LobbySubjectPool subjectPool;
 
 
     public SseEmitter subscribeForSse(Authentication auth) {
-
         var recipient = userService.getUserByEmailOrThrow(auth.getName());
+
+        if (recipientPool.isInPool(recipient.getId())) {
+            return recipientPool.getObserver(recipient.getId()).getEmitter();
+        }
 
         final SseEmitter emitter = sseService.createSseConnection();
 
         createSseObserver(emitter, recipient.getId());
+
+        log.info("Sse connection created for Recipient with ID: {}", recipient.getId());
 
         return emitter;
     }
@@ -42,7 +48,7 @@ public class SseNotificationService {
         try {
             if (recipientPool.isInPool(recipientId)) {
 
-                var observer = ((SseNotificationObserver) recipientPool.getObserver(recipientId));
+                var observer = recipientPool.getObserver(recipientId);
 
                 var subject = ((LobbySubject) subjectPool.getSubject(lobbyId));
 
@@ -69,15 +75,14 @@ public class SseNotificationService {
 
     public void unsubscribeUserFromSubject(long userId, Long lobbyId) {
         if (recipientPool.isInPool(userId)) {
-            var observer = ((SseNotificationObserver) recipientPool.getObserver(userId));
+            var observer = recipientPool.getObserver(userId);
+
             observer.unsubscribeFromSubject(lobbyId);
             observer.removeOnCloseCallback(lobbyId);
         }
     }
 
     private void createSseObserver(SseEmitter emitter, Long recipientId) {
-
         recipientPool.addObserver(recipientId, emitter);
-
     }
 }

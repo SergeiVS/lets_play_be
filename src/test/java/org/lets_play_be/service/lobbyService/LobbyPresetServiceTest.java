@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.lets_play_be.dto.lobbyDto.ChangePresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.NewPresetRequest;
 import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
-import org.lets_play_be.dto.userDto.UserShortResponse;
+import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.LobbyPresetRepository;
@@ -71,8 +71,18 @@ class LobbyPresetServiceTest {
 
         blankPreset = new LobbyPreset(2L, "", now, owner);
 
-        timeString = time.getHour() + ":" + time.getMinute() + ":" + time.getSecond() + time.getOffset();
-        newPresetRequest = new NewPresetRequest("Title", timeString, List.of(user1.getId(), user2.getId()));
+        timeString = "%02d:%02d:%02d%s".formatted(
+                time.getHour(),
+                time.getMinute(),
+                time.getSecond(),
+                time.getOffset()
+        );
+
+        newPresetRequest = new NewPresetRequest(
+                "Title",
+                timeString,
+                List.of(user1.getId(), user2.getId())
+        );
     }
 
     @AfterEach
@@ -94,15 +104,15 @@ class LobbyPresetServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
 
         var expectedResponse = new PresetFullResponse(preset);
-        var userShot1 = new UserShortResponse(user1);
-        var userShot2 = new UserShortResponse(user2);
+        var userResp1 = new AppUserFullResponse(user1);
+        var userResp2 = new AppUserFullResponse(user2);
 
         var result = presetService.getUsersLobbyPreset(owner.getId(), auth);
 
         assertEquals(expectedResponse, result);
 
         assertThat(result.users()).hasSize(2);
-//        assertThat(result.users()).contains(userShot1, userShot2);
+        assertThat(result.users()).contains(userResp1, userResp2);
 
         verify(presetRepository, times(1)).findUniqueByOwnerId(owner.getId());
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());

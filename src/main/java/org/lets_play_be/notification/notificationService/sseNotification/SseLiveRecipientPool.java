@@ -1,8 +1,7 @@
 package org.lets_play_be.notification.notificationService.sseNotification;
 
-import org.lets_play_be.exception.RestException;
-import org.lets_play_be.notification.NotificationObserver;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -12,18 +11,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class SseLiveRecipientPool {
 
-    private final Map<Long, NotificationObserver> pool = new ConcurrentHashMap<>();
+    private final static Logger log = LoggerFactory.getLogger(SseLiveRecipientPool.class);
+
+    private final Map<Long, SseNotificationObserver> pool = new ConcurrentHashMap<>();
 
     public void addObserver(long recipientId, SseEmitter emitter) {
         addCallbacksToEmitter(recipientId, emitter);
 
-        NotificationObserver observer = new SseNotificationObserver(emitter);
-
-        pool.put(recipientId, observer);
+        pool.put(recipientId, new SseNotificationObserver(emitter));
     }
 
     public void removeRecipient(final long recipientId) {
-        SseNotificationObserver observer = (SseNotificationObserver) pool.remove(recipientId);
+        SseNotificationObserver observer = pool.remove(recipientId);
 
         if (observer != null) {
             observer.getOnCloseCallbacks().values().forEach(Runnable::run);
@@ -34,21 +33,34 @@ public class SseLiveRecipientPool {
         return pool.containsKey(recipientId);
     }
 
-    public NotificationObserver getObserver(final long recipientId) {
+    public SseNotificationObserver getObserver(final long recipientId) {
         return pool.get(recipientId);
     }
 
     private void addCallbacksToEmitter(long recipientId, SseEmitter emitter) {
-        emitter.onCompletion(() -> removeRecipient(recipientId));
+        emitter.onCompletion(() -> {
+            removeRecipient(recipientId);
 
-        emitter.onTimeout(() -> removeRecipient(recipientId));
+            log.info(
+                    "Sse connection completed for Recipient with ID: {} | {}",
+                    recipientId,
+                    emitter
+            );
+        });
+
+        emitter.onTimeout(() -> log.warn(
+                "Sse connection timed out for Recipient with ID: {} | {}",
+                recipientId,
+                emitter
+        ));
 
         emitter.onError(throwable -> {
             removeRecipient(recipientId);
 
-            throw new RestException(
-                    "Sse connection error. %s".formatted(throwable.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR
+            log.error(
+                    "Sse connection Error for Recipient with ID: {} | error: {}",
+                    recipientId,
+                    throwable.getMessage()
             );
         });
     }

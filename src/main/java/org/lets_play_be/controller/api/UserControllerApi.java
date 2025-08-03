@@ -47,7 +47,7 @@ public interface UserControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping()
+    @GetMapping
     ResponseEntity<AppUserFullResponse> getUserData(Principal principal);
 
     @Operation(summary = "Updating of user Username and AvatarUrl")

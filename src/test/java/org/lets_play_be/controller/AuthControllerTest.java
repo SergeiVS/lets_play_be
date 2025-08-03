@@ -30,13 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class AuthControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    EntityManager em;
-
     static final ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
+    MockMvc mockMvc;
+
+    @Autowired
+    EntityManager em;
 
     @Nested
     @DisplayName("POST/api/v1/auth/login: ")

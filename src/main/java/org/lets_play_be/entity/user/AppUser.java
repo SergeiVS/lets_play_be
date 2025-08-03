@@ -3,6 +3,7 @@ package org.lets_play_be.entity.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.lets_play_be.entity.enums.AvailabilityEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ public class AppUser {
         this.password = password;
         this.avatarUrl = avatarUrl;
         this.roles = new ArrayList<>();
+        this.availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
     }
 
     public AppUser(Long id, String name, String email, String password, String avatarUrl) {
@@ -57,7 +59,8 @@ public class AppUser {
         this.password = password;
         this.avatarUrl = avatarUrl;
         this.roles = new ArrayList<>();
-    }
+        this.availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
+   }
 
     public String[] getRolesStrings() {
         String[] rolesStringsArray = new String[roles.size()];
