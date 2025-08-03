@@ -2,7 +2,7 @@
   <configuration default="false" name="StartDev" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <option name="ACTIVE_PROFILES" value="dev" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-    <module name="lets_play_backend" />
+    <module name="letsPlayBackend" />
     <selectedOptions>
       <option name="environmentVariables" />
     </selectedOptions>

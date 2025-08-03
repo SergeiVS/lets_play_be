@@ -42,8 +42,8 @@ public class FormattingUtils {
         if (timeString == null || timeString.isEmpty()|| timeString.matches("\\s*")) {
             throw new IllegalArgumentException("timeString is null or empty");
         }
-        if (!timeString.matches(ValidationRegex.ZEIT_FORMAT_REGEX.getRegex())) {
-            throw new IllegalArgumentException("timeString is in invalid format");
+        if (!timeString.matches(ValidationRegex.TIME_FORMAT_REGEX.getRegex())) {
+            throw new IllegalArgumentException("timeString is in invalid format " + timeString);
         }
 
         return OffsetTime.parse(timeString);
