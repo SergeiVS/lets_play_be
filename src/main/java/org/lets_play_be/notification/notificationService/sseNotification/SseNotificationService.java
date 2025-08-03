@@ -39,7 +39,6 @@ public class SseNotificationService {
 
 
     public void subscribeSseObserverForActiveLobby(long recipientId, long lobbyId) {
-
         try {
             if (recipientPool.isInPool(recipientId)) {
 
@@ -63,7 +62,6 @@ public class SseNotificationService {
             var notification = createNotification(data);
 
             subject.notifyObservers(notification);
-
         } catch (RuntimeException e) {
             throw new RestException("Members Notification failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }

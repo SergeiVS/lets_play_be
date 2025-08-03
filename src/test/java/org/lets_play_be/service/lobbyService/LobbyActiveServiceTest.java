@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lets_play_be.common.ErrorMessage;
 import org.lets_play_be.dto.lobbyDto.*;
+import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.invite.Invite;
@@ -552,7 +553,7 @@ class LobbyActiveServiceTest {
         doCallRealMethod().when(baseUpdateService).setNewValues(updateTitleTimeRequest, savedLobby, owner.getId());
         when(repository.save(savedLobby)).thenReturn(savedLobby);
 
-        var ownerResponse = new InvitedUserResponse(owner);
+        var ownerResponse = new AppUserFullResponse(owner);
         List<InvitedUserResponse> invitesUsers = List.of(new InvitedUserResponse(invite1), new InvitedUserResponse(invite2), new InvitedUserResponse(invite3));
         var expected = new ActiveLobbyResponse(savedLobby.getId(), newTime, ownerResponse, savedLobby.getType().toString(), newTitle, invitesUsers);
 

@@ -36,7 +36,14 @@ public record AppUserFullResponse(
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AppUserFullResponse response = (AppUserFullResponse) o;
-        return Objects.equals(userId, response.userId) && Objects.equals(name, response.name) && Objects.equals(email, response.email) && Objects.deepEquals(roles, response.roles) && Objects.equals(avatarUrl, response.avatarUrl) && Objects.equals(toAvailable, response.toAvailable) && Objects.equals(availability, response.availability) && Objects.equals(fromAvailable, response.fromAvailable);
+        return Objects.equals(userId, response.userId)
+                && Objects.equals(name, response.name)
+                && Objects.equals(email, response.email)
+                && Objects.deepEquals(roles, response.roles)
+                && Objects.equals(avatarUrl, response.avatarUrl)
+                && Objects.equals(toAvailable, response.toAvailable)
+                && Objects.equals(availability, response.availability)
+                && Objects.equals(fromAvailable, response.fromAvailable);
     }
 
     @Override

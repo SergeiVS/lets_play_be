@@ -1,5 +1,6 @@
 package org.lets_play_be.security.securityConfig;
 
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.security.filter.JwtAuthenticationFilter;
@@ -66,6 +67,8 @@ public class WebSecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.ASYNC)
+                        .permitAll()
                         .requestMatchers(
                                 new AntPathRequestMatcher("/api/v1/user/**"),
                                 new AntPathRequestMatcher("/api/v1/sse"),
@@ -84,10 +87,11 @@ public class WebSecurityConfig {
                                 new AntPathRequestMatcher("/api/v1/auth/refresh"),
                                 new AntPathRequestMatcher("/api/v1/auth/register")
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest()
+                        .authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .cors(cors -> corsConfigurationSource())
+                .cors(_ -> corsConfigurationSource())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new AppEntryPointHandler())
                         .accessDeniedHandler(new AppAccessDeniedHandler())

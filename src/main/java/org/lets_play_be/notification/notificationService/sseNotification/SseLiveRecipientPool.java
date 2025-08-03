@@ -15,7 +15,6 @@ public class SseLiveRecipientPool {
     private final Map<Long, NotificationObserver> pool = new ConcurrentHashMap<>();
 
     public void addObserver(long recipientId, SseEmitter emitter) {
-
         addCallbacksToEmitter(recipientId, emitter);
 
         NotificationObserver observer = new SseNotificationObserver(emitter);
@@ -24,9 +23,11 @@ public class SseLiveRecipientPool {
     }
 
     public void removeRecipient(final long recipientId) {
-
         SseNotificationObserver observer = (SseNotificationObserver) pool.remove(recipientId);
-        observer.getOnCloseCallbacks().values().forEach(Runnable::run);
+
+        if (observer != null) {
+            observer.getOnCloseCallbacks().values().forEach(Runnable::run);
+        }
     }
 
     public boolean isInPool(final long recipientId) {
@@ -34,21 +35,21 @@ public class SseLiveRecipientPool {
     }
 
     public NotificationObserver getObserver(final long recipientId) {
-
         return pool.get(recipientId);
     }
 
     private void addCallbacksToEmitter(long recipientId, SseEmitter emitter) {
-
         emitter.onCompletion(() -> removeRecipient(recipientId));
 
         emitter.onTimeout(() -> removeRecipient(recipientId));
 
         emitter.onError(throwable -> {
-
             removeRecipient(recipientId);
 
-            throw new RestException("Sse connection error. " + throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException(
+                    "Sse connection error. %s".formatted(throwable.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         });
     }
 }

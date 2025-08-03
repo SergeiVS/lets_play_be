@@ -1,6 +1,7 @@
 package org.lets_play_be.dto.lobbyDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.UserShortResponse;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 
@@ -14,20 +15,20 @@ import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 public record PresetFullResponse(
         Long id,
         String type,
-        UserShortResponse owner,
+        AppUserFullResponse owner,
         String title,
         String time,
-        List<UserShortResponse> users
+        List<AppUserFullResponse> users
 ) implements Serializable {
 
     public PresetFullResponse(LobbyPreset lobby) {
         this(
                 lobby.getId(),
                 lobby.getType().toString(),
-                new UserShortResponse(lobby.getOwner()),
+                new AppUserFullResponse(lobby.getOwner()),
                 lobby.getTitle(),
                 timeToStringFormatter(lobby.getTime()),
-                lobby.getUsers().stream().map(UserShortResponse::new).toList()
+                lobby.getUsers().stream().map(AppUserFullResponse::new).toList()
         );
     }
 

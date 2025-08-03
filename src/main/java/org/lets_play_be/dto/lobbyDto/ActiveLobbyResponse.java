@@ -1,6 +1,7 @@
 package org.lets_play_be.dto.lobbyDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.entity.lobby.LobbyActive;
 
@@ -13,7 +14,7 @@ import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 @Schema(description = "Will sent to client as current Lobby state presentation")
 public record ActiveLobbyResponse(long id,
                                   String time,
-                                  InvitedUserResponse owner,
+                                  AppUserFullResponse owner,
                                   String lobbyType,
                                   String title,
                                   List<InvitedUserResponse> invitedUsers) implements Serializable {
@@ -22,7 +23,7 @@ public record ActiveLobbyResponse(long id,
         this(
                 lobby.getId(),
                 timeToStringFormatter(lobby.getTime()),
-                new InvitedUserResponse(lobby.getOwner()),
+                new AppUserFullResponse(lobby.getOwner()),
                 lobby.getType().toString(),
                 lobby.getTitle(),
                 lobby.getInvites().stream().map(InvitedUserResponse::new).toList());
@@ -33,7 +34,11 @@ public record ActiveLobbyResponse(long id,
         if (this == o) return true;
         if (!(o instanceof ActiveLobbyResponse response)) return false;
 
-        return id == response.id && Objects.equals(time, response.time) && Objects.equals(title, response.title) && Objects.equals(lobbyType, response.lobbyType) && Objects.equals(owner, response.owner) && Objects.equals(invitedUsers, response.invitedUsers);
+        return id == response.id && Objects.equals(time, response.time)
+                && Objects.equals(title, response.title)
+                && Objects.equals(lobbyType, response.lobbyType)
+                && Objects.equals(owner, response.owner)
+                && Objects.equals(invitedUsers, response.invitedUsers);
     }
 
     @Override

@@ -13,10 +13,8 @@ import static org.lets_play_be.notification.NotificationFactory.createNotificati
 @Service
 @RequiredArgsConstructor
 public class SseService {
-
-
     public SseEmitter createSseConnection() {
-        SseEmitter emitter = new SseEmitter();
+        SseEmitter emitter = new SseEmitter((long) (60000 * 5));
 
         try {
             Notification notification = createNotification(new MessageNotificationData("Connection build"));

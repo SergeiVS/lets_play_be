@@ -31,7 +31,7 @@ public interface UserControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping
+    @GetMapping("users")
     ResponseEntity<List<AppUserFullResponse>> getAllUsers();
 
     @Operation(summary = "User can get his/herself data")
@@ -47,7 +47,7 @@ public interface UserControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping("user")
+    @GetMapping()
     ResponseEntity<AppUserFullResponse> getUserData(Principal principal);
 
     @Operation(summary = "Updating of user Username and AvatarUrl")
