@@ -91,7 +91,7 @@ public class WebSecurityConfig {
                         .authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .cors(_ -> corsConfigurationSource())
+                .cors(cors -> corsConfigurationSource())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new AppEntryPointHandler())
                         .accessDeniedHandler(new AppAccessDeniedHandler())
