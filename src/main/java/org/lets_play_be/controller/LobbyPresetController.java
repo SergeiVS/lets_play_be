@@ -50,20 +50,20 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
     }
 
     @Override
-    public ResponseEntity<PresetFullResponse> addUsers(ChangePresetUsersRequest request) {
-        var response = lobbyPresetService.addNewUsersToLobbyPreset(request);
+    public ResponseEntity<PresetFullResponse> addUsers(ChangePresetUsersRequest request, Authentication auth) {
+        var response = lobbyPresetService.addNewUsersToLobbyPreset(request, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<PresetFullResponse> removeUsers(ChangePresetUsersRequest request) {
-        var response = lobbyPresetService.removeUserFromPreset(request);
+    public ResponseEntity<PresetFullResponse> removeUsers(ChangePresetUsersRequest request, Authentication auth) {
+        var response = lobbyPresetService.removeUserFromPreset(request, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<StandardStringResponse> deletePreset(Long id) {
-        var response = lobbyPresetService.removeLobbyPreset(id);
+    public ResponseEntity<StandardStringResponse> deletePreset(Long id, Authentication auth) {
+        var response = lobbyPresetService.removeLobbyPreset(id, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

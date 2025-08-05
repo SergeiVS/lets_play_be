@@ -134,7 +134,7 @@ public interface LobbyPresetControllerApi {
     @PutMapping("user")
     ResponseEntity<PresetFullResponse> addUsers(@RequestBody
                                                      @Valid
-                                                ChangePresetUsersRequest request);
+                                                ChangePresetUsersRequest request, Authentication auth);
 
     @Operation(summary = "Users deleting from preset")
     @ApiResponses(value = {
@@ -157,7 +157,7 @@ public interface LobbyPresetControllerApi {
     @DeleteMapping("user")
     ResponseEntity<PresetFullResponse> removeUsers(@RequestBody
                                                         @Valid
-                                                   ChangePresetUsersRequest request);
+                                                   ChangePresetUsersRequest request, Authentication auth);
 
     @Operation(summary = "Deleting preset")
     @ApiResponses(value = {
@@ -178,5 +178,5 @@ public interface LobbyPresetControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping("{id}")
-    ResponseEntity<StandardStringResponse> deletePreset(@PathVariable Long id);
+    ResponseEntity<StandardStringResponse> deletePreset(@PathVariable("id") Long presetId, Authentication auth);
 }

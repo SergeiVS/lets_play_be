@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
@@ -29,16 +30,14 @@ public class LobbyPresetService {
     private final AppUserService appUserService;
 
     @Transactional
-    public PresetFullResponse createNewLobbyPreset(NewPresetRequest request, Authentication authentication) {
-
-        LobbyPreset savedLobby = saveNewLobbyPreset(request, authentication);
+    public PresetFullResponse createNewLobbyPreset(NewPresetRequest request, Authentication auth) {
+        LobbyPreset savedLobby = saveNewLobbyPreset(request, auth);
 
         return new PresetFullResponse(savedLobby);
     }
 
     @Deprecated
     public List<PresetFullResponse> getAllUserPresets(Authentication auth) {
-
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
         List<LobbyPreset> lobbies = repository.findByOwnerId(owner.getId());
 
@@ -48,22 +47,23 @@ public class LobbyPresetService {
     public PresetFullResponse getUsersLobbyPreset(long userId, Authentication auth) {
         var owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        if (owner.getId() != userId) throw new IllegalArgumentException("Id don't match authenticated User id");
+        isPresetIdValid(Objects.equals(userId, owner.getId()));
 
+        return getPresetFullResponse(owner);
+    }
+
+    public PresetFullResponse getPresetFullResponse(AppUser owner) {
         var preset = repository.findUniqueByOwnerId(owner.getId());
 
-        if (preset.isEmpty()) {
-            var savedBlankPreset = getSavedBlankPreset(owner);
-            return new PresetFullResponse(savedBlankPreset);
-        }
-
-        return new PresetFullResponse(preset.get());
+        return preset.map(PresetFullResponse::new).orElseGet(() -> new PresetFullResponse(getSavedBlankPreset(owner)));
     }
 
     @Transactional
-    public PresetFullResponse addNewUsersToLobbyPreset(ChangePresetUsersRequest request) {
+    public PresetFullResponse addNewUsersToLobbyPreset(ChangePresetUsersRequest request, Authentication auth) {
+        var presetForChange = getPresetByIdOrThrow(request.lobbyId());
+        var owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyPreset presetForChange = getPresetByIdOrThrow(request.lobbyId());
+        isOwner(Objects.equals(owner, presetForChange.getOwner()));
 
         List<AppUser> usersForAdd = appUserService.getUsersListByIds(request.usersId());
 
@@ -73,29 +73,33 @@ public class LobbyPresetService {
     }
 
     @Transactional
-    public PresetFullResponse removeUserFromPreset(ChangePresetUsersRequest request) {
+    public PresetFullResponse removeUserFromPreset(ChangePresetUsersRequest request, Authentication auth) {
+        var presetForRemove = getPresetByIdOrThrow(request.lobbyId());
+        var owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyPreset presetForRemove = getPresetByIdOrThrow(request.lobbyId());
-
+        isOwner(Objects.equals(owner, presetForRemove.getOwner()));
         removeUsersFromPreset(request, presetForRemove);
 
-        LobbyPreset savedPreset = repository.save(presetForRemove);
+        var savedPreset = repository.save(presetForRemove);
 
         return new PresetFullResponse(savedPreset);
     }
 
     @Transactional
-    public StandardStringResponse removeLobbyPreset(Long id) {
+    public StandardStringResponse removeLobbyPreset(Long id, Authentication auth) {
+        var owner = appUserService.getUserByEmailOrThrow(auth.getName());
+        var preset = getPresetByIdOrThrow(id);
+
+        isOwner(Objects.equals(owner, preset.getOwner()));
+        isPresetIdValid(Objects.equals(preset.getId(), id));
 
         repository.deleteById(id);
 
         return new StandardStringResponse("Lobby preset with lobbyId: " + id + " is deleted");
     }
 
-
     @Transactional
     public PresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
-
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
         LobbyPreset presetForChange = getPresetByIdOrThrow(request.lobbyId());
@@ -107,14 +111,20 @@ public class LobbyPresetService {
         return new PresetFullResponse(savedPreset);
     }
 
-    public LobbyPreset getPresetByIdOrThrow(Long id) {
+    public LobbyPreset getPresetByOwnerIdOrThrow(long ownerId) {
+        return repository.findUniqueByOwnerId(ownerId).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
+    }
 
+    private LobbyPreset getPresetByIdOrThrow(Long id) {
         return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
     }
 
-    public LobbyPreset getPresetByOwnerIdOrThrow(long ownerId) {
+    private void isOwner(boolean isOwner) {
+        if (!isOwner) throw new IllegalArgumentException("Current User is not the same as the preset owner");
+    }
 
-        return repository.findUniqueByOwnerId(ownerId).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
+    private void isPresetIdValid(boolean isValid) {
+        if (!isValid) throw new IllegalArgumentException("Id don't match authenticated Users preset id");
     }
 
     private LobbyPreset getSavedBlankPreset(AppUser owner) {
@@ -123,7 +133,6 @@ public class LobbyPresetService {
     }
 
     private List<PresetFullResponse> getListOfPresetsFullResponse(List<LobbyPreset> presets) {
-
         return presets
                 .stream()
                 .map(PresetFullResponse::new)
@@ -140,13 +149,11 @@ public class LobbyPresetService {
         return repository.save(presetForChange);
     }
 
-    private static void removeUsersFromPreset(ChangePresetUsersRequest request, LobbyPreset presetForRemove) {
-
+    private void removeUsersFromPreset(ChangePresetUsersRequest request, LobbyPreset presetForRemove) {
         presetForRemove.getUsers().removeIf(user -> request.usersId().contains(user.getId()));
     }
 
     private LobbyPreset saveNewLobbyPreset(NewPresetRequest request, Authentication auth) {
-
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
         OffsetTime time = timeStringToOffsetTime(request.time());
