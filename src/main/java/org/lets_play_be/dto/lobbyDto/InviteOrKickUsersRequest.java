@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
-public record InviteNewUsersRequest(@NotEmpty
+public record InviteOrKickUsersRequest(@NotEmpty
                                     String message,
-                                    @NotNull
+                                       @NotNull
                                     List<Long> usersIds) implements Serializable {
 }

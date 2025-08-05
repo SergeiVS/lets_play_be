@@ -51,6 +51,7 @@ class LobbyPresetServiceTest {
     LobbyPreset preset;
     LobbyPreset blankPreset;
     NewPresetRequest newPresetRequest;
+    ChangePresetUsersRequest changePresetUsersRequest;
     OffsetTime time;
     String timeString;
 
@@ -83,6 +84,7 @@ class LobbyPresetServiceTest {
                 timeString,
                 List.of(user1.getId(), user2.getId())
         );
+        changePresetUsersRequest = new ChangePresetUsersRequest(preset.getId(), List.of(user1.getId()));
     }
 
     @AfterEach
@@ -94,6 +96,7 @@ class LobbyPresetServiceTest {
         preset = null;
         blankPreset = null;
         newPresetRequest = null;
+        changePresetUsersRequest = null;
         time = null;
         timeString = null;
     }
@@ -241,11 +244,13 @@ class LobbyPresetServiceTest {
         newPreset.getUsers().add(user3);
 
         when(presetRepository.findById(request.lobbyId())).thenReturn(Optional.of(preset));
+        when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(userService.getUsersListByIds(List.of(user3.getId()))).thenReturn(List.of(user3));
         when(presetRepository.save(any(LobbyPreset.class))).thenReturn(newPreset);
 
+
         var expectedResult = new PresetFullResponse(newPreset);
-        var result = presetService.addNewUsersToLobbyPreset(request);
+        var result = presetService.addNewUsersToLobbyPreset(request, auth);
 
         assertEquals(expectedResult, result);
 
@@ -261,7 +266,7 @@ class LobbyPresetServiceTest {
 
         when(presetRepository.findById(request.lobbyId())).thenThrow(IllegalArgumentException.class);
 
-        assertThrows(IllegalArgumentException.class, () -> presetService.addNewUsersToLobbyPreset(request));
+        assertThrows(IllegalArgumentException.class, () -> presetService.addNewUsersToLobbyPreset(request, auth));
 
         verify(presetRepository, times(1)).findById(preset.getId());
         verify(userService, times(0)).getUsersListByIds(List.of(user3.getId()));
@@ -275,9 +280,11 @@ class LobbyPresetServiceTest {
         ChangePresetUsersRequest request = new ChangePresetUsersRequest(preset.getId(), List.of(user3.getId()));
 
         when(presetRepository.findById(request.lobbyId())).thenReturn(Optional.of(preset));
+        when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
+        when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(userService.getUsersListByIds(List.of(user3.getId()))).thenThrow(e);
 
-        assertThrows(e, () -> presetService.addNewUsersToLobbyPreset(request));
+        assertThrows(e, () -> presetService.addNewUsersToLobbyPreset(request, auth));
 
         verify(presetRepository, times(1)).findById(preset.getId());
         verify(userService, times(1)).getUsersListByIds(List.of(user3.getId()));
@@ -286,6 +293,26 @@ class LobbyPresetServiceTest {
 
     @Test
     void removeUserFromPreset() {
+        var changedPreset = new LobbyPreset(preset.getId(), preset.getTitle(), preset.getTime(), preset.getOwner());
+        changedPreset.getUsers().add(user2);
+
+        when(presetRepository.findById(preset.getId())).thenReturn(Optional.of(preset));
+        when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
+        when(presetRepository.save(changedPreset)).thenReturn(changedPreset);
+
+        assertThat(preset.getUsers().size()).isEqualTo(2);
+        assertThat(preset.getUsers().containsAll(List.of(user1, user2))).isTrue();
+
+        var expectedResult = new PresetFullResponse(changedPreset);
+        var result = presetService.removeUserFromPreset(changePresetUsersRequest, auth);
+
+        assertEquals(expectedResult, result);
+        assertThat(preset.getUsers().size()).isEqualTo(1);
+        assertThat(preset.getUsers().contains(user1)).isFalse();
+        assertThat(preset.getUsers().contains(user2)).isTrue();
+
+        verify(presetRepository, times(1)).findById(preset.getId());
+        verify(presetRepository, times(1)).save(changedPreset);
     }
 
     @Test
@@ -297,6 +324,31 @@ class LobbyPresetServiceTest {
     }
 
     @Test
-    void getPresetByIdOrThrow() {
+    void getPresetFullResponse_Success_PresetFound() {
+        when(presetRepository.findUniqueByOwnerId(owner.getId())).thenReturn(Optional.of(preset));
+
+        var expectedResult = new PresetFullResponse(preset);
+        var result = presetService.getPresetFullResponse(owner);
+
+        assertEquals(expectedResult, result);
+        verify(presetRepository, times(1)).findUniqueByOwnerId(owner.getId());
+        verifyNoMoreInteractions(presetRepository);
+    }
+
+    @Test
+    void getPresetFullResponse_Success_PresetNotFound() {
+        var timeNow = OffsetTime.now();
+        var blankPreset = new LobbyPreset(2L, "", timeNow, owner);
+
+        when(presetRepository.findUniqueByOwnerId(owner.getId())).thenReturn(Optional.empty());
+        when(presetRepository.save(any(LobbyPreset.class))).thenReturn(blankPreset);
+
+        var expectedResult = new PresetFullResponse(blankPreset);
+        var result = presetService.getPresetFullResponse(owner);
+
+        assertEquals(expectedResult, result);
+        verify(presetRepository, times(1)).findUniqueByOwnerId(owner.getId());
+        verify(presetRepository, times(1)).save(any(LobbyPreset.class));
+        verifyNoMoreInteractions(presetRepository);
     }
 }

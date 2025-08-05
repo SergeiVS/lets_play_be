@@ -35,7 +35,6 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
 
     @Override
     public ResponseEntity<ActiveLobbyResponse> getUsersActiveLobby(Authentication auth) {
-
         var response = lobbyService.getUsersActiveLobby(auth);
 
         if (response == null) {
@@ -48,14 +47,28 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
     @Override
     public ResponseEntity<ActiveLobbyResponse> updateLobbyActiveTitleAndTile(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
         var response = lobbyService.updateLobbyTitleAndTime(request, auth);
+
         return ResponseEntity.ok(response);
     }
 
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> inviteNewUsers(InviteNewUsersRequest request, Authentication auth) {
-
+    public ResponseEntity<ActiveLobbyResponse> inviteNewUsers(InviteOrKickUsersRequest request, Authentication auth) {
         var response = lobbyService.inviteNewUsers(request, auth);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<PresetFullResponse> leaveLobby(long lobbyId, Authentication auth) {
+        var response = lobbyService.leaveLobby(lobbyId, auth);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ActiveLobbyResponse> kickUsers(InviteOrKickUsersRequest request, Authentication auth) {
+        var response = lobbyService.kickUsers(request, auth);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

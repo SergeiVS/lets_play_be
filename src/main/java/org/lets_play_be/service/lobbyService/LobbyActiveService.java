@@ -20,11 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.lets_play_be.entity.converters.PresetToActiveLobbyConverter.convertPresetToLobby;
+import static org.lets_play_be.notification.NotificationFactory.createNotification;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Service
@@ -91,8 +92,7 @@ public class LobbyActiveService {
     }
 
     @Transactional
-    public ActiveLobbyResponse inviteNewUsers(InviteNewUsersRequest request, Authentication auth) {
-
+    public ActiveLobbyResponse inviteNewUsers(InviteOrKickUsersRequest request, Authentication auth) {
         var owner = userService.getUserByEmailOrThrow(auth.getName());
         var lobby = loadLobbyByOwnerIdOrThrow(owner);
 
@@ -105,7 +105,7 @@ public class LobbyActiveService {
                 .filter(invite -> request.usersIds().contains(invite.getRecipient().getId()))
                 .toList();
 
-        NotificationData notificationData = new NewUserInvitedNotificationData(updatedLobby);
+        NotificationData notificationData = new UsersInvitedNotificationData(updatedLobby);
 
         subscribeRecipients(updatedLobby.getId(), request.usersIds());
 
@@ -117,8 +117,44 @@ public class LobbyActiveService {
     }
 
     @Transactional
-    public ActiveLobbyResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+    public PresetFullResponse leaveLobby(long lobbyId, Authentication auth) {
+        var user = userService.getUserByEmailOrThrow(auth.getName());
+        var lobby = getLobbyByIdOrThrow(lobbyId);
 
+        isInLobby(lobby, user);
+
+        lobby.getInvites().removeIf(invite -> invite.getRecipient().getId().equals(user.getId()));
+        var updatedLobby = repository.save(lobby);
+
+        var message = user.getName() + " was leaved the lobby: " + updatedLobby.getTitle();
+
+        notifyInvitedUsers(updatedLobby, new MessageNotificationData(message));
+
+        return presetService.getPresetFullResponse(user);
+    }
+
+    @Transactional
+    public ActiveLobbyResponse kickUsers(InviteOrKickUsersRequest request, Authentication auth) {
+        var owner = userService.getUserByEmailOrThrow(auth.getName());
+        var lobby = loadLobbyByOwnerIdOrThrow(owner);
+        List<Long> kickedUsersIds = request.usersIds();
+
+        lobby.getInvites().removeIf(invite -> kickedUsersIds.contains(invite.getRecipient().getId()));
+        var updatedLobby = repository.save(lobby);
+
+        unsubscribeRecipients(updatedLobby.getId(), kickedUsersIds);
+
+        var lobbyMembersNotificationData = new UsersKickedNotificationData(updatedLobby);
+
+        notifyInvitedUsers(updatedLobby, lobbyMembersNotificationData);
+
+        notifyKickedUsers(kickedUsersIds, request.message());
+
+        return new ActiveLobbyResponse(updatedLobby);
+    }
+
+    @Transactional
+    public ActiveLobbyResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
         AppUser owner = userService.getUserByEmailOrThrow(auth.getName());
 
         LobbyActive lobbyForChange = getLobbyByIdOrThrow(request.lobbyId());
@@ -136,7 +172,6 @@ public class LobbyActiveService {
 
     @Transactional
     public ActiveLobbyResponse closeLobby(Long lobbyId, Authentication auth) {
-
         var owner = userService.getUserByEmailOrThrow(auth.getName());
 
         var lobbyForDelete = getLobbyByIdOrThrow(lobbyId);
@@ -156,19 +191,16 @@ public class LobbyActiveService {
 
 
     public LobbyActive loadLobbyByOwnerIdOrThrow(AppUser owner) {
-
         return repository.findLobbyActiveByOwnerId(owner.getId())
                 .orElseThrow(() -> new RestException("Current user does not have active lobby", HttpStatus.BAD_REQUEST));
     }
 
     public LobbyActive getLobbyByIdOrThrow(Long id) {
-
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No Lobby found with lobbyId: " + id));
     }
 
     private void subscribeLobbySubjectInPool(LobbyActive lobby) {
-
         LobbySubject subject = createLobbyNotificationSubject(lobby.getId());
 
         subjectPool.addSubject(subject);
@@ -183,7 +215,6 @@ public class LobbyActiveService {
     }
 
     private void subscribeRecipients(long lobbyId, List<Long> recipientsIds) {
-
         for (long recipientId : recipientsIds) {
 
             if (recipientPool.isInPool(recipientId)) {
@@ -192,8 +223,18 @@ public class LobbyActiveService {
         }
     }
 
-    private List<Long> getRecipientsIds(LobbyActive lobby) {
+    private void unsubscribeRecipients(long lobbyId, List<Long> recipientsIds) {
+        var lobbySubject = subjectPool.getSubject(lobbyId);
 
+        recipientsIds.forEach(id-> {
+                    if (recipientPool.isInPool(id)){
+                        lobbySubject.unsubscribe(recipientPool.getObserver(id));
+                    }
+                }
+        );
+    }
+
+    private List<Long> getRecipientsIds(LobbyActive lobby) {
         List<Long> recipientsIds = new ArrayList<>();
 
         lobby.getInvites().forEach(invite -> recipientsIds.add(invite.getRecipient().getId()));
@@ -202,7 +243,6 @@ public class LobbyActiveService {
     }
 
     private void setInvitesDelivered(List<Invite> invites) {
-
         for (Invite invite : invites) {
 
             var recipientId = invite.getRecipient().getId();
@@ -215,7 +255,6 @@ public class LobbyActiveService {
     }
 
     private LobbyActive saveNewLobbyFromRequest(NewActiveLobbyRequest request, AppUser owner) {
-
         var title = request.title();
         var time = timeStringToOffsetTime(request.time());
         var lobbyForSave = new LobbyActive(title, time, owner);
@@ -228,8 +267,7 @@ public class LobbyActiveService {
     }
 
     private LobbyActive saveNewLobbyFromPreset(ActivatePresetRequest request, LobbyPreset preset) {
-
-        var lobby = convertPresetToLobby(preset);
+        var lobby = new LobbyActive(preset);
         var userIds = preset.getUsers().stream().map(AppUser::getId).toList();
 
         List<Invite> invites = getNewInvitesList(userIds, request.message(), lobby);
@@ -239,22 +277,48 @@ public class LobbyActiveService {
     }
 
     private List<Invite> getNewInvitesList(List<Long> usersId, String message, LobbyActive lobbyForSave) {
-
         List<AppUser> users = userService.getUsersListByIds(usersId);
 
         return users.stream().map(user -> new Invite(user, lobbyForSave, message)).toList();
     }
 
     private void notifyInvitedUsers(LobbyActive savedLobby, NotificationData notificationData) {
-
         sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
     }
 
-    private void isLobbyExistingByOwner(AppUser owner) {
+    private void notifyKickedUsers(List<Long> userIds, String message){
+        var messageNotificationData= new MessageNotificationData(message);
+        List<AppUser> users = userService.getUsersListByIds(userIds);
 
+        users.forEach(user->{
+            if(recipientPool.isInPool(user.getId())){
+                try {
+                    var presetResponse = presetService.getPresetFullResponse(user);
+                    var observer = recipientPool.getObserver(user.getId());
+
+                    observer.update(createNotification(messageNotificationData));
+                    observer.update(createNotification(presetResponse));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    private void isLobbyExistingByOwner(AppUser owner) {
         if (repository.existsLobbyActiveByOwner(owner)) {
 
             throw new IllegalArgumentException("The Lobby for given owner already exists");
+        }
+    }
+
+    private void isInLobby(LobbyActive lobby, AppUser user) {
+        var inviteOpt = lobby.getInvites().stream()
+                .filter(invite -> invite.getRecipient().getId().equals(user.getId()))
+                .findFirst();
+
+        if(inviteOpt.isEmpty()){
+            throw new IllegalArgumentException("User is not a lobby member");
         }
     }
 }

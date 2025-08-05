@@ -128,7 +128,49 @@ public interface LobbyActiveControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping("users")
-    ResponseEntity<ActiveLobbyResponse> inviteNewUsers(@RequestBody @Valid InviteNewUsersRequest request, Authentication auth);
+    ResponseEntity<ActiveLobbyResponse> inviteNewUsers(@RequestBody @Valid InviteOrKickUsersRequest request, Authentication auth);
+
+    @Operation(summary = "Kick users from Active Lobby by lobby owner")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby was updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PatchMapping("exit/{lobbyId}")
+    ResponseEntity<PresetFullResponse> leaveLobby(@PathVariable("lobbyId") long lobbyId, Authentication auth);
+
+    @Operation(summary = "Kick users from Active Lobby by lobby owner")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby was updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PatchMapping("kick")
+    ResponseEntity<ActiveLobbyResponse> kickUsers(@RequestBody @Valid InviteOrKickUsersRequest request, Authentication auth);
 
     @Operation(summary = "Delete lobby by owner")
     @ApiResponses(value = {
@@ -148,7 +190,7 @@ public interface LobbyActiveControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @DeleteMapping("{id}")
-    ResponseEntity<ActiveLobbyResponse> deleteActiveLobby(@PathVariable("id") @NotNull Long lobbyId, Authentication auth);
+    @DeleteMapping("{lobbyId}")
+    ResponseEntity<ActiveLobbyResponse> deleteActiveLobby(@PathVariable("lobbyId") @NotNull Long lobbyId, Authentication auth);
 
 }
