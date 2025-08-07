@@ -22,23 +22,23 @@ public class UserAvailability {
     private AvailabilityEnum availabilityType;
 
     @Setter
-    private OffsetTime fromUnavailable;
+    private OffsetTime unavailableFrom;
 
     @Setter
-    private OffsetTime toUnavailable;
+    private OffsetTime unavailableTo;
 
 
     public UserAvailability(AvailabilityEnum availabilityType) {
         this.availabilityType = availabilityType;
-        this.fromUnavailable = OffsetTime.parse("00:00:00+00:00");
-        this.toUnavailable = OffsetTime.parse("00:00:00+00:00");
+        this.unavailableFrom = OffsetTime.parse("00:00:00+00:00");
+        this.unavailableTo = OffsetTime.parse("00:00:00+00:00");
     }
 
     public UserAvailability(long id, AvailabilityEnum availabilityType) {
         this.id = id;
         this.availabilityType = availabilityType;
-        this.fromUnavailable = OffsetTime.parse("00:00:00+00:00");
-        this.toUnavailable = OffsetTime.parse("00:00:00+00:00");
+        this.unavailableFrom = OffsetTime.parse("00:00:00+00:00");
+        this.unavailableTo = OffsetTime.parse("00:00:00+00:00");
     }
 
 }

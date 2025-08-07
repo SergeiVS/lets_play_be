@@ -15,8 +15,8 @@ public record AppUserFullResponse(
         String avatarUrl,
         String[] roles,
         String availability,
-        String fromAvailable,
-        String toAvailable) implements Serializable {
+        String unavailableFrom,
+        String unavailableTo) implements Serializable {
 
     public AppUserFullResponse(AppUser appUser) {
         this(
@@ -26,8 +26,8 @@ public record AppUserFullResponse(
                 appUser.getAvatarUrl(),
                 appUser.getRolesStrings(),
                 appUser.getAvailability().getAvailabilityType().toString(),
-                timeToStringFormatter(appUser.getAvailability().getFromUnavailable()),
-                timeToStringFormatter(appUser.getAvailability().getToUnavailable())
+                timeToStringFormatter(appUser.getAvailability().getUnavailableFrom()),
+                timeToStringFormatter(appUser.getAvailability().getUnavailableTo())
         );
     }
 
@@ -41,14 +41,14 @@ public record AppUserFullResponse(
                 && Objects.equals(email, response.email)
                 && Objects.deepEquals(roles, response.roles)
                 && Objects.equals(avatarUrl, response.avatarUrl)
-                && Objects.equals(toAvailable, response.toAvailable)
+                && Objects.equals(unavailableTo, response.unavailableTo)
                 && Objects.equals(availability, response.availability)
-                && Objects.equals(fromAvailable, response.fromAvailable);
+                && Objects.equals(unavailableFrom, response.unavailableFrom);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, name, email, avatarUrl, Arrays.hashCode(roles), availability, fromAvailable, toAvailable);
+        return Objects.hash(userId, name, email, avatarUrl, Arrays.hashCode(roles), availability, unavailableFrom, unavailableTo);
 
     }
 }

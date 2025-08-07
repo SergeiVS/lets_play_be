@@ -55,12 +55,12 @@ class RegisterNewUserServiceTest {
         String email = request.email();
         String password = "hashedPassword";
         String avatarUrl = "N/A";
-        String fromAvailable = timeToStringFormatter(availability.getFromUnavailable());
-        String toAvailable = timeToStringFormatter(availability.getFromUnavailable());
+        String unavailableFrom = timeToStringFormatter(availability.getUnavailableFrom());
+        String unavailableTo = timeToStringFormatter(availability.getUnavailableFrom());
 
         role = new AppUserRole(UserRoleEnum.ROLE_USER.name());
         responseMocked = new AppUserFullResponse(1L, "Name", "name@testemail.com", avatarUrl,
-                new String[]{role.getName()}, "AVAILABLE", fromAvailable, toAvailable);
+                new String[]{role.getName()}, "AVAILABLE", unavailableFrom, unavailableTo);
         appUserForSave = new AppUser(name, email, password, avatarUrl);
         appUserForSave.getRoles().add(role);
         appUserForSave.setAvailability(availability);
@@ -97,8 +97,8 @@ class RegisterNewUserServiceTest {
         assertThat(result.roles().length).isEqualTo(1);
         assertThat(result.roles()[0]).isEqualTo(role.getName());
         assertThat(result.availability()).isEqualTo(responseMocked.availability());
-        assertThat(result.fromAvailable()).isEqualTo(responseMocked.fromAvailable());
-        assertThat(result.toAvailable()).isEqualTo(responseMocked.toAvailable());
+        assertThat(result.unavailableFrom()).isEqualTo(responseMocked.unavailableFrom());
+        assertThat(result.unavailableTo()).isEqualTo(responseMocked.unavailableTo());
 
         verify(repositoryMock, times(1)).existsByEmail("name@testemail.com");
         verify(repositoryMock, times(1)).existsByName("Name");

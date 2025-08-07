@@ -25,8 +25,8 @@ public record InvitedUserResponse(
                 invite.getRecipient().getId(),
                 invite.getRecipient().getName(),
                 invite.getRecipient().getAvailability().getAvailabilityType().toString(),
-                timeToStringFormatter(invite.getRecipient().getAvailability().getFromUnavailable()),
-                timeToStringFormatter(invite.getRecipient().getAvailability().getToUnavailable()),
+                timeToStringFormatter(invite.getRecipient().getAvailability().getUnavailableFrom()),
+                timeToStringFormatter(invite.getRecipient().getAvailability().getUnavailableTo()),
                 invite.getState().toString(),
                 invite.getDelayedFor()
         );

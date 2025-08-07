@@ -40,8 +40,8 @@ public class InitDefaultUser {
             if (!userRepository.existsByEmail(user.getEmail())) {
 
                 UserAvailability availability = new UserAvailability(AvailabilityEnum.AVAILABLE);
-                availability.setFromUnavailable(timeStringToOffsetTime("00:00:00+00:00"));
-                availability.setToUnavailable(timeStringToOffsetTime("00:00:00+00:00"));
+                availability.setUnavailableFrom(timeStringToOffsetTime("00:00:00+00:00"));
+                availability.setUnavailableTo(timeStringToOffsetTime("00:00:00+00:00"));
                 user.setAvailability(availability);
                 AppUser savedUser = userRepository.save(user);
 

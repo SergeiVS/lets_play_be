@@ -11,10 +11,10 @@ public record UserAvailabilityUpdateRequest(@NotEmpty(message = "Field availabil
                                             @NotNull(message = "Field could not be  null")
                                             @Pattern(regexp = "(?:2[0-3]|[01]\\d|\\d)}:[0-5]{1}\\d{1}:[0-5]{1}\\d{1}[+|-]?0\\d|1[0-4]:[0-5][0-9]",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
-                                            String newFromUnavailable,
+                                            String newUnavailableFrom,
                                             @NotNull(message = "Field could not be  null")
                                             @Pattern(regexp = "(?:2[0-3]|[01]\\d|\\d)}:[0-5]{1}\\d{1}:[0-5]{1}\\d{1}[+|-]?0\\d|1[0-4]:[0-5][0-9]",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
-                                            String newToUnavailable
+                                            String newUnavailableTo
 ) implements Serializable {
 }

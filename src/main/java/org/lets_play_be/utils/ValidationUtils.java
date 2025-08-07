@@ -12,8 +12,8 @@ public class ValidationUtils {
         }
     }
 
-    public static void isFromTimeBeforeTo(OffsetTime fromUnavailable, OffsetTime toUnavailable) {
-        if(toUnavailable.isBefore(fromUnavailable)) {
+    public static void isFromTimeBeforeTo(OffsetTime unavailableFrom, OffsetTime unavailableTo) {
+        if(unavailableTo.isBefore(unavailableFrom)) {
             throw new IllegalArgumentException("To time must be after from");
         }
     }

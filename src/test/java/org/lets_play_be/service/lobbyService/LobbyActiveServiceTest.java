@@ -124,8 +124,8 @@ class LobbyActiveServiceTest {
         userAvailability1 = new UserAvailability(11, AvailabilityEnum.AVAILABLE);
         userAvailability2 = new UserAvailability(12, AvailabilityEnum.UNAVAILABLE);
         userAvailability3 = new UserAvailability(13, AvailabilityEnum.TEMPORARILY_UNAVAILABLE);
-        userAvailability3.setFromUnavailable(OffsetTime.now().plusHours(1));
-        userAvailability1.setFromUnavailable(OffsetTime.now().plusHours(3));
+        userAvailability3.setUnavailableFrom(OffsetTime.now().plusHours(1));
+        userAvailability1.setUnavailableFrom(OffsetTime.now().plusHours(3));
         owner.setAvailability(ownerAvailability);
         user1.setAvailability(userAvailability1);
         user2.setAvailability(userAvailability2);
