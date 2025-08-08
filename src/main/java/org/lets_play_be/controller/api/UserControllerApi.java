@@ -34,7 +34,7 @@ public interface UserControllerApi {
     @GetMapping("users")
     ResponseEntity<List<AppUserFullResponse>> getAllUsers();
 
-    @Operation(summary = "User can get his/herself data")
+    @Operation(summary = "User can get their self data")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "get user data of authenticated user",
                     content = {@Content(mediaType = "application/json",
@@ -67,13 +67,13 @@ public interface UserControllerApi {
     ResponseEntity<AppUserFullResponse> updateUserData(@RequestBody @Valid @NotNull UserDataUpdateRequest request,
                                                        @NotNull Principal principal);
 
-    @Operation(summary = "User can change his/her Availability")
+    @Operation(summary = "User can change their Availability")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "change user availability",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = AppUserFullResponse.class))}
             ),
-            @ApiResponse(responseCode = "400", description = "Some of Arguments is illegal",
+            @ApiResponse(responseCode = "400", description = "Some of the Arguments are illegal",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
