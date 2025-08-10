@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum ValidationRegex {
-    TIME_FORMAT_REGEX("([0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d[+-](0\\d|1[0-4]):[0-5]\\d");
+    TIME_FORMAT_REGEX("([0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d[+\\-](0\\d|1[0-4]):[0-5]\\d");
     final String regex;
 
     ValidationRegex(String regex) {

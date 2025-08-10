@@ -3,7 +3,7 @@ package org.lets_play_be.entity.invite;
 import jakarta.persistence.*;
 import lombok.*;
 import org.lets_play_be.entity.enums.InviteState;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 
 import java.time.OffsetDateTime;
@@ -42,9 +42,9 @@ public class Invite {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lobby_active_id")
-    private LobbyActive lobby;
+    private Lobby lobby;
 
-    public Invite(AppUser recipient, LobbyActive lobby, String message) {
+    public Invite(AppUser recipient, Lobby lobby, String message) {
         this.recipient = recipient;
         this.state = InviteState.PENDING;
         this.createdAt = OffsetDateTime.now();
@@ -55,7 +55,7 @@ public class Invite {
         this.delayedFor = 0;
     }
 
-    public Invite(long id, AppUser recipient, LobbyActive lobby, String message) {
+    public Invite(long id, AppUser recipient, Lobby lobby, String message) {
         this.id = id;
         this.recipient = recipient;
         this.state = InviteState.PENDING;

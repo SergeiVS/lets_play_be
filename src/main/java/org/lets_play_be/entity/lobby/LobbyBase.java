@@ -5,6 +5,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
+import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.annotations.TimeZoneStorageType;
 import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.user.AppUser;
 
@@ -19,11 +21,16 @@ import java.time.OffsetTime;
 public abstract class LobbyBase {
 
     private String title;
+
     @Setter(AccessLevel.PROTECTED)
     private LobbyType type;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "owner_id", unique = true)
     private AppUser owner;
+
+    @Setter
+    @TimeZoneStorage(TimeZoneStorageType.COLUMN)
     private OffsetTime time;
 
     public LobbyBase(String title, OffsetTime time, AppUser owner) {

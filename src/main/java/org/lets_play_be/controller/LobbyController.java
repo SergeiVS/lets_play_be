@@ -1,9 +1,9 @@
 package org.lets_play_be.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.controller.api.LobbyActiveControllerApi;
+import org.lets_play_be.controller.api.LobbyControllerApi;
 import org.lets_play_be.dto.lobbyDto.*;
-import org.lets_play_be.service.lobbyService.LobbyActiveService;
+import org.lets_play_be.service.lobbyService.LobbyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,22 +11,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class LobbyActiveController implements LobbyActiveControllerApi {
+public class LobbyController implements LobbyControllerApi {
 
-    private final LobbyActiveService lobbyService;
+    private final LobbyService lobbyService;
 
     @Deprecated
     @Override
-    public ResponseEntity<ActiveLobbyResponse> addNewLobbyActive(NewActiveLobbyRequest request,
-                                                                 Authentication authentication) {
-        ActiveLobbyResponse response = lobbyService.createActiveLobby(request, authentication);
+    public ResponseEntity<LobbyResponse> addNewLobbyActive(NewActiveLobbyRequest request,
+                                                           Authentication authentication) {
+        LobbyResponse response = lobbyService.createActiveLobby(request, authentication);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> createActiveLobby(ActivatePresetRequest request,
-                                                                 Authentication auth) {
+    public ResponseEntity<LobbyResponse> activateLobby(ActivatePresetRequest request,
+                                                       Authentication auth) {
         var response = lobbyService.createLobbyFromPreset(request, auth);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -34,8 +34,8 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
 
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> getUsersActiveLobby(Authentication auth) {
-        var response = lobbyService.getUsersActiveLobby(auth);
+    public ResponseEntity<LobbyResponse> getLobby(Authentication auth) {
+        var response = lobbyService.getUsersLobby(auth);
 
         if (response == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -45,7 +45,7 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
     }
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> updateLobbyActiveTitleAndTile(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+    public ResponseEntity<LobbyResponse> updateLobbyData(UpdateLobbyRequest request, Authentication auth) {
         var response = lobbyService.updateLobbyTitleAndTime(request, auth);
 
         return ResponseEntity.ok(response);
@@ -53,7 +53,7 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
 
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> inviteNewUsers(InviteOrKickUsersRequest request, Authentication auth) {
+    public ResponseEntity<LobbyResponse> inviteNewUsers(ChangeUsersListRequest request, Authentication auth) {
         var response = lobbyService.inviteNewUsers(request, auth);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -67,15 +67,25 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
     }
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> kickUsers(InviteOrKickUsersRequest request, Authentication auth) {
+    public ResponseEntity<LobbyResponse> kickUsers(ChangeUsersListRequest request, Authentication auth) {
         var response = lobbyService.kickUsers(request, auth);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> deleteActiveLobby(Long lobbyId, Authentication auth) {
+    public ResponseEntity<LobbyResponse> deactivateLobby(Long lobbyId, Authentication auth) {
         return ResponseEntity.ok(lobbyService.closeLobby(lobbyId, auth));
+    }
+
+    @Override
+    public ResponseEntity<LobbyResponse> addUsers(ChangeUsersListRequest request, Authentication auth) {
+        return ResponseEntity.ok(lobbyService.addUsers(request, auth));
+    }
+
+    @Override
+    public ResponseEntity<LobbyResponse> removeUsers(ChangeUsersListRequest request, Authentication auth) {
+        return ResponseEntity.ok(lobbyService.addUsers(request, auth));
     }
 
 }

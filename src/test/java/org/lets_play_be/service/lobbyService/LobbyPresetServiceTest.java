@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.lets_play_be.dto.lobbyDto.ChangePresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.NewPresetRequest;
 import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
-import org.lets_play_be.dto.userDto.AppUserFullResponse;
+import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.LobbyPresetRepository;
@@ -107,8 +107,8 @@ class LobbyPresetServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
 
         var expectedResponse = new PresetFullResponse(preset);
-        var userResp1 = new AppUserFullResponse(user1);
-        var userResp2 = new AppUserFullResponse(user2);
+        var userResp1 = new InvitedUserResponse(user1);
+        var userResp2 = new InvitedUserResponse(user2);
 
         var result = presetService.getUsersLobbyPreset(owner.getId(), auth);
 

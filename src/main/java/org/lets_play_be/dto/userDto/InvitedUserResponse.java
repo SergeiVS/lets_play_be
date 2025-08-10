@@ -13,6 +13,7 @@ import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 public record InvitedUserResponse(
         long userId,
         String name,
+        String avatarUrl,
         String availability,
         String unavailableFrom,
         String unavailableTo,
@@ -24,9 +25,10 @@ public record InvitedUserResponse(
         this(
                 invite.getRecipient().getId(),
                 invite.getRecipient().getName(),
+                invite.getRecipient().getAvatarUrl(),
                 invite.getRecipient().getAvailability().getAvailabilityType().toString(),
-                timeToStringFormatter(invite.getRecipient().getAvailability().getFromUnavailable()),
-                timeToStringFormatter(invite.getRecipient().getAvailability().getToUnavailable()),
+                timeToStringFormatter(invite.getRecipient().getAvailability().getUnavailableFrom()),
+                timeToStringFormatter(invite.getRecipient().getAvailability().getUnavailableTo()),
                 invite.getState().toString(),
                 invite.getDelayedFor()
         );
@@ -36,9 +38,10 @@ public record InvitedUserResponse(
         this(
                 user.getId(),
                 user.getName(),
+                user.getAvatarUrl(),
                 AvailabilityEnum.AVAILABLE.toString(),
-                "00.00.00+01.00",
-                "00.00.00+01.00",
+                timeToStringFormatter(user.getAvailability().getUnavailableFrom()),
+                timeToStringFormatter(user.getAvailability().getUnavailableTo()),
                 InviteState.ACCEPTED.toString(),
                 0
         );
@@ -48,7 +51,14 @@ public record InvitedUserResponse(
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof InvitedUserResponse that)) return false;
-        return userId == that.userId && delayedFor == that.delayedFor && Objects.equals(name, that.name) && Objects.equals(inviteState, that.inviteState) && Objects.equals(availability, that.availability) && Objects.equals(unavailableTo, that.unavailableTo) && Objects.equals(unavailableFrom, that.unavailableFrom);
+        return userId == that.userId
+                && delayedFor == that.delayedFor
+                && Objects.equals(name, that.name)
+                && Objects.equals(inviteState, that.inviteState)
+                && Objects.equals(availability, that.availability)
+                && Objects.equals(unavailableTo, that.unavailableTo)
+                && Objects.equals(unavailableFrom, that.unavailableFrom)
+                && Objects.equals(avatarUrl, that.avatarUrl);
     }
 
     @Override

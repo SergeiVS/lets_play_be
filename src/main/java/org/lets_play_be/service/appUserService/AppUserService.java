@@ -113,13 +113,13 @@ public class AppUserService {
 
         if (availability.getAvailabilityType().equals(AvailabilityEnum.TEMPORARILY_UNAVAILABLE)) {
 
-            OffsetTime fromUnavailable = timeStringToOffsetTime(request.newFromUnavailable());
-            OffsetTime toUnavailable = timeStringToOffsetTime(request.newToUnavailable());
+            OffsetTime unavailableFrom = timeStringToOffsetTime(request.newUnavailableFrom());
+            OffsetTime unavailableTo = timeStringToOffsetTime(request.newUnavailableTo());
 
-            isFromTimeBeforeTo(fromUnavailable, toUnavailable);
+            isFromTimeBeforeTo(unavailableFrom, unavailableTo);
 
-            availability.setFromUnavailable(fromUnavailable);
-            availability.setToUnavailable(toUnavailable);
+            availability.setUnavailableFrom(unavailableFrom);
+            availability.setUnavailableTo(unavailableTo);
         }
     }
 

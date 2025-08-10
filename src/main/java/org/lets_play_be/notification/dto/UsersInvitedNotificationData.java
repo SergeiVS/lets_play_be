@@ -1,7 +1,7 @@
 package org.lets_play_be.notification.dto;
 
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,7 +16,7 @@ public record UsersInvitedNotificationData(long lobbyId,
                                            List<InvitedUserResponse> invitedNewUsers
 ) implements Serializable, NotificationData {
 
-    public UsersInvitedNotificationData(LobbyActive lobby) {
+    public UsersInvitedNotificationData(Lobby lobby) {
         this(
                 lobby.getId(),
                 timeToStringFormatter(lobby.getTime()),

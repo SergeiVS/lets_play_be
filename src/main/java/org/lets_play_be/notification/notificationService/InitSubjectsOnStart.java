@@ -3,7 +3,7 @@ package org.lets_play_be.notification.notificationService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.lets_play_be.repository.LobbyActiveRepository;
+import org.lets_play_be.repository.LobbyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 public class InitSubjectsOnStart {
 
-    private final LobbyActiveRepository repository;
+    private final LobbyRepository repository;
 
     private final LobbySubjectPool pool;
 

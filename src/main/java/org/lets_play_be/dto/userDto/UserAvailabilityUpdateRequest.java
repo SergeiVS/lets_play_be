@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 public record UserAvailabilityUpdateRequest(@NotEmpty(message = "Field availability should be filled")
                                             String newAvailability,
-                                            @NotNull(message = "Field could not be  null")
-                                            @Pattern(regexp = "(?:2[0-3]|[01]\\d|\\d)}:[0-5]{1}\\d{1}:[0-5]{1}\\d{1}[+|-]?0\\d|1[0-4]:[0-5][0-9]",
+                                            @NotNull(message = "Field can not be  null")
+                                            @Pattern(regexp = "([0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d[+\\-](0\\d|1[0-4]):[0-5]\\d",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
-                                            String newFromUnavailable,
-                                            @NotNull(message = "Field could not be  null")
-                                            @Pattern(regexp = "(?:2[0-3]|[01]\\d|\\d)}:[0-5]{1}\\d{1}:[0-5]{1}\\d{1}[+|-]?0\\d|1[0-4]:[0-5][0-9]",
+                                            String newUnavailableFrom,
+                                            @NotNull(message = "Field can not be  null")
+                                            @Pattern(regexp = "([0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d[+\\-](0\\d|1[0-4]):[0-5]\\d",
                                                     message = "Wrong time format. Expected: HH:MM+/-HH:MM")
-                                            String newToUnavailable
+                                            String newUnavailableTo
 ) implements Serializable {
 }

@@ -1,0 +1,9 @@
+@startuml notifications
+
+class RestException {
+    - id
+    - message
+    - httpCode
+}
+
+@enduml

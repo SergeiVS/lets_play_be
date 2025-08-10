@@ -3,7 +3,7 @@ package org.lets_play_be.notification.notificationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.notification.NotificationSubject;
 
@@ -15,16 +15,16 @@ class LobbySubjectPoolTest {
 
     private LobbySubjectPool lobbySubjectPool;
 
-    private LobbyActive testLobby1;
-    private LobbyActive testLobby2;
+    private Lobby testLobby1;
+    private Lobby testLobby2;
     private LobbySubject testSubject1;
     private LobbySubject testSubject2;
 
     @BeforeEach
     void setUp() {
         lobbySubjectPool = new LobbySubjectPool();
-        testLobby1 = new LobbyActive(1L, "null", OffsetTime.now(), new AppUser());
-        testLobby2 = new LobbyActive(2L, "null", OffsetTime.now(), new AppUser());
+        testLobby1 = new Lobby(1L, "null", OffsetTime.now(), new AppUser());
+        testLobby2 = new Lobby(2L, "null", OffsetTime.now(), new AppUser());
 
         testSubject1 = new LobbySubject(testLobby1.getId());
         testSubject2 = new LobbySubject(testLobby2.getId());

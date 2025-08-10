@@ -111,8 +111,8 @@ class AppUserServiceTest {
         assertEquals(expectedResponse.availability(), actualResponse.availability());
         assertEquals(expectedResponse.roles().length, actualResponse.roles().length);
         assertEquals(Arrays.stream(expectedResponse.roles()).findFirst(), Arrays.stream(actualResponse.roles()).findFirst());
-        assertEquals(expectedResponse.fromAvailable(), actualResponse.fromAvailable());
-        assertEquals(expectedResponse.toAvailable(), actualResponse.toAvailable());
+        assertEquals(expectedResponse.unavailableFrom(), actualResponse.unavailableFrom());
+        assertEquals(expectedResponse.unavailableTo(), actualResponse.unavailableTo());
 
         verify(repository, times(1)).findAppUserByEmail(user1.getEmail());
     }
@@ -153,8 +153,8 @@ class AppUserServiceTest {
         assertEquals(expectedResponse.availability(), actualResponse.availability());
         assertEquals(expectedResponse.roles().length, actualResponse.roles().length);
         assertEquals(Arrays.stream(expectedResponse.roles()).findFirst(), Arrays.stream(actualResponse.roles()).findFirst());
-        assertEquals(expectedResponse.fromAvailable(), actualResponse.fromAvailable());
-        assertEquals(expectedResponse.toAvailable(), actualResponse.toAvailable());
+        assertEquals(expectedResponse.unavailableFrom(), actualResponse.unavailableFrom());
+        assertEquals(expectedResponse.unavailableTo(), actualResponse.unavailableTo());
 
         verify(repository, times(1)).findAppUserByEmail(user1.getEmail());
         verify(repository, times(1)).save(changedUser);
@@ -192,14 +192,14 @@ class AppUserServiceTest {
                 AvailabilityEnum.UNAVAILABLE.toString(),
                 "12:00:00+01:00", "16:00:00+01:00");
 
-        String expectedFromUnavailable = timeToStringFormatter(user1.getAvailability().getFromUnavailable());
-        String expectedToUnavailable = timeToStringFormatter(user1.getAvailability().getToUnavailable());
+        String expectedUnavailableFrom = timeToStringFormatter(user1.getAvailability().getUnavailableFrom());
+        String expectedUnavailableTo = timeToStringFormatter(user1.getAvailability().getUnavailableTo());
 
         String[] userRoles = user1.getRoles().stream().map(AppUserRole::getName).toArray(String[]::new);
 
         AppUserFullResponse expectedResponse = new AppUserFullResponse(user1.getId(), user1.getName(),
-                user1.getEmail(), user1.getAvatarUrl(), userRoles, request.newAvailability(),
-                request.newFromUnavailable(), request.newToUnavailable());
+                                                                       user1.getEmail(), user1.getAvatarUrl(), userRoles, request.newAvailability(),
+                                                                       request.newUnavailableFrom(), request.newUnavailableTo());
 
         when(repository.findAppUserByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
         when(repository.save(user1)).thenReturn(user1);
@@ -211,8 +211,8 @@ class AppUserServiceTest {
         assertEquals(expectedResponse.name(), actualResponse.name());
         assertEquals(expectedResponse.availability(), actualResponse.availability());
         assertEquals(expectedResponse.roles().length, actualResponse.roles().length);
-        assertEquals(expectedFromUnavailable, actualResponse.fromAvailable());
-        assertEquals(expectedToUnavailable, actualResponse.toAvailable());
+        assertEquals(expectedUnavailableFrom, actualResponse.unavailableFrom());
+        assertEquals(expectedUnavailableTo, actualResponse.unavailableTo());
 
         verify(repository, times(1)).findAppUserByEmail(user1.getEmail());
         verify(repository, times(1)).save(user1);
@@ -228,8 +228,8 @@ class AppUserServiceTest {
         String[] userRoles = user1.getRoles().stream().map(AppUserRole::getName).toArray(String[]::new);
 
         AppUserFullResponse expectedResponse = new AppUserFullResponse(user1.getId(), user1.getName(),
-                user1.getEmail(), user1.getAvatarUrl(), userRoles, request.newAvailability(),
-                request.newFromUnavailable(), request.newToUnavailable());
+                                                                       user1.getEmail(), user1.getAvatarUrl(), userRoles, request.newAvailability(),
+                                                                       request.newUnavailableFrom(), request.newUnavailableTo());
 
         when(repository.findAppUserByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
         when(repository.save(user1)).thenReturn(user1);
@@ -241,8 +241,8 @@ class AppUserServiceTest {
         assertEquals(expectedResponse.name(), actualResponse.name());
         assertEquals(expectedResponse.availability(), actualResponse.availability());
         assertEquals(expectedResponse.roles().length, actualResponse.roles().length);
-        assertEquals(expectedResponse.fromAvailable(), actualResponse.fromAvailable());
-        assertEquals(expectedResponse.toAvailable(), actualResponse.toAvailable());
+        assertEquals(expectedResponse.unavailableFrom(), actualResponse.unavailableFrom());
+        assertEquals(expectedResponse.unavailableTo(), actualResponse.unavailableTo());
 
         verify(repository, times(1)).findAppUserByEmail(user1.getEmail());
         verify(repository, times(1)).save(user1);

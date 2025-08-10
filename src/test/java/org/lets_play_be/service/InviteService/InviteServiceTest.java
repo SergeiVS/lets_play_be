@@ -8,7 +8,7 @@ import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.entity.enums.InviteState;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
 import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
@@ -51,8 +51,8 @@ class InviteServiceTest {
     Authentication auth2;
     Authentication auth3;
 
-    LobbyActive lobby1;
-    LobbyActive lobby2;
+    Lobby lobby1;
+    Lobby lobby2;
 
     Invite invite1;
     Invite invite2;
@@ -67,8 +67,8 @@ class InviteServiceTest {
         auth2 = new UsernamePasswordAuthenticationToken(user2.getEmail(), user2.getPassword());
         auth3 = new UsernamePasswordAuthenticationToken(user3.getEmail(), user3.getPassword());
 
-        lobby1 = new LobbyActive(1L, "title1", OffsetTime.now().plusHours(1), user1);
-        lobby2 = new LobbyActive(2L, "title2", OffsetTime.now().plusHours(2), user2);
+        lobby1 = new Lobby(1L, "title1", OffsetTime.now().plusHours(1), user1);
+        lobby2 = new Lobby(2L, "title2", OffsetTime.now().plusHours(2), user2);
 
         invite1 = new Invite(1L, user3, lobby1, "message1");
         invite2 = new Invite(2L, user3, lobby2, "message2");

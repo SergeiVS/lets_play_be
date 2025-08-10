@@ -143,8 +143,8 @@ class AuthControllerTest {
             assertThat(actualResponse.avatarUrl()).isEqualTo(expectedResponse.avatarUrl());
             assertThat(actualResponse.roles()).isEqualTo(expectedResponse.roles());
             assertThat(actualResponse.availability()).isEqualTo(expectedResponse.availability());
-            assertThat(actualResponse.fromAvailable()).isEqualTo(expectedResponse.fromAvailable());
-            assertThat(actualResponse.toAvailable()).isEqualTo(expectedResponse.toAvailable());
+            assertThat(actualResponse.unavailableFrom()).isEqualTo(expectedResponse.unavailableFrom());
+            assertThat(actualResponse.unavailableTo()).isEqualTo(expectedResponse.unavailableTo());
         }
 
         @Test
@@ -177,8 +177,8 @@ class AuthControllerTest {
             assertThat(actualResponse.avatarUrl()).isEqualTo(expectedResponse.avatarUrl());
             assertThat(actualResponse.roles()).isEqualTo(expectedResponse.roles());
             assertThat(actualResponse.availability()).isEqualTo(expectedResponse.availability());
-            assertThat(actualResponse.fromAvailable()).isEqualTo(expectedResponse.fromAvailable());
-            assertThat(actualResponse.toAvailable()).isEqualTo(expectedResponse.toAvailable());
+            assertThat(actualResponse.unavailableFrom()).isEqualTo(expectedResponse.unavailableFrom());
+            assertThat(actualResponse.unavailableTo()).isEqualTo(expectedResponse.unavailableTo());
         }
 
         @Test

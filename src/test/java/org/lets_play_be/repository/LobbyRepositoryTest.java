@@ -4,7 +4,7 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @Profile("test")
-class LobbyActiveRepositoryTest {
+class LobbyRepositoryTest {
 
     @Autowired
-    private LobbyActiveRepository repository;
+    private LobbyRepository repository;
     @Autowired
     private EntityManager em;
 
@@ -30,8 +30,8 @@ class LobbyActiveRepositoryTest {
     AppUser user2;
     AppUser user3;
 
-    LobbyActive lobby1;
-    LobbyActive lobby2;
+    Lobby lobby1;
+    Lobby lobby2;
 
     @BeforeEach
     void setUp() {
@@ -43,10 +43,10 @@ class LobbyActiveRepositoryTest {
         user3 = new AppUser("User3", "email3@email.com", "Password3", "N/A");
         em.persist(user3);
 
-        lobby1 = new LobbyActive("Title1", OffsetTime.now().plusHours(2), user1);
+        lobby1 = new Lobby("Title1", OffsetTime.now().plusHours(2), user1);
         em.persist(lobby1);
 
-        lobby2 = new LobbyActive("Title2", OffsetTime.now().plusHours(3), user2);
+        lobby2 = new Lobby("Title2", OffsetTime.now().plusHours(3), user2);
         em.persist(lobby2);
 
         em.flush();

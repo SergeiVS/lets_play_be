@@ -2,6 +2,8 @@ package org.lets_play_be.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.annotations.TimeZoneStorageType;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 
 import java.time.OffsetTime;
@@ -22,23 +24,25 @@ public class UserAvailability {
     private AvailabilityEnum availabilityType;
 
     @Setter
-    private OffsetTime fromUnavailable;
+    @TimeZoneStorage(TimeZoneStorageType.COLUMN)
+    private OffsetTime unavailableFrom;
 
     @Setter
-    private OffsetTime toUnavailable;
+    @TimeZoneStorage(TimeZoneStorageType.COLUMN)
+    private OffsetTime unavailableTo;
 
 
     public UserAvailability(AvailabilityEnum availabilityType) {
         this.availabilityType = availabilityType;
-        this.fromUnavailable = OffsetTime.parse("00:00:00+00:00");
-        this.toUnavailable = OffsetTime.parse("00:00:00+00:00");
+        this.unavailableFrom = OffsetTime.parse("10:00:00+01:00");
+        this.unavailableTo = OffsetTime.parse("11:00:00+01:00");
     }
 
     public UserAvailability(long id, AvailabilityEnum availabilityType) {
         this.id = id;
         this.availabilityType = availabilityType;
-        this.fromUnavailable = OffsetTime.parse("00:00:00+00:00");
-        this.toUnavailable = OffsetTime.parse("00:00:00+00:00");
+        this.unavailableFrom = OffsetTime.parse("00:00:00+00:00");
+        this.unavailableTo = OffsetTime.parse("00:00:00+00:00");
     }
 
 }

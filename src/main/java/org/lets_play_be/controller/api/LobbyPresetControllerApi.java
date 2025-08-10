@@ -26,7 +26,7 @@ public interface LobbyPresetControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Preset is created",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = LobbyResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -50,7 +50,7 @@ public interface LobbyPresetControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Presets are found, may return an empty list",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = LobbyResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -71,7 +71,7 @@ public interface LobbyPresetControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Preset were found or created",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = LobbyResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -92,7 +92,7 @@ public interface LobbyPresetControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "preset Updated",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = LobbyResponse.class))}),
             @ApiResponse(responseCode = "400", description = " User or Preset not found",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -110,14 +110,14 @@ public interface LobbyPresetControllerApi {
     ResponseEntity<PresetFullResponse> updateLobbyTitleAndTime(@RequestBody
                                                                     @NotNull
                                                                     @Validated
-                                                                    UpdateLobbyTitleAndTimeRequest request,
+                                                               UpdateLobbyRequest request,
                                                                Authentication auth);
 
     @Operation(summary = "Adding Users to Presets")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Users were added",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = LobbyResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -140,7 +140,7 @@ public interface LobbyPresetControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Users were deleted",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = LobbyResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
@@ -163,7 +163,7 @@ public interface LobbyPresetControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Preset was deleted",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActiveLobbyResponse.class))}),
+                            schema = @Schema(implementation = LobbyResponse.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
