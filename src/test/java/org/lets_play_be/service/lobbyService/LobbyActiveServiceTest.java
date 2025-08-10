@@ -213,7 +213,7 @@ class LobbyActiveServiceTest {
         ActiveLobbyResponse result = lobbyActiveService.createActiveLobby(newLobbyRequest, auth);
 
         assertThat(lobbyResponse).isEqualTo(result);
-        Assertions.assertTrue(result.invitedUsers().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
+        Assertions.assertTrue(result.users().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
 
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).existsLobbyActiveByOwner(owner);
@@ -245,7 +245,7 @@ class LobbyActiveServiceTest {
         ActiveLobbyResponse result = lobbyActiveService.createActiveLobby(newLobbyRequest, auth);
 
         assertThat(lobbyResponse).isEqualTo(result);
-        Assertions.assertTrue(result.invitedUsers().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
+        Assertions.assertTrue(result.users().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
 
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).existsLobbyActiveByOwner(owner);
@@ -338,7 +338,7 @@ class LobbyActiveServiceTest {
         ActiveLobbyResponse result = lobbyActiveService.createLobbyFromPreset(activationRequest, auth);
 
         assertThat(lobbyResponse).isEqualTo(result);
-        Assertions.assertTrue(result.invitedUsers().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
+        Assertions.assertTrue(result.users().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
 
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).existsLobbyActiveByOwner(owner);
@@ -368,7 +368,7 @@ class LobbyActiveServiceTest {
         ActiveLobbyResponse result = lobbyActiveService.createLobbyFromPreset(activationRequest, auth);
 
         assertThat(lobbyResponse).isEqualTo(result);
-        Assertions.assertTrue(result.invitedUsers().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
+        Assertions.assertTrue(result.users().containsAll(List.of(invitedUser1, invitedUser2, invitedUser3)));
 
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(repository, times(1)).existsLobbyActiveByOwner(owner);

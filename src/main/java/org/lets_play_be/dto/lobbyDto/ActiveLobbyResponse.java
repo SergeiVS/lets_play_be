@@ -18,7 +18,7 @@ public record ActiveLobbyResponse(
         AppUserFullResponse owner,
         String lobbyType,
         String title,
-        List<InvitedUserResponse> invitedUsers
+        List<InvitedUserResponse> users
 ) implements Serializable {
 
     public ActiveLobbyResponse(LobbyActive lobby) {
@@ -43,11 +43,11 @@ public record ActiveLobbyResponse(
                 && Objects.equals(title, that.title)
                 && Objects.equals(lobbyType, that.lobbyType)
                 && Objects.equals(owner, that.owner)
-                && Objects.equals(invitedUsers, that.invitedUsers);
+                && Objects.equals(users, that.users);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, time, owner, lobbyType, title, invitedUsers);
+        return Objects.hash(id, time, owner, lobbyType, title, users);
     }
 }

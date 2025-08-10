@@ -11,5 +11,5 @@ import java.util.List;
 public record ChangePresetUsersRequest(@NotNull(message = "Id could not be null")
                                        Long lobbyId,
                                        @NotEmpty(message = "Id Array could not be empty")
-                                       List<Long> usersId) implements Serializable {
+                                       List<Long> usersIds) implements Serializable {
 }

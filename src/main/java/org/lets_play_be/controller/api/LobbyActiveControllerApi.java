@@ -130,7 +130,7 @@ public interface LobbyActiveControllerApi {
     @PatchMapping("users")
     ResponseEntity<ActiveLobbyResponse> inviteNewUsers(@RequestBody @Valid InviteOrKickUsersRequest request, Authentication auth);
 
-    @Operation(summary = "Kick users from Active Lobby by lobby owner")
+    @Operation(summary = "Leave an active Lobby")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lobby was updated",
                     content = {@Content(mediaType = "application/json",
@@ -148,7 +148,7 @@ public interface LobbyActiveControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PatchMapping("exit/{lobbyId}")
+    @PatchMapping("leave/{lobbyId}")
     ResponseEntity<PresetFullResponse> leaveLobby(@PathVariable("lobbyId") long lobbyId, Authentication auth);
 
     @Operation(summary = "Kick users from Active Lobby by lobby owner")

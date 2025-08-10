@@ -5,13 +5,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.UserAvailabilityUpdateRequest;
 import org.lets_play_be.dto.userDto.UserDataUpdateRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -64,8 +64,14 @@ public interface UserControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping
-    ResponseEntity<AppUserFullResponse> updateUserData(@RequestBody @Valid @NotNull UserDataUpdateRequest request,
-                                                       @NotNull Principal principal);
+    ResponseEntity<AppUserFullResponse> updateUserData(
+            @RequestBody
+            @Validated
+            @NotNull
+            UserDataUpdateRequest request,
+            @NotNull
+            Principal principal
+    );
 
     @Operation(summary = "User can change their Availability")
     @ApiResponses(value = {
@@ -81,6 +87,12 @@ public interface UserControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping("availability")
-    ResponseEntity<AppUserFullResponse> updateUserAvailability(@RequestBody @Valid @NotNull
-                                                               UserAvailabilityUpdateRequest request, @NotNull Principal principal);
+    ResponseEntity<AppUserFullResponse> updateUserAvailability(
+            @RequestBody
+            @Validated
+            @NotNull
+            UserAvailabilityUpdateRequest request,
+            @NotNull
+            Principal principal
+    );
 }

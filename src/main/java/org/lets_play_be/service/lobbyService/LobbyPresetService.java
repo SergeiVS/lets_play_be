@@ -65,7 +65,7 @@ public class LobbyPresetService {
 
         isOwner(Objects.equals(owner, presetForChange.getOwner()));
 
-        List<AppUser> usersForAdd = appUserService.getUsersListByIds(request.usersId());
+        List<AppUser> usersForAdd = appUserService.getUsersListByIds(request.usersIds());
 
         LobbyPreset savedPreset = saveNewUsersToPreset(presetForChange, usersForAdd);
 
@@ -150,7 +150,7 @@ public class LobbyPresetService {
     }
 
     private void removeUsersFromPreset(ChangePresetUsersRequest request, LobbyPreset presetForRemove) {
-        presetForRemove.getUsers().removeIf(user -> request.usersId().contains(user.getId()));
+        presetForRemove.getUsers().removeIf(user -> request.usersIds().contains(user.getId()));
     }
 
     private LobbyPreset saveNewLobbyPreset(NewPresetRequest request, Authentication auth) {
