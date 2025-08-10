@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.AppUserRole;
-import org.lets_play_be.entity.user.UserAvailability;
-import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.enums.UserRoleEnum;
 import org.lets_play_be.repository.AppUserRepository;
 import org.springframework.context.annotation.DependsOn;
@@ -15,11 +13,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 
 @Slf4j
 @Component

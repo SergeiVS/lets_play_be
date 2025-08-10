@@ -2,16 +2,11 @@ package org.lets_play_be.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.TimeZoneColumn;
 import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.TimeZoneStorageType;
-import org.hibernate.type.SqlTypes;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.OffsetTime;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter

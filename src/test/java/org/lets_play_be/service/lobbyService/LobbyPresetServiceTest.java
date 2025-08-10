@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.lets_play_be.dto.lobbyDto.ChangePresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.NewPresetRequest;
 import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
-import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
