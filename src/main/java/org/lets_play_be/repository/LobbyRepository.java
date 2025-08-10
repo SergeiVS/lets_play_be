@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface LobbyActiveRepository extends JpaRepository<Lobby, Long> {
+public interface LobbyRepository extends JpaRepository<Lobby, Long> {
 
     boolean existsLobbyActiveByOwner(AppUser owner);
 

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LobbyRepositoryTest {
 
     @Autowired
-    private LobbyActiveRepository repository;
+    private LobbyRepository repository;
     @Autowired
     private EntityManager em;
 
