@@ -90,7 +90,7 @@ public class LobbyService {
     public LobbyResponse getUsersLobby(Authentication auth) {
         var owner = userService.getUserByEmailOrThrow(auth.getName());
 
-        Optional<Lobby> optionalLobby = repository.findLobbyActiveByOwnerId(owner.getId());
+        Optional<Lobby> optionalLobby = repository.findLobbyByOwnerId(owner.getId());
 
         return optionalLobby.map(LobbyResponse::new).orElse(null);
     }

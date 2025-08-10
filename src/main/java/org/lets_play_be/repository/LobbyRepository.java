@@ -15,5 +15,5 @@ public interface LobbyRepository extends JpaRepository<Lobby, Long> {
     @Query("SELECT l.id FROM Lobby l")
     List<Long> findAllLobbyIds();
 
-    Optional<Lobby> findLobbyActiveByOwnerId(long ownerId);
+    Optional<Lobby> findLobbyByOwnerId(long ownerId);
 }

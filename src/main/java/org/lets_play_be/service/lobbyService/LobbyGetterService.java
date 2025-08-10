@@ -23,7 +23,7 @@ public class LobbyGetterService {
     }
 
     public Lobby loadLobbyByOwnerIdOrThrow(AppUser owner) {
-        return repository.findLobbyActiveByOwnerId(owner.getId())
+        return repository.findLobbyByOwnerId(owner.getId())
                 .orElseThrow(() -> new RestException("Current user does not have active lobby", HttpStatus.BAD_REQUEST));
     }
 
