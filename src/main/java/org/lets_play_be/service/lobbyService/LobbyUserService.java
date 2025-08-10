@@ -6,10 +6,8 @@ import org.lets_play_be.dto.lobbyDto.ChangeUsersListRequest;
 import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
-import org.lets_play_be.exception.RestException;
 import org.lets_play_be.repository.LobbyRepository;
 import org.lets_play_be.service.appUserService.AppUserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +39,6 @@ public class LobbyUserService {
         lobby.getInvites().removeIf(invite -> kickedUsersIds.contains(invite.getRecipient().getId()));
 
         return repository.save(lobby);
-    }
-
-    public Lobby loadLobbyByOwnerIdOrThrow(AppUser owner) {
-        return repository.findLobbyActiveByOwnerId(owner.getId())
-                .orElseThrow(() -> new RestException("Current user does not have active lobby", HttpStatus.BAD_REQUEST));
     }
 
     private List<Invite> getNewInvitesList(List<Long> usersId, String message, Lobby lobbyForSave) {
