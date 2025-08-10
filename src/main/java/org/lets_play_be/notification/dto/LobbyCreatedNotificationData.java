@@ -1,6 +1,6 @@
 package org.lets_play_be.notification.dto;
 
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ public record LobbyCreatedNotificationData(long lobbyId,
                                            String title,
                                            String time) implements Serializable, NotificationData {
 
-    public LobbyCreatedNotificationData(LobbyActive lobby) {
+    public LobbyCreatedNotificationData(Lobby lobby) {
         this(
                 lobby.getId(),
                 lobby.getOwner().getName(),

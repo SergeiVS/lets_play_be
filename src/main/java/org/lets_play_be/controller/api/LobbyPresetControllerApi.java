@@ -110,7 +110,7 @@ public interface LobbyPresetControllerApi {
     ResponseEntity<PresetFullResponse> updateLobbyTitleAndTime(@RequestBody
                                                                     @NotNull
                                                                     @Validated
-                                                                    UpdateLobbyTitleAndTimeRequest request,
+                                                               UpdateLobbyRequest request,
                                                                Authentication auth);
 
     @Operation(summary = "Adding Users to Presets")

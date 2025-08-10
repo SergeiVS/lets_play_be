@@ -16,7 +16,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @NoArgsConstructor
-public class LobbyActive extends LobbyBase {
+public class Lobby extends LobbyBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,20 +25,20 @@ public class LobbyActive extends LobbyBase {
     @OneToMany(mappedBy = "lobby", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Invite> invites;
 
-    public LobbyActive(String title, OffsetTime time, AppUser owner) {
+    public Lobby(String title, OffsetTime time, AppUser owner) {
         super(title, time, owner);
         setType(LobbyType.ACTIVE);
         this.invites = new ArrayList<>();
     }
 
-    public LobbyActive(long id, String title, OffsetTime time, AppUser owner) {
+    public Lobby(long id, String title, OffsetTime time, AppUser owner) {
         super(title, time, owner);
         setType(LobbyType.ACTIVE);
         this.id = id;
         this.invites = new ArrayList<>();
     }
 
-    public LobbyActive(LobbyPreset preset) {
+    public Lobby(LobbyPreset preset) {
         super(preset.getTitle(), preset.getTime(), preset.getOwner());
         setType(LobbyType.ACTIVE);
         this.invites = new ArrayList<>();
@@ -47,7 +47,7 @@ public class LobbyActive extends LobbyBase {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LobbyActive that)) return false;
+        if (!(o instanceof Lobby that)) return false;
         return Objects.equals(getId(), that.getId());
     }
 

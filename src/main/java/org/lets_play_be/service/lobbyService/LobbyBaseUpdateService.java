@@ -1,7 +1,7 @@
 package org.lets_play_be.service.lobbyService;
 
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyRequest;
 import org.lets_play_be.entity.lobby.LobbyBase;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 @RequiredArgsConstructor
 public class LobbyBaseUpdateService {
   
-        public void setNewValues(UpdateLobbyTitleAndTimeRequest request, LobbyBase lobbyForChange, long ownerId) {
+        public void setNewValues(UpdateLobbyRequest request, LobbyBase lobbyForChange, long ownerId) {
 
         isLobbyOwner(lobbyForChange, ownerId);
 

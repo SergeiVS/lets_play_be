@@ -6,7 +6,7 @@ import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.ChangePresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.NewPresetRequest;
 import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyRequest;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.repository.LobbyPresetRepository;
@@ -99,7 +99,7 @@ public class LobbyPresetService {
     }
 
     @Transactional
-    public PresetFullResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+    public PresetFullResponse updateLobbyTitleAndTime(UpdateLobbyRequest request, Authentication auth) {
         AppUser owner = appUserService.getUserByEmailOrThrow(auth.getName());
 
         LobbyPreset presetForChange = getPresetByIdOrThrow(request.lobbyId());

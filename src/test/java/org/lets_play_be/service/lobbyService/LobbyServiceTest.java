@@ -12,7 +12,7 @@ import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 import org.lets_play_be.entity.invite.Invite;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
@@ -44,7 +44,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class LobbyActiveServiceTest {
+class LobbyServiceTest {
 
     @Mock
     LobbyActiveRepository repository;
@@ -84,7 +84,7 @@ class LobbyActiveServiceTest {
 
     NewActiveLobbyRequest newLobbyRequest;
     ActiveLobbyResponse lobbyResponse;
-    UpdateLobbyTitleAndTimeRequest updateTitleTimeRequest;
+    UpdateLobbyRequest updateTitleTimeRequest;
     InviteOrKickUsersRequest inviteUsersRequest;
     ActivatePresetRequest activationRequest;
 
@@ -94,8 +94,8 @@ class LobbyActiveServiceTest {
     Invite invite4;
     Invite invite5;
 
-    LobbyActive lobbyForSave;
-    LobbyActive savedLobby;
+    Lobby lobbyForSave;
+    Lobby savedLobby;
     LobbyPreset preset;
     LobbyPreset presetUser1;
 
@@ -134,7 +134,7 @@ class LobbyActiveServiceTest {
         auth = new UsernamePasswordAuthenticationToken(owner.getEmail(), owner.getPassword());
         authUser1 = new UsernamePasswordAuthenticationToken(user1.getEmail(), user1.getPassword());
 
-        lobbyForSave = new LobbyActive(title, OffsetTime.parse(timeString), owner);
+        lobbyForSave = new Lobby(title, OffsetTime.parse(timeString), owner);
 
         preset = new LobbyPreset(1L, title, OffsetTime.parse(timeString), owner);
         preset.getUsers().addAll(List.of(user1, user2, user3));
@@ -146,12 +146,12 @@ class LobbyActiveServiceTest {
         invite4 = new Invite(4L, user4, lobbyForSave, newInviteMessage);
         invite5 = new Invite(5L, user5, lobbyForSave, newInviteMessage);
 
-        savedLobby = new LobbyActive(1L, "Title", OffsetTime.parse(timeString), owner);
+        savedLobby = new Lobby(1L, "Title", OffsetTime.parse(timeString), owner);
         savedLobby.getInvites().addAll(List.of(invite1, invite2, invite3));
 
         var newTitle = "newTitle";
         var newTime = "20:00:00+02:00";
-        updateTitleTimeRequest = new UpdateLobbyTitleAndTimeRequest(savedLobby.getId(), newTitle, newTime);
+        updateTitleTimeRequest = new UpdateLobbyRequest(savedLobby.getId(), newTitle, newTime);
         newLobbyRequest = new NewActiveLobbyRequest(title, timeString, message, List.of(11L, 12L, 13L));
         activationRequest = new ActivatePresetRequest(message);
         inviteUsersRequest = new InviteOrKickUsersRequest(newInviteMessage, List.of(user4.getId(), user5.getId()));
@@ -207,7 +207,7 @@ class LobbyActiveServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(userService.getUsersListByIds(newLobbyRequest.userIds())).thenReturn(List.of(user1, user2, user3));
         when(repository.existsLobbyActiveByOwner(owner)).thenReturn(false);
-        when(repository.save(any(LobbyActive.class))).thenReturn(savedLobby);
+        when(repository.save(any(Lobby.class))).thenReturn(savedLobby);
         when(recipientPool.isInPool(anyLong())).thenReturn(true);
 
         ActiveLobbyResponse result = lobbyActiveService.createActiveLobby(newLobbyRequest, auth);
@@ -223,7 +223,7 @@ class LobbyActiveServiceTest {
         verify(notificationService, times(1)).notifyLobbyMembers(savedLobby.getId(), notificationData);
         verify(recipientPool, times(usersCount * 2)).isInPool(anyLong());
         verify(inviteService, times(usersCount)).updateIsDelivered(anyLong());
-        verify(repository, times(1)).save(any(LobbyActive.class));
+        verify(repository, times(1)).save(any(Lobby.class));
     }
 
     @Deprecated
@@ -239,7 +239,7 @@ class LobbyActiveServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(userService.getUsersListByIds(newLobbyRequest.userIds())).thenReturn(List.of(user1, user2, user3));
         when(repository.existsLobbyActiveByOwner(owner)).thenReturn(false);
-        when(repository.save(any(LobbyActive.class))).thenReturn(savedLobby);
+        when(repository.save(any(Lobby.class))).thenReturn(savedLobby);
         when(recipientPool.isInPool(anyLong())).thenReturn(false);
 
         ActiveLobbyResponse result = lobbyActiveService.createActiveLobby(newLobbyRequest, auth);
@@ -256,7 +256,7 @@ class LobbyActiveServiceTest {
         verify(recipientPool, times(usersCount * 2)).isInPool(anyLong());
         verify(inviteService, times(0)).updateIsDelivered(anyLong());
         verify(notificationService, times(1)).notifyLobbyMembers(savedLobby.getId(), notificationData);
-        verify(repository, times(1)).save(any(LobbyActive.class));
+        verify(repository, times(1)).save(any(Lobby.class));
     }
 
     @Deprecated
@@ -275,7 +275,7 @@ class LobbyActiveServiceTest {
         verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
         verify(recipientPool, times(0)).isInPool(anyLong());
         verify(inviteService, times(0)).updateIsDelivered(anyLong());
-        verify(repository, times(0)).save(any(LobbyActive.class));
+        verify(repository, times(0)).save(any(Lobby.class));
     }
 
     @Deprecated
@@ -297,7 +297,7 @@ class LobbyActiveServiceTest {
         verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
         verify(recipientPool, times(0)).isInPool(anyLong());
         verify(inviteService, times(0)).updateIsDelivered(anyLong());
-        verify(repository, times(0)).save(any(LobbyActive.class));
+        verify(repository, times(0)).save(any(Lobby.class));
     }
 
     @Deprecated
@@ -318,7 +318,7 @@ class LobbyActiveServiceTest {
         verify(notificationService, times(0)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
         verify(recipientPool, times(0)).isInPool(anyLong());
         verify(inviteService, times(0)).updateIsDelivered(anyLong());
-        verify(repository, times(0)).save(any(LobbyActive.class));
+        verify(repository, times(0)).save(any(Lobby.class));
     }
 
     @Test
@@ -332,7 +332,7 @@ class LobbyActiveServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(presetService.getPresetByOwnerIdOrThrow(owner.getId())).thenReturn(preset);
         when(repository.existsLobbyActiveByOwner(owner)).thenReturn(false);
-        when(repository.save(any(LobbyActive.class))).thenReturn(savedLobby);
+        when(repository.save(any(Lobby.class))).thenReturn(savedLobby);
         when(recipientPool.isInPool(anyLong())).thenReturn(true);
 
         ActiveLobbyResponse result = lobbyActiveService.createLobbyFromPreset(activationRequest, auth);
@@ -348,7 +348,7 @@ class LobbyActiveServiceTest {
         verify(notificationService, times(1)).notifyLobbyMembers(savedLobby.getId(), notificationData);
         verify(recipientPool, times(usersCount * 2)).isInPool(anyLong());
         verify(inviteService, times(usersCount)).updateIsDelivered(anyLong());
-        verify(repository, times(1)).save(any(LobbyActive.class));
+        verify(repository, times(1)).save(any(Lobby.class));
     }
 
     @Test
@@ -362,7 +362,7 @@ class LobbyActiveServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(presetService.getPresetByOwnerIdOrThrow(owner.getId())).thenReturn(preset);
         when(repository.existsLobbyActiveByOwner(owner)).thenReturn(false);
-        when(repository.save(any(LobbyActive.class))).thenReturn(savedLobby);
+        when(repository.save(any(Lobby.class))).thenReturn(savedLobby);
         when(recipientPool.isInPool(anyLong())).thenReturn(false);
 
         ActiveLobbyResponse result = lobbyActiveService.createLobbyFromPreset(activationRequest, auth);
@@ -378,7 +378,7 @@ class LobbyActiveServiceTest {
         verify(notificationService, times(1)).notifyLobbyMembers(savedLobby.getId(), notificationData);
         verify(recipientPool, times(usersCount * 2)).isInPool(anyLong());
         verify(inviteService, times(0)).updateIsDelivered(anyLong());
-        verify(repository, times(1)).save(any(LobbyActive.class));
+        verify(repository, times(1)).save(any(Lobby.class));
     }
 
     @Test
@@ -468,7 +468,7 @@ class LobbyActiveServiceTest {
 
     @Test
     void inviteNewUsers_Success() {
-        LobbyActive updatedLobby = cloneLobby(savedLobby);
+        Lobby updatedLobby = cloneLobby(savedLobby);
         updatedLobby.getInvites().addAll(List.of(invite4, invite5));
 
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
@@ -494,7 +494,7 @@ class LobbyActiveServiceTest {
 
     @Test
     void inviteNewUsers_No_Users_Online_Success() {
-        LobbyActive updatedLobby = cloneLobby(savedLobby);
+        Lobby updatedLobby = cloneLobby(savedLobby);
         updatedLobby.getInvites().addAll(List.of(invite4, invite5));
 
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
@@ -834,8 +834,8 @@ class LobbyActiveServiceTest {
         verify(repository, times(1)).findById(anyLong());
     }
 
-    private LobbyActive cloneLobby(LobbyActive lobby) {
-        LobbyActive newLobby = new LobbyActive(lobby.getId(), lobby.getTitle(), lobby.getTime(), lobby.getOwner());
+    private Lobby cloneLobby(Lobby lobby) {
+        Lobby newLobby = new Lobby(lobby.getId(), lobby.getTitle(), lobby.getTime(), lobby.getOwner());
         newLobby.getInvites().addAll(lobby.getInvites());
         return newLobby;
     }

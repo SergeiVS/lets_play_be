@@ -6,7 +6,7 @@ import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.lobbyDto.ChangePresetUsersRequest;
 import org.lets_play_be.dto.lobbyDto.NewPresetRequest;
 import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyRequest;
 import org.lets_play_be.service.lobbyService.LobbyPresetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +43,7 @@ public class LobbyPresetController implements LobbyPresetControllerApi {
     }
 
     @Override
-    public ResponseEntity<PresetFullResponse> updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request,
+    public ResponseEntity<PresetFullResponse> updateLobbyTitleAndTime(UpdateLobbyRequest request,
                                                                       Authentication auth) {
         var response = lobbyPresetService.updateLobbyTitleAndTime(request, auth);
         return new ResponseEntity<>(response, HttpStatus.OK);

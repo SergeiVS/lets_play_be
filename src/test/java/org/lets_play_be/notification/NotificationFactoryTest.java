@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.entity.invite.Invite;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.notification.dto.*;
 
@@ -18,14 +18,14 @@ import static org.lets_play_be.notification.NotificationFactory.createNotificati
 class NotificationFactoryTest {
 
     private AppUser testUser;
-    private LobbyActive testLobby;
+    private Lobby testLobby;
     private String testMessage;
     private Invite testInvite;
 
     @BeforeEach
     void setUp() {
         testUser = new AppUser(1L, "Name", "email@email.com", "password", "url");
-        testLobby = new LobbyActive(1L, "title", OffsetTime.now().plusHours(1), testUser);
+        testLobby = new Lobby(1L, "title", OffsetTime.now().plusHours(1), testUser);
         testMessage = "test message";
         testInvite = new Invite(1L, testUser, testLobby, testMessage);
     }

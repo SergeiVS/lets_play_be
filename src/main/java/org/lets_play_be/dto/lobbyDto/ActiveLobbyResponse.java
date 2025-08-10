@@ -3,7 +3,7 @@ package org.lets_play_be.dto.lobbyDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,7 +21,7 @@ public record ActiveLobbyResponse(
         List<InvitedUserResponse> users
 ) implements Serializable {
 
-    public ActiveLobbyResponse(LobbyActive lobby) {
+    public ActiveLobbyResponse(Lobby lobby) {
         this(
                 lobby.getId(),
                 timeToStringFormatter(lobby.getTime()),

@@ -3,8 +3,8 @@ package org.lets_play_be.service.lobbyService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.lets_play_be.dto.lobbyDto.UpdateLobbyTitleAndTimeRequest;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.dto.lobbyDto.UpdateLobbyRequest;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.entity.user.UserAvailability;
 import org.lets_play_be.utils.FormattingUtils;
@@ -20,8 +20,8 @@ class LobbyBaseUpdateServiceTest {
     private final LobbyBaseUpdateService service = new LobbyBaseUpdateService();
 
     private AppUser owner;
-    private LobbyActive lobbyForChange;
-    private UpdateLobbyTitleAndTimeRequest newLobbyRequest;
+    private Lobby lobbyForChange;
+    private UpdateLobbyRequest newLobbyRequest;
     private String newTime;
     private String newTitle;
 
@@ -32,8 +32,8 @@ class LobbyBaseUpdateServiceTest {
         newTitle = "New Title";
 
         owner = new AppUser(1L, "name", "email@email.com", "password", "url", new ArrayList<>(), new UserAvailability());
-        lobbyForChange = new LobbyActive(1L, "Title", OffsetTime.now().plusHours(1), owner);
-        newLobbyRequest = new UpdateLobbyTitleAndTimeRequest(lobbyForChange.getId(), newTitle, newTime);
+        lobbyForChange = new Lobby(1L, "Title", OffsetTime.now().plusHours(1), owner);
+        newLobbyRequest = new UpdateLobbyRequest(lobbyForChange.getId(), newTitle, newTime);
     }
 
     @AfterEach

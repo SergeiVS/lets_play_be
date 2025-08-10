@@ -25,8 +25,8 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
 
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> createActiveLobby(ActivatePresetRequest request,
-                                                                 Authentication auth) {
+    public ResponseEntity<ActiveLobbyResponse> activateLobby(ActivatePresetRequest request,
+                                                             Authentication auth) {
         var response = lobbyService.createLobbyFromPreset(request, auth);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -34,7 +34,7 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
 
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> getUsersActiveLobby(Authentication auth) {
+    public ResponseEntity<ActiveLobbyResponse> getActiveLobby(Authentication auth) {
         var response = lobbyService.getUsersActiveLobby(auth);
 
         if (response == null) {
@@ -45,7 +45,7 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
     }
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> updateLobbyActiveTitleAndTile(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+    public ResponseEntity<ActiveLobbyResponse> updateLobbyData(UpdateLobbyRequest request, Authentication auth) {
         var response = lobbyService.updateLobbyTitleAndTime(request, auth);
 
         return ResponseEntity.ok(response);
@@ -74,7 +74,7 @@ public class LobbyActiveController implements LobbyActiveControllerApi {
     }
 
     @Override
-    public ResponseEntity<ActiveLobbyResponse> deleteActiveLobby(Long lobbyId, Authentication auth) {
+    public ResponseEntity<ActiveLobbyResponse> deactivateLobby(Long lobbyId, Authentication auth) {
         return ResponseEntity.ok(lobbyService.closeLobby(lobbyId, auth));
     }
 

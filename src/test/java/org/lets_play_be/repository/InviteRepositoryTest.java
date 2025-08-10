@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.lets_play_be.entity.invite.Invite;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,8 +29,8 @@ class InviteRepositoryTest {
     private AppUser user1;
     private AppUser user2;
 
-    private LobbyActive lobby1;
-    private LobbyActive lobby2;
+    private Lobby lobby1;
+    private Lobby lobby2;
 
     private Invite invite1;
     private Invite invite2;
@@ -43,9 +43,9 @@ class InviteRepositoryTest {
         user2 = new AppUser("User2", "email2@email.com", "password2", "N/A");
         em.persist(user2);
 
-        lobby1 = new LobbyActive("Title1", OffsetTime.now().plusHours(2), user1);
+        lobby1 = new Lobby("Title1", OffsetTime.now().plusHours(2), user1);
         em.persist(lobby1);
-        lobby2 = new LobbyActive("Title2", OffsetTime.now().plusHours(3), user2);
+        lobby2 = new Lobby("Title2", OffsetTime.now().plusHours(3), user2);
         em.persist(lobby2);
 
         invite1 = new Invite(user2, lobby1, "MESSAGE1");

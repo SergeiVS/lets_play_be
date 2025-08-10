@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.lets_play_be.dto.lobbyDto.*;
 import org.lets_play_be.entity.invite.Invite;
-import org.lets_play_be.entity.lobby.LobbyActive;
+import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.lobby.LobbyPreset;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
@@ -49,7 +49,7 @@ public class LobbyActiveService {
 
         isLobbyExistingByOwner(owner);
 
-        LobbyActive savedLobby = saveNewLobbyFromRequest(request, owner);
+        Lobby savedLobby = saveNewLobbyFromRequest(request, owner);
 
         subscribeLobbySubjectInPool(savedLobby);
 
@@ -86,7 +86,7 @@ public class LobbyActiveService {
     public ActiveLobbyResponse getUsersActiveLobby(Authentication auth) {
         var owner = userService.getUserByEmailOrThrow(auth.getName());
 
-        Optional<LobbyActive> optionalLobby = repository.findLobbyActiveByOwnerId(owner.getId());
+        Optional<Lobby> optionalLobby = repository.findLobbyActiveByOwnerId(owner.getId());
 
         return optionalLobby.map(ActiveLobbyResponse::new).orElse(null);
     }
@@ -154,14 +154,14 @@ public class LobbyActiveService {
     }
 
     @Transactional
-    public ActiveLobbyResponse updateLobbyTitleAndTime(UpdateLobbyTitleAndTimeRequest request, Authentication auth) {
+    public ActiveLobbyResponse updateLobbyTitleAndTime(UpdateLobbyRequest request, Authentication auth) {
         AppUser owner = userService.getUserByEmailOrThrow(auth.getName());
 
-        LobbyActive lobbyForChange = getLobbyByIdOrThrow(request.lobbyId());
+        Lobby lobbyForChange = getLobbyByIdOrThrow(request.lobbyId());
 
         baseUpdateService.setNewValues(request, lobbyForChange, owner.getId());
 
-        LobbyActive savedLobby = repository.save(lobbyForChange);
+        Lobby savedLobby = repository.save(lobbyForChange);
 
         var notificationData = new LobbyUpdatedNotificationData(savedLobby);
 
@@ -190,17 +190,17 @@ public class LobbyActiveService {
     }
 
 
-    public LobbyActive loadLobbyByOwnerIdOrThrow(AppUser owner) {
+    public Lobby loadLobbyByOwnerIdOrThrow(AppUser owner) {
         return repository.findLobbyActiveByOwnerId(owner.getId())
                 .orElseThrow(() -> new RestException("Current user does not have active lobby", HttpStatus.BAD_REQUEST));
     }
 
-    public LobbyActive getLobbyByIdOrThrow(Long id) {
+    public Lobby getLobbyByIdOrThrow(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No Lobby found with lobbyId: " + id));
     }
 
-    private void subscribeLobbySubjectInPool(LobbyActive lobby) {
+    private void subscribeLobbySubjectInPool(Lobby lobby) {
         LobbySubject subject = createLobbyNotificationSubject(lobby.getId());
 
         subjectPool.addSubject(subject);
@@ -234,7 +234,7 @@ public class LobbyActiveService {
         );
     }
 
-    private List<Long> getRecipientsIds(LobbyActive lobby) {
+    private List<Long> getRecipientsIds(Lobby lobby) {
         List<Long> recipientsIds = new ArrayList<>();
 
         lobby.getInvites().forEach(invite -> recipientsIds.add(invite.getRecipient().getId()));
@@ -254,10 +254,10 @@ public class LobbyActiveService {
         }
     }
 
-    private LobbyActive saveNewLobbyFromRequest(NewActiveLobbyRequest request, AppUser owner) {
+    private Lobby saveNewLobbyFromRequest(NewActiveLobbyRequest request, AppUser owner) {
         var title = request.title();
         var time = timeStringToOffsetTime(request.time());
-        var lobbyForSave = new LobbyActive(title, time, owner);
+        var lobbyForSave = new Lobby(title, time, owner);
 
         List<Invite> newInvitesList = getNewInvitesList(request.userIds(), request.message(), lobbyForSave);
 
@@ -266,8 +266,8 @@ public class LobbyActiveService {
         return repository.save(lobbyForSave);
     }
 
-    private LobbyActive saveNewLobbyFromPreset(ActivatePresetRequest request, LobbyPreset preset) {
-        var lobby = new LobbyActive(preset);
+    private Lobby saveNewLobbyFromPreset(ActivatePresetRequest request, LobbyPreset preset) {
+        var lobby = new Lobby(preset);
         var userIds = preset.getUsers().stream().map(AppUser::getId).toList();
 
         List<Invite> invites = getNewInvitesList(userIds, request.message(), lobby);
@@ -276,13 +276,13 @@ public class LobbyActiveService {
         return repository.save(lobby);
     }
 
-    private List<Invite> getNewInvitesList(List<Long> usersId, String message, LobbyActive lobbyForSave) {
+    private List<Invite> getNewInvitesList(List<Long> usersId, String message, Lobby lobbyForSave) {
         List<AppUser> users = userService.getUsersListByIds(usersId);
 
         return users.stream().map(user -> new Invite(user, lobbyForSave, message)).toList();
     }
 
-    private void notifyInvitedUsers(LobbyActive savedLobby, NotificationData notificationData) {
+    private void notifyInvitedUsers(Lobby savedLobby, NotificationData notificationData) {
         sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
     }
 
@@ -312,7 +312,7 @@ public class LobbyActiveService {
         }
     }
 
-    private void isInLobby(LobbyActive lobby, AppUser user) {
+    private void isInLobby(Lobby lobby, AppUser user) {
         var inviteOpt = lobby.getInvites().stream()
                 .filter(invite -> invite.getRecipient().getId().equals(user.getId()))
                 .findFirst();
