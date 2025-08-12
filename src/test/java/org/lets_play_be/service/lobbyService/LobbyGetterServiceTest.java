@@ -137,4 +137,12 @@ class LobbyGetterServiceTest {
         verify(repository, times(1)).findById(lobby.getId());
         verifyNoMoreInteractions(repository);
     }
+
+    @Test
+    void getUserCurrentLobby() {
+    }
+
+    @Test
+    void findOrCreateUserLobby() {
+    }
 }

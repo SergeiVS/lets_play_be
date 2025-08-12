@@ -7,7 +7,8 @@ public enum InviteState {
     PENDING,
     ACCEPTED,
     DECLINED,
-    DELAYED;
+    DELAYED,
+    INACTIVE;
 
     @Override
     public String toString() {

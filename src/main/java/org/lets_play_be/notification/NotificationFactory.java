@@ -24,7 +24,7 @@ public class NotificationFactory {
 
         return switch (data) {
             case MessageNotificationData ignored -> NotificationType.MESSAGE.name();
-            case LobbyCreatedNotificationData ignored -> NotificationType.LOBBY_CREATED.name();
+            case LobbyActivatedNotificationData ignored -> NotificationType.LOBBY_ACTIVATED.name();
             case LobbyUpdatedNotificationData ignored -> NotificationType.LOBBY_UPDATED.name();
             case LobbyClosedNotificationData ignored -> NotificationType.LOBBY_CLOSED.name();
             case InviteResponse ignored -> NotificationType.INVITE_UPDATED.name();

@@ -146,7 +146,7 @@ class InviteServiceTest {
     }
 
     @Test
-    void getAllInvitesByUser() {
+    void getAllUserInviteResponses() {
         invite2.setDelivered(true);
 
         when(repositoryMock.findInvitesByUserId(user3.getId())).thenReturn(listOf(invite1, invite2));
@@ -160,7 +160,7 @@ class InviteServiceTest {
         assertThat(invite1.isDelivered()).isFalse();
         assertThat(invite2.isDelivered()).isTrue();
 
-        List<InviteResponse> result1 = inviteService.getAllInvitesByUser(user3.getId());
+        List<InviteResponse> result1 = inviteService.getAllUserInviteResponses(user3.getId());
 
         assertThat(result1.size()).isEqualTo(2);
 
@@ -177,11 +177,11 @@ class InviteServiceTest {
     }
 
     @Test
-    void getAllInvitesByUser_Throws_Exception_InvitesNotFound() {
+    void getAllInvitesByUser_Throws_Exception_InvitesNotFoundInviteResponses() {
         when(repositoryMock.findInvitesByUserId(4L)).thenReturn(listOf());
 
         assertThrowsExactly(RestException.class,
-                () -> inviteService.getAllInvitesByUser(4L),
+                () -> inviteService.getAllUserInviteResponses(4L),
                 "No invites were found");
 
         verify(repositoryMock, times(1)).findInvitesByUserId(4L);

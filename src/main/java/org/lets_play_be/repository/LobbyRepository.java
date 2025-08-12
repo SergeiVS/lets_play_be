@@ -16,4 +16,5 @@ public interface LobbyRepository extends JpaRepository<Lobby, Long> {
     List<Long> findAllLobbyIds();
 
     Optional<Lobby> findLobbyByOwnerId(long ownerId);
+
 }

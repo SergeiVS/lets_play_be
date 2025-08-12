@@ -22,7 +22,7 @@ public class InviteController implements InviteControllerApi {
     @Override
     public ResponseEntity<List<InviteResponse>> getAllUserInvitesByUser(long userId) {
 
-        List<InviteResponse> response = inviteService.getAllInvitesByUser(userId);
+        List<InviteResponse> response = inviteService.getAllUserInviteResponses(userId);
 
         return ResponseEntity.ok(response);
     }

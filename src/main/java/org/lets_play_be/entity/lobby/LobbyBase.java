@@ -1,9 +1,6 @@
 package org.lets_play_be.entity.lobby;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.TimeZoneStorageType;
@@ -16,13 +13,14 @@ import java.time.OffsetTime;
 @Getter
 @ToString
 @MappedSuperclass
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class LobbyBase {
 
+    @Setter
     private String title;
 
-    @Setter(AccessLevel.PROTECTED)
+    @Setter
+    @Enumerated(EnumType.STRING)
     private LobbyType type;
 
     @ManyToOne(fetch = FetchType.LAZY)

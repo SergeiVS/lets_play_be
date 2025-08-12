@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class LobbyServiceTest {
+class LobbyNotificationsServiceTest {
 
     @BeforeEach
     void setUp() {
@@ -15,38 +15,22 @@ class LobbyServiceTest {
     }
 
     @Test
-    void getUserLobby() {
+    void subscribeNotifyRecipients() {
     }
 
     @Test
-    void activateLobby() {
+    void unsubscribeNotifyRecipients() {
     }
 
     @Test
-    void inviteNewUsers() {
+    void notifyInvitedUsers() {
     }
 
     @Test
-    void leaveLobby() {
+    void subscribeLobbySubjectInPool() {
     }
 
     @Test
-    void kickUsers() {
-    }
-
-    @Test
-    void removeUsers() {
-    }
-
-    @Test
-    void addUsers() {
-    }
-
-    @Test
-    void updateLobbyTitleAndTime() {
-    }
-
-    @Test
-    void deActivateLobby() {
+    void removeLobbySubject() {
     }
 }

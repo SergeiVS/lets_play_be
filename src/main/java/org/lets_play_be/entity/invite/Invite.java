@@ -35,13 +35,14 @@ public class Invite {
     @Setter
     private InviteState state;
 
+    @Setter
     private String message;
 
     @Setter
     private int delayedFor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lobby_active_id")
+    @JoinColumn(name = "lobby_id")
     private Lobby lobby;
 
     public Invite(AppUser recipient, Lobby lobby, String message) {
