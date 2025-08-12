@@ -63,15 +63,6 @@ public class LobbyGetterService {
         return repository.save(lobby);
     }
 
-    private Invite getAcceptedInvite(AppUser user) {
-        List<Invite> userInvites = inviteService.findAllUsersInvites(user.getId());
-
-        return userInvites.stream()
-                .filter(invite -> invite.getState() == InviteState.ACCEPTED)
-                .findFirst()
-                .orElse(null);
-    }
-
     private Lobby getLobbyByAcceptedInviteOrNull(AppUser user) {
         Invite acceptedInvite = getAcceptedInvite(user);
 
@@ -79,5 +70,14 @@ public class LobbyGetterService {
             return acceptedInvite.getLobby();
         }
         return null;
+    }
+
+    private Invite getAcceptedInvite(AppUser user) {
+        List<Invite> userInvites = inviteService.findAllUsersInvites(user.getId());
+
+        return userInvites.stream()
+                .filter(invite -> invite.getState() == InviteState.ACCEPTED)
+                .findFirst()
+                .orElse(null);
     }
 }
