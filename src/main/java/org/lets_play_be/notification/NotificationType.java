@@ -7,6 +7,7 @@ public enum NotificationType {
     LOBBY_USERS_KICKED,
     LOBBY_CLOSED,
     INVITE_UPDATED,
-    USERS_PRESET_STATE,
+    USER_PRESET_STATE,
+    USER_CURRENT_LOBBY,
     MESSAGE
 }

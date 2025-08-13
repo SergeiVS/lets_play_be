@@ -44,7 +44,7 @@ public class SseNotificationService {
     }
 
 
-    public void subscribeSseObserverForActiveLobby(long recipientId, long lobbyId) {
+    public void subscribeSseObserverToLobby(long recipientId, long lobbyId) {
         try {
             if (recipientPool.isInPool(recipientId)) {
 

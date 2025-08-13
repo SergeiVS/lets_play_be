@@ -5,6 +5,7 @@ import org.lets_play_be.dto.lobbyDto.ChangeUsersListRequest;
 import org.lets_play_be.dto.lobbyDto.LobbyResponse;
 import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
+import org.lets_play_be.notification.NotificationObserver;
 import org.lets_play_be.notification.dto.MessageNotificationData;
 import org.lets_play_be.notification.dto.NotificationData;
 import org.lets_play_be.notification.dto.UsersInvitedNotificationData;
@@ -34,9 +35,8 @@ public class LobbyNotificationsService {
 
     public void subscribeNotifyRecipients(Lobby lobby, List<Long> recipientsIds) {
         for (long recipientId : recipientsIds) {
-
             if (recipientPool.isInPool(recipientId)) {
-                sseNotificationService.subscribeSseObserverForActiveLobby(recipientId, lobby.getId());
+                sseNotificationService.subscribeSseObserverToLobby(recipientId, lobby.getId());
             }
         }
         NotificationData notificationData = new UsersInvitedNotificationData(lobby);
@@ -45,38 +45,21 @@ public class LobbyNotificationsService {
     }
 
     public void unsubscribeNotifyRecipients(Lobby lobby, ChangeUsersListRequest request) {
+        List<AppUser> users = userService.getUsersListByIds(request.usersIds());
         var lobbySubject = subjectPool.getSubject(lobby.getId());
+        var message = new MessageNotificationData(request.message());
 
-        request.usersIds().forEach(id -> {
-                    if (recipientPool.isInPool(id)) {
-                        lobbySubject.unsubscribe(recipientPool.getObserver(id));
+        users.forEach(user -> {
+                    if (recipientPool.isInPool(user.getId())) {
+                        var observer = recipientPool.getObserver(user.getId());
+                        lobbySubject.unsubscribe(observer);
+                        notifyKickedUser(user, observer, message);
                     }
                 }
         );
 
         final var notificationData = new UsersKickedNotificationData(lobby);
         notifyInvitedUsers(lobby, notificationData);
-        notifyKickedUsers(request.usersIds(), request.message());
-    }
-
-    private void notifyKickedUsers(List<Long> userIds, String message) {
-        var messageNotificationData = new MessageNotificationData(message);
-        List<AppUser> users = userService.getUsersListByIds(userIds);
-
-        users.forEach(user -> {
-            if (recipientPool.isInPool(user.getId())) {
-                try {
-                    var userCurrentLobby = lobbyGetterService.getUserCurrentLobby(user);
-                    var lobbyResponse = new LobbyResponse(userCurrentLobby);
-                    var observer = recipientPool.getObserver(user.getId());
-
-                    observer.update(createNotification(messageNotificationData));
-                    observer.update(createNotification(lobbyResponse));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
     }
 
     public void notifyInvitedUsers(Lobby savedLobby, NotificationData notificationData) {
@@ -84,14 +67,26 @@ public class LobbyNotificationsService {
     }
 
     public void subscribeLobbySubjectInPool(Lobby lobby, List<Long> recipientsIds) {
-        LobbySubject subject = new LobbySubject(lobby.getId());
+        var subject = new LobbySubject(lobby.getId());
 
         subjectPool.addSubject(subject);
 
         subscribeNotifyRecipients(lobby, recipientsIds);
     }
 
-    public void removeLobbySubject(long lobbyId){
+    public void removeLobbySubject(long lobbyId) {
         subjectPool.removeSubject(lobbyId);
+    }
+
+    private void notifyKickedUser(AppUser user, NotificationObserver observer, NotificationData message) {
+        try {
+            var userCurrentLobby = lobbyGetterService.getUserCurrentLobby(user);
+            var lobbyResponse = new LobbyResponse(userCurrentLobby);
+
+            observer.update(createNotification(message));
+            observer.update(createNotification(lobbyResponse));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

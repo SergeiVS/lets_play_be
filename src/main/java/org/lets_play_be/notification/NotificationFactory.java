@@ -1,6 +1,7 @@
 package org.lets_play_be.notification;
 
 import org.lets_play_be.dto.inviteDto.InviteResponse;
+import org.lets_play_be.dto.lobbyDto.LobbyResponse;
 import org.lets_play_be.dto.lobbyDto.PresetFullResponse;
 import org.lets_play_be.notification.dto.*;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,8 @@ public class NotificationFactory {
             case InviteResponse ignored -> NotificationType.INVITE_UPDATED.name();
             case UsersInvitedNotificationData ignored -> NotificationType.LOBBY_NEW_USERS_INVITED.name();
             case UsersKickedNotificationData ignored -> NotificationType.LOBBY_USERS_KICKED.name();
-            case PresetFullResponse ignored ->NotificationType.USERS_PRESET_STATE.name();
+            case PresetFullResponse ignored ->NotificationType.USER_PRESET_STATE.name();
+            case LobbyResponse ignored -> NotificationType.USER_CURRENT_LOBBY.name();
             default -> throw new IllegalStateException("Unexpected value: " + data);
         };
     }
