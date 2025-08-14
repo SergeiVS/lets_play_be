@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.time.OffsetTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -51,14 +51,14 @@ class LobbyNotificationsServiceTest {
     @InjectMocks
     LobbyNotificationsService lobbyNotificationsService;
 
-    AppUser owner;
-    AppUser user1;
-    AppUser user2;
+    private AppUser owner;
+    private AppUser user1;
+    private AppUser user2;
 
-    Lobby lobby;
-    LobbySubject lobbySubject;
+    private Lobby lobby;
+    private LobbySubject lobbySubject;
 
-    ChangeUsersListRequest request;
+    private ChangeUsersListRequest request;
 
     @BeforeEach
     void setUp() {
@@ -228,16 +228,46 @@ class LobbyNotificationsServiceTest {
     }
 
     @Test
-    void subscribeLobbySubjectInPoo_Success_MembersAreNotInPool() {
+    void subscribeLobbySubjectInPool_Success_MembersAreInPool() {
+        doNothing().when(subjectPool).addSubject(any(LobbySubject.class));
+        when(recipientPool.isInPool(anyLong())).thenReturn(true);
+        doNothing().when(sseNotificationService).notifyLobbyMembers(anyLong(), any());
+
+        var numberOfUsersInList = request.usersIds().size();
+
+        var result = lobbyNotificationsService
+                .subscribeLobbySubjectInPool(lobby, request.usersIds());
+        System.out.println(request.usersIds());
+
+        result.forEach(id->assertTrue(request.usersIds().contains(id)));
+
+
+        verify(subjectPool, times(1))
+                .addSubject(any(LobbySubject.class));
+        verify(recipientPool, times(numberOfUsersInList))
+                .isInPool(anyLong());
+        verify(sseNotificationService, times(numberOfUsersInList))
+                .subscribeSseObserverToLobby(anyLong(),anyLong());
+        verify(sseNotificationService, times(1))
+                .notifyLobbyMembers(anyLong(), any());
+        verifyNoMoreInteractions(subjectPool);
+        verifyNoMoreInteractions(recipientPool);
+
+        verifyNoMoreInteractions(sseNotificationService);
+    }
+
+    @Test
+    void subscribeLobbySubjectInPool_Success_MembersAreNotInPool() {
         doNothing().when(subjectPool).addSubject(any(LobbySubject.class));
         when(recipientPool.isInPool(anyLong())).thenReturn(false);
         doNothing().when(sseNotificationService).notifyLobbyMembers(anyLong(), any());
 
         var numberOfUsersInList = request.usersIds().size();
 
-        lobbyNotificationsService
+        var result = lobbyNotificationsService
                 .subscribeLobbySubjectInPool(lobby, request.usersIds());
 
+        assertNotEquals(request.usersIds(), result);
         verify(subjectPool, times(1))
                 .addSubject(any(LobbySubject.class));
         verify(recipientPool, times(numberOfUsersInList))
@@ -257,7 +287,7 @@ class LobbyNotificationsServiceTest {
 
         var numberOfUsersInList = request.usersIds().size();
 
-       assertThrows(RuntimeException.class,()-> lobbyNotificationsService
+        assertThrows(RuntimeException.class, () -> lobbyNotificationsService
                 .subscribeLobbySubjectInPool(lobby, request.usersIds()));
 
         verify(subjectPool, times(1))
@@ -277,7 +307,7 @@ class LobbyNotificationsServiceTest {
         when(recipientPool.isInPool(anyLong())).thenReturn(true);
         doThrow(RuntimeException.class).when(sseNotificationService).subscribeSseObserverToLobby(anyLong(), anyLong());
 
-        assertThrows(RuntimeException.class,()-> lobbyNotificationsService
+        assertThrows(RuntimeException.class, () -> lobbyNotificationsService
                 .subscribeLobbySubjectInPool(lobby, request.usersIds()));
 
         verify(subjectPool, times(1))
@@ -293,8 +323,8 @@ class LobbyNotificationsServiceTest {
 
     @Test
     void removeLobbySubject() {
-       lobbyNotificationsService.removeLobbySubject(lobby.getId());
-       verify(subjectPool, times(1)).removeSubject(anyLong());
-       verifyNoMoreInteractions(subjectPool);
+        lobbyNotificationsService.removeLobbySubject(lobby.getId());
+        verify(subjectPool, times(1)).removeSubject(anyLong());
+        verifyNoMoreInteractions(subjectPool);
     }
 }

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
-import org.lets_play_be.dto.lobbyDto.ActivatePresetRequest;
+import org.lets_play_be.dto.lobbyDto.ActivateLobbyRequest;
 import org.lets_play_be.dto.lobbyDto.ChangeUsersListRequest;
 import org.lets_play_be.dto.lobbyDto.LobbyResponse;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyRequest;
@@ -27,7 +27,7 @@ public interface LobbyControllerApi {
     ResponseEntity<LobbyResponse> activateLobby(
             @RequestBody
             @Valid
-            ActivatePresetRequest request,
+            ActivateLobbyRequest request,
             Authentication auth);
 
     @Operation(summary = "Returns current lobby for authenticated user ")

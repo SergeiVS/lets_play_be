@@ -63,7 +63,6 @@ public class InviteService {
         isListEmpty(invites);
 
         invites.forEach(invite -> {
-
             if (!invite.isDelivered()) {
                 updateIsDelivered(invite.getId());
             }
@@ -114,8 +113,17 @@ public class InviteService {
         return new InviteResponse(invite);
     }
 
-    public void saveInvitesList(List<Invite> invites) {
-        repository.saveAll(invites);
+    public void setInvitesDelivered(List<Invite> invites, List<Long> subscribedRecipientsIds) {
+        if (subscribedRecipientsIds != null && !subscribedRecipientsIds.isEmpty()) {
+            for (Invite invite : invites) {
+                var recipientId = invite.getRecipient().getId();
+
+                if (subscribedRecipientsIds.contains(recipientId)) {
+                    invite.setDelivered(true);
+                }
+            }
+            repository.saveAll(invites);
+        }
     }
 
     private void isListEmpty(List<Invite> invites) {

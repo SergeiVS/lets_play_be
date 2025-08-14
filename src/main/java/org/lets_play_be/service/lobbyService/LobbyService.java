@@ -2,13 +2,12 @@ package org.lets_play_be.service.lobbyService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.lets_play_be.dto.lobbyDto.ActivatePresetRequest;
+import org.lets_play_be.dto.lobbyDto.ActivateLobbyRequest;
 import org.lets_play_be.dto.lobbyDto.ChangeUsersListRequest;
 import org.lets_play_be.dto.lobbyDto.LobbyResponse;
 import org.lets_play_be.dto.lobbyDto.UpdateLobbyRequest;
 import org.lets_play_be.entity.enums.InviteState;
 import org.lets_play_be.entity.enums.LobbyType;
-import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
@@ -16,7 +15,6 @@ import org.lets_play_be.notification.dto.LobbyActivatedNotificationData;
 import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
 import org.lets_play_be.notification.dto.LobbyUpdatedNotificationData;
 import org.lets_play_be.notification.dto.MessageNotificationData;
-import org.lets_play_be.notification.notificationService.sseNotification.SseLiveRecipientPool;
 import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
 import org.lets_play_be.repository.LobbyRepository;
 import org.lets_play_be.service.InviteService.InviteService;
@@ -40,7 +38,6 @@ public class LobbyService {
     private final LobbyNotificationsService lobbyNotificationsService;
     private final AppUserService userService;
     private final InviteService inviteService;
-    private final SseLiveRecipientPool recipientPool;
     private final SseNotificationService sseNotificationService;
 
     public LobbyResponse getUserLobby(Authentication auth) {
@@ -52,19 +49,27 @@ public class LobbyService {
     }
 
     @Transactional
-    public LobbyResponse activateLobby(ActivatePresetRequest request, Authentication auth) {
+    public LobbyResponse activateLobby(ActivateLobbyRequest request, Authentication auth) {
         var user = userService.getUserByEmailOrThrow(auth.getName());
+        var lobby = lobbyGetter.findOrCreateUserLobby(user);
 
-        Lobby lobby = lobbyGetter.findOrCreateUserLobby(user);
+        if (isActive(lobby)) {
+            throw new RestException("You can't activate active lobby ", HttpStatus.BAD_REQUEST);
+        }
+
         lobby.setType(LobbyType.ACTIVE);
-        restoreInitialInvitesState(lobby, request.message());
-        Lobby activatedLobby = repository.save(lobby);
+        restoreInitialStateOfInvites(lobby, request.message());
+        var activatedLobby = repository.save(lobby);
 
-        var notificationData = new LobbyActivatedNotificationData(lobby);
-        lobbyNotificationsService.subscribeLobbySubjectInPool(lobby, getRecipientsIds(lobby));
-        lobbyNotificationsService.notifyInvitedUsers(lobby, notificationData);
+        var subscribedRecipientsIds = lobbyNotificationsService
+                .subscribeLobbySubjectInPool(lobby, getRecipientsIds(lobby));
 
-        setInvitesDelivered(lobby.getInvites());
+        lobbyNotificationsService.notifyInvitedUsers(
+                lobby,
+                new LobbyActivatedNotificationData(lobby)
+        );
+
+        inviteService.setInvitesDelivered(lobby.getInvites(), subscribedRecipientsIds);
 
         return new LobbyResponse(activatedLobby);
     }
@@ -79,20 +84,22 @@ public class LobbyService {
                 .filter(invite -> request.usersIds().contains(invite.getRecipient().getId()))
                 .toList();
 
-        lobbyNotificationsService.subscribeNotifyRecipients(updatedLobby, request.usersIds());
+        var subscribedRecipients = lobbyNotificationsService
+                .subscribeNotifyRecipients(updatedLobby, request.usersIds());
 
-        setInvitesDelivered(savedNewInvites);
+        inviteService.setInvitesDelivered(savedNewInvites, subscribedRecipients);
 
         return new LobbyResponse(updatedLobby);
     }
 
     public LobbyResponse leaveLobby(long lobbyId, Authentication auth) {
-        var user = userService.getUserByEmailOrThrow(auth.getName());
         var lobby = lobbyGetter.getLobbyByIdOrThrow(lobbyId);
 
         if (!isActive(lobby)) {
             throw new RestException("You can't leave an inactive lobby", HttpStatus.BAD_REQUEST);
         }
+
+        var user = userService.getUserByEmailOrThrow(auth.getName());
 
         isInLobby(lobby, user);
 
@@ -148,7 +155,6 @@ public class LobbyService {
         return new LobbyResponse(lobbyUserService.addUsers(request, auth));
     }
 
-
     @Transactional
     public LobbyResponse updateLobbyTitleAndTime(UpdateLobbyRequest request, Authentication auth) {
         AppUser owner = userService.getUserByEmailOrThrow(auth.getName());
@@ -195,14 +201,9 @@ public class LobbyService {
         return repository.save(lobbyForDeactivate);
     }
 
-    private void restoreInitialInvitesState(Lobby lobby, String message) {
+    private void restoreInitialStateOfInvites(Lobby lobby, String message) {
         if (!lobby.getInvites().isEmpty()) {
-            lobby.getInvites().forEach(invite -> {
-                invite.setState(InviteState.PENDING);
-                invite.setDelivered(false);
-                invite.setSeen(false);
-                invite.setMessage(message);
-            });
+            lobby.getInvites().forEach(invite -> invite.restoreInitialState(message));
         }
     }
 
@@ -212,20 +213,6 @@ public class LobbyService {
         lobby.getInvites().forEach(invite -> recipientsIds.add(invite.getRecipient().getId()));
 
         return recipientsIds;
-    }
-
-    private void setInvitesDelivered(List<Invite> invites) {
-        for (Invite invite : invites) {
-
-            var recipientId = invite.getRecipient().getId();
-
-            if (recipientPool.isInPool(recipientId)) {
-
-                inviteService.updateIsDelivered(invite.getId());
-            }
-        }
-
-        inviteService.saveInvitesList(invites);
     }
 
     private void isInLobby(Lobby lobby, AppUser user) {
@@ -239,6 +226,6 @@ public class LobbyService {
     }
 
     private boolean isActive(Lobby lobby) {
-        return lobby.getType() == LobbyType.ACTIVE;
+        return lobby.getType().equals(LobbyType.ACTIVE);
     }
 }

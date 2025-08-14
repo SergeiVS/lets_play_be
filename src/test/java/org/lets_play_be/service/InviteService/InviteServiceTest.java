@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
-import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.entity.enums.InviteState;
+import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
@@ -26,8 +26,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.internal.util.collections.CollectionHelper.listOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -341,5 +340,31 @@ class InviteServiceTest {
         verify(userServiceMock, times(1)).getUserByEmailOrThrow(anyString());
         verify(repositoryMock, times(0)).delete(invite2);
         verify(notificationServiceMock, times(0)).unsubscribeUserFromSubject(anyLong(), anyLong());
+    }
+
+    @Test
+    void setInvitesDelivered_RecipientIdsListNotEmpty() {
+        assertFalse(invite1.isDelivered());
+        assertFalse(invite2.isDelivered());
+        assertFalse(invite3.isDelivered());
+
+        inviteService.setInvitesDelivered(List.of(invite1, invite3), List.of(user3.getId(), user2.getId()));
+
+        assertTrue(invite1.isDelivered());
+        assertFalse(invite2.isDelivered());
+        assertTrue(invite3.isDelivered());
+    }
+
+    @Test
+    void setInvitesDelivered_RecipientIdsListEmpty() {
+        assertFalse(invite1.isDelivered());
+        assertFalse(invite2.isDelivered());
+        assertFalse(invite3.isDelivered());
+
+        inviteService.setInvitesDelivered(List.of(invite1, invite3), List.of());
+
+        assertFalse(invite1.isDelivered());
+        assertFalse(invite2.isDelivered());
+        assertFalse(invite3.isDelivered());
     }
 }

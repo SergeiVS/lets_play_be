@@ -30,39 +30,39 @@ import static org.mockito.Mockito.*;
 class LobbyUserServiceTest {
 
     @Mock
-    LobbyRepository repository;
+    private LobbyRepository repository;
 
     @Mock
-    AppUserService userService;
+    private AppUserService userService;
 
     @Mock
-    LobbyGetterService getter;
+    private LobbyGetterService getter;
 
     @InjectMocks
-    LobbyUserService service;
+    private LobbyUserService service;
 
-    Authentication auth;
-    AppUser owner;
-    AppUser user1;
-    AppUser user2;
-    AppUser user3;
-    AppUser user4;
-    AppUser user5;
+    private Authentication auth;
+    private AppUser owner;
+    private AppUser user1;
+    private AppUser user2;
+    private AppUser user3;
+    private AppUser user4;
+    private AppUser user5;
 
-    ChangeUsersListRequest request;
+    private ChangeUsersListRequest request;
 
-    Invite invite1;
-    Invite invite2;
-    Invite invite3;
-    Invite invite4;
-    Invite invite5;
+    private Invite invite1;
+    private Invite invite2;
+    private Invite invite3;
+    private Invite invite4;
+    private Invite invite5;
 
-    Lobby lobbyForSave;
-    Lobby savedLobby;
+    private Lobby lobbyForSave;
+    private Lobby savedLobby;
 
-    String message = "message";
-    String newInviteMessage = "newInviteMessage";
-    String timeString = "18:00:00+00:00";
+    private String message = "message";
+    private String newInviteMessage = "newInviteMessage";
+    private String timeString = "18:00:00+00:00";
 
     @BeforeEach
     void setUp() {

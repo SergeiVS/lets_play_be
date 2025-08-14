@@ -18,6 +18,7 @@ import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lets_play_be.notification.NotificationFactory.createNotification;
@@ -33,15 +34,19 @@ public class LobbyNotificationsService {
     private final LobbyGetterService lobbyGetterService;
 
 
-    public void subscribeNotifyRecipients(Lobby lobby, List<Long> recipientsIds) {
+    public List<Long> subscribeNotifyRecipients(Lobby lobby, List<Long> recipientsIds) {
+        List<Long> subscribedRecipients = new ArrayList<>();
         for (long recipientId : recipientsIds) {
             if (recipientPool.isInPool(recipientId)) {
                 sseNotificationService.subscribeSseObserverToLobby(recipientId, lobby.getId());
+                subscribedRecipients.add(recipientId);
             }
         }
         NotificationData notificationData = new UsersInvitedNotificationData(lobby);
 
         notifyInvitedUsers(lobby, notificationData);
+
+        return subscribedRecipients;
     }
 
     public void unsubscribeNotifyRecipients(Lobby lobby, ChangeUsersListRequest request) {
@@ -66,12 +71,12 @@ public class LobbyNotificationsService {
         sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
     }
 
-    public void subscribeLobbySubjectInPool(Lobby lobby, List<Long> recipientsIds) {
+    public List<Long> subscribeLobbySubjectInPool(Lobby lobby, List<Long> recipientsIds) {
         var subject = new LobbySubject(lobby.getId());
 
         subjectPool.addSubject(subject);
 
-        subscribeNotifyRecipients(lobby, recipientsIds);
+       return subscribeNotifyRecipients(lobby, recipientsIds);
     }
 
     public void removeLobbySubject(long lobbyId) {

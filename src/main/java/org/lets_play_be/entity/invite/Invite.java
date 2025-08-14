@@ -68,6 +68,14 @@ public class Invite {
         this.delayedFor = 0;
     }
 
+    public void restoreInitialState(String message) {
+        this.setState(InviteState.PENDING);
+        this.setDelivered(false);
+        this.setSeen(false);
+        this.setDelayedFor(0);
+        this.setMessage(message);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

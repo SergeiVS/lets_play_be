@@ -46,16 +46,14 @@ public class SseNotificationService {
 
     public void subscribeSseObserverToLobby(long recipientId, long lobbyId) {
         try {
-            if (recipientPool.isInPool(recipientId)) {
+            var observer = recipientPool.getObserver(recipientId);
 
-                var observer = recipientPool.getObserver(recipientId);
+            var subject = ((LobbySubject) subjectPool.getSubject(lobbyId));
 
-                var subject = ((LobbySubject) subjectPool.getSubject(lobbyId));
+            observer.addOnCloseCallback(lobbyId, subject.removeObserver(observer));
 
-                observer.addOnCloseCallback(lobbyId, subject.removeObserver(observer));
+            subject.subscribe(observer);
 
-                subject.subscribe(observer);
-            }
         } catch (RuntimeException e) {
             throw new RestException("Subscription for Lobby failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }

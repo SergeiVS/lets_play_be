@@ -17,7 +17,7 @@ public class LobbyController implements LobbyControllerApi {
 
 
     @Override
-    public ResponseEntity<LobbyResponse> activateLobby(ActivatePresetRequest request,
+    public ResponseEntity<LobbyResponse> activateLobby(ActivateLobbyRequest request,
                                                        Authentication auth) {
         var response = lobbyService.activateLobby(request, auth);
 
