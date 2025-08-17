@@ -115,44 +115,24 @@ class SseNotificationServiceTest {
     }
 
     @Test
-    void subscribeSseObserverForActiveLobby_Success() {
-        when(recipientPoolMock.isInPool(appUserMock.getId())).thenReturn(true);
+    void subscribeSseObserverToLobby_Success() {
         when(recipientPoolMock.getObserver(appUserMock.getId())).thenReturn(observerMock);
         when(subjectPoolMock.getSubject(lobbyMock.getId())).thenReturn(lobbySubjectMock);
 
         assertThat(observerMock.getOnCloseCallbacks().size()).isEqualTo(0);
         assertThat(lobbySubjectMock.getObservers().size()).isEqualTo(0);
 
-        sseNotificationService.subscribeSseObserverForActiveLobby(appUserMock.getId(), lobbyMock.getId());
+        sseNotificationService.subscribeSseObserverToLobby(appUserMock.getId(), lobbyMock.getId());
 
         assertThat(observerMock.getOnCloseCallbacks().size()).isEqualTo(1);
         assertThat(lobbySubjectMock.getObservers().size()).isEqualTo(1);
 
-        verify(recipientPoolMock, times(1)).isInPool(appUserMock.getId());
         verify(recipientPoolMock, times(1)).getObserver(appUserMock.getId());
         verify(subjectPoolMock, times(1)).getSubject(lobbyMock.getId());
     }
 
     @Test
-    void subscribeSseObserverForActiveLobby_User_Not_InPool() {
-        when(recipientPoolMock.isInPool(appUserMock.getId())).thenReturn(false);
-
-        assertThat(observerMock.getOnCloseCallbacks().size()).isEqualTo(0);
-        assertThat(lobbySubjectMock.getObservers().size()).isEqualTo(0);
-
-        sseNotificationService.subscribeSseObserverForActiveLobby(appUserMock.getId(), lobbyMock.getId());
-
-        assertThat(observerMock.getOnCloseCallbacks().size()).isEqualTo(0);
-        assertThat(lobbySubjectMock.getObservers().size()).isEqualTo(0);
-
-        verify(recipientPoolMock, times(1)).isInPool(appUserMock.getId());
-        verify(recipientPoolMock, times(0)).getObserver(appUserMock.getId());
-        verify(subjectPoolMock, times(0)).getSubject(lobbyMock.getId());
-    }
-
-    @Test
-    void subscribeSseObserverForActiveLobby_No_Subject_InPool() {
-        when(recipientPoolMock.isInPool(appUserMock.getId())).thenReturn(true);
+    void subscribeSseObserverToLobby_No_Subject_InPool() {
         when(recipientPoolMock.getObserver(appUserMock.getId())).thenReturn(observerMock);
         when(subjectPoolMock.getSubject(lobbyMock.getId())).thenReturn(null);
 
@@ -160,13 +140,12 @@ class SseNotificationServiceTest {
         assertThat(lobbySubjectMock.getObservers().size()).isEqualTo(0);
 
         assertThrowsExactly(RestException.class,
-                () -> sseNotificationService.subscribeSseObserverForActiveLobby(appUserMock.getId(), lobbyMock.getId()),
+                () -> sseNotificationService.subscribeSseObserverToLobby(appUserMock.getId(), lobbyMock.getId()),
                 "Subscription for Lobby failed");
 
         assertThat(observerMock.getOnCloseCallbacks().size()).isEqualTo(0);
         assertThat(lobbySubjectMock.getObservers().size()).isEqualTo(0);
 
-        verify(recipientPoolMock, times(1)).isInPool(appUserMock.getId());
         verify(recipientPoolMock, times(1)).getObserver(appUserMock.getId());
         verify(subjectPoolMock, times(1)).getSubject(lobbyMock.getId());
     }

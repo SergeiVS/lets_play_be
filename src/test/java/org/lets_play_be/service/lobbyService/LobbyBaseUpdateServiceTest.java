@@ -45,18 +45,10 @@ class LobbyBaseUpdateServiceTest {
     @Test
     void setNewValues_Success() {
 
-        service.setNewValues(newLobbyRequest,lobbyForChange, owner.getId());
+        service.setNewValues(newLobbyRequest,lobbyForChange);
 
         assertEquals(newTitle, lobbyForChange.getTitle());
         assertEquals(FormattingUtils.timeStringToOffsetTime(newTime), lobbyForChange.getTime());
-    }
-
-    @Test
-    void setNewValues_NotOwner_Throws() {
-
-        assertThrowsExactly(IllegalArgumentException.class,
-                () -> service.setNewValues(newLobbyRequest,lobbyForChange, 2L),
-                "User with Id: " + 2L + " is not owner of this lobby.");
     }
 
     @Test

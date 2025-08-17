@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 @Schema(description = "received from client used to set new values for title and time fields")
 public record UpdateLobbyRequest(@NotNull
                                  Long lobbyId,
-                                 @NotEmpty
+                                 @NotNull
                                  String newTitle,
                                  @NotEmpty
                                  @Pattern(regexp = "([0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d[+-](0\\d|1[0-4]):[0-5]\\d",

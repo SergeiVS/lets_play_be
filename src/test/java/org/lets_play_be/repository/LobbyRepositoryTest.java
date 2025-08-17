@@ -77,16 +77,16 @@ class LobbyRepositoryTest {
     }
 
     @Test
-    void findLobbyActiveByOwnerId() {
-        var result1 = repository.findLobbyActiveByOwnerId(user1.getId());
+    void findLobbyByOwnerId() {
+        var result1 = repository.findLobbyByOwnerId(user1.getId());
         assertTrue(result1.isPresent());
         assertThat(result1.get()).isEqualTo(lobby1);
 
-        var result2 = repository.findLobbyActiveByOwnerId(user2.getId());
+        var result2 = repository.findLobbyByOwnerId(user2.getId());
         assertTrue(result2.isPresent());
         assertThat(result2.get()).isEqualTo(lobby2);
 
-        var result3 = repository.findLobbyActiveByOwnerId(user3.getId());
+        var result3 = repository.findLobbyByOwnerId(user3.getId());
         assertTrue(result3.isEmpty());
     }
 }

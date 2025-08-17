@@ -35,13 +35,14 @@ public class Invite {
     @Setter
     private InviteState state;
 
+    @Setter
     private String message;
 
     @Setter
     private int delayedFor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lobby_active_id")
+    @JoinColumn(name = "lobby_id")
     private Lobby lobby;
 
     public Invite(AppUser recipient, Lobby lobby, String message) {
@@ -67,6 +68,13 @@ public class Invite {
         this.delayedFor = 0;
     }
 
+    public void restoreInitialState(String message) {
+        this.setState(InviteState.PENDING);
+        this.setDelivered(false);
+        this.setSeen(false);
+        this.setDelayedFor(0);
+        this.setMessage(message);
+    }
 
     @Override
     public boolean equals(Object o) {

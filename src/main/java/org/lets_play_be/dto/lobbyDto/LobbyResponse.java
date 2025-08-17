@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.lets_play_be.dto.userDto.AppUserFullResponse;
 import org.lets_play_be.dto.userDto.InvitedUserResponse;
 import org.lets_play_be.entity.lobby.Lobby;
+import org.lets_play_be.notification.dto.NotificationData;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,7 +20,7 @@ public record LobbyResponse(
         String lobbyType,
         String title,
         List<InvitedUserResponse> users
-) implements Serializable {
+) implements Serializable, NotificationData {
 
     public LobbyResponse(Lobby lobby) {
         this(

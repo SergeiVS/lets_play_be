@@ -15,10 +15,7 @@ import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 @RequiredArgsConstructor
 public class LobbyBaseUpdateService {
   
-        public void setNewValues(UpdateLobbyRequest request, LobbyBase lobbyForChange, long ownerId) {
-
-        isLobbyOwner(lobbyForChange, ownerId);
-
+        public void setNewValues(UpdateLobbyRequest request, LobbyBase lobbyForChange) {
         OffsetTime newTime = timeStringToOffsetTime(request.newTime());
 
         if (!request.newTitle().equals(lobbyForChange.getTitle())) {

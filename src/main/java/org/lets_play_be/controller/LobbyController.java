@@ -15,19 +15,11 @@ public class LobbyController implements LobbyControllerApi {
 
     private final LobbyService lobbyService;
 
-    @Deprecated
-    @Override
-    public ResponseEntity<LobbyResponse> addNewLobbyActive(NewActiveLobbyRequest request,
-                                                           Authentication authentication) {
-        LobbyResponse response = lobbyService.createActiveLobby(request, authentication);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
 
     @Override
-    public ResponseEntity<LobbyResponse> activateLobby(ActivatePresetRequest request,
+    public ResponseEntity<LobbyResponse> activateLobby(ActivateLobbyRequest request,
                                                        Authentication auth) {
-        var response = lobbyService.createLobbyFromPreset(request, auth);
+        var response = lobbyService.activateLobby(request, auth);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -35,11 +27,7 @@ public class LobbyController implements LobbyControllerApi {
 
     @Override
     public ResponseEntity<LobbyResponse> getLobby(Authentication auth) {
-        var response = lobbyService.getUsersLobby(auth);
-
-        if (response == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        var response = lobbyService.getUserLobby(auth);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -60,7 +48,7 @@ public class LobbyController implements LobbyControllerApi {
     }
 
     @Override
-    public ResponseEntity<PresetFullResponse> leaveLobby(long lobbyId, Authentication auth) {
+    public ResponseEntity<LobbyResponse> leaveLobby(long lobbyId, Authentication auth) {
         var response = lobbyService.leaveLobby(lobbyId, auth);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -75,7 +63,7 @@ public class LobbyController implements LobbyControllerApi {
 
     @Override
     public ResponseEntity<LobbyResponse> deactivateLobby(Long lobbyId, Authentication auth) {
-        return ResponseEntity.ok(lobbyService.closeLobby(lobbyId, auth));
+        return ResponseEntity.ok(lobbyService.deActivateLobby(lobbyId, auth));
     }
 
     @Override
@@ -85,7 +73,7 @@ public class LobbyController implements LobbyControllerApi {
 
     @Override
     public ResponseEntity<LobbyResponse> removeUsers(ChangeUsersListRequest request, Authentication auth) {
-        return ResponseEntity.ok(lobbyService.addUsers(request, auth));
+        return ResponseEntity.ok(lobbyService.removeUsers(request, auth));
     }
 
 }

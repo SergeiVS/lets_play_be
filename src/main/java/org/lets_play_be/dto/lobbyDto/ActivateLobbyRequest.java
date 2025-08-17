@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 import java.io.Serializable;
 
-public record ActivatePresetRequest(
+public record ActivateLobbyRequest(
         @NotEmpty
         String message) implements Serializable {
 }

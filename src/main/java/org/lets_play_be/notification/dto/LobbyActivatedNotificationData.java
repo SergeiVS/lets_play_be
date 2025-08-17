@@ -6,12 +6,12 @@ import java.io.Serializable;
 
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
-public record LobbyCreatedNotificationData(long lobbyId,
-                                           String ownerName,
-                                           String title,
-                                           String time) implements Serializable, NotificationData {
+public record LobbyActivatedNotificationData(long lobbyId,
+                                             String ownerName,
+                                             String title,
+                                             String time) implements Serializable, NotificationData {
 
-    public LobbyCreatedNotificationData(Lobby lobby) {
+    public LobbyActivatedNotificationData(Lobby lobby) {
         this(
                 lobby.getId(),
                 lobby.getOwner().getName(),

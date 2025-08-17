@@ -54,14 +54,14 @@ class NotificationFactoryTest {
     @Test
     void createNotification_LobbyCreated() {
 
-        NotificationData data = new LobbyCreatedNotificationData(testLobby);
+        NotificationData data = new LobbyActivatedNotificationData(testLobby);
 
         Notification result = createNotification(data);
 
         assertThat(result.id()).isNotNull();
         assertThat(result.createdAt()).isNotNull();
         assertThat(result.data()).isEqualTo(data);
-        assertThat(result.type()).isEqualTo(NotificationType.LOBBY_CREATED.toString());
+        assertThat(result.type()).isEqualTo(NotificationType.LOBBY_ACTIVATED.toString());
     }
 
     @Test

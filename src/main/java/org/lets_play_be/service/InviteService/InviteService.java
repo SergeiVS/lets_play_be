@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InviteService {
 
-    private final InviteRepository inviteRepository;
+    private final InviteRepository repository;
     private final AppUserService userService;
     private final SseNotificationService notificationService;
 
@@ -31,7 +31,7 @@ public class InviteService {
 
         invite.setDelivered(true);
 
-        inviteRepository.save(invite);
+        repository.save(invite);
     }
 
     public void updateIsSeen(Authentication auth, long inviteId) {
@@ -49,17 +49,20 @@ public class InviteService {
             invite.setDelivered(true);
         }
 
-        inviteRepository.save(invite);
+        repository.save(invite);
     }
 
-    public List<InviteResponse> getAllInvitesByUser(long userId) {
+    public List<Invite> findAllUsersInvites(long userId) {
+        return repository.findInvitesByUserId(userId);
+    }
 
-        List<Invite> invites = inviteRepository.findInvitesByUserId(userId);
+    public List<InviteResponse> getAllUserInviteResponses(long userId) {
+
+        List<Invite> invites = findAllUsersInvites(userId);
 
         isListEmpty(invites);
 
         invites.forEach(invite -> {
-
             if (!invite.isDelivered()) {
                 updateIsDelivered(invite.getId());
             }
@@ -71,7 +74,7 @@ public class InviteService {
 
     public List<InviteResponse> getAllInvitesByLobbyId(long lobbyId) {
 
-        List<Invite> invites = inviteRepository.findInvitesByLobbyId(lobbyId);
+        List<Invite> invites = repository.findInvitesByLobbyId(lobbyId);
 
         isListEmpty(invites);
 
@@ -86,7 +89,7 @@ public class InviteService {
 
         setNewStateToInvite(invite, request);
 
-        var savedInvite = inviteRepository.save(invite);
+        var savedInvite = repository.save(invite);
 
         var response = new InviteResponse(savedInvite);
 
@@ -103,11 +106,24 @@ public class InviteService {
 
         isLobbyOwner(invite, user.getId());
 
-        inviteRepository.delete(invite);
+        repository.delete(invite);
 
         notificationService.unsubscribeUserFromSubject(user.getId(), lobbyId);
 
         return new InviteResponse(invite);
+    }
+
+    public void setInvitesDelivered(List<Invite> invites, List<Long> subscribedRecipientsIds) {
+        if (subscribedRecipientsIds != null && !subscribedRecipientsIds.isEmpty()) {
+            for (Invite invite : invites) {
+                var recipientId = invite.getRecipient().getId();
+
+                if (subscribedRecipientsIds.contains(recipientId)) {
+                    invite.setDelivered(true);
+                }
+            }
+            repository.saveAll(invites);
+        }
     }
 
     private void isListEmpty(List<Invite> invites) {
@@ -147,7 +163,7 @@ public class InviteService {
     }
 
     private Invite getInviteByIdOrElseThrow(long inviteId) {
-        return inviteRepository.findById(inviteId).orElseThrow(
+        return repository.findById(inviteId).orElseThrow(
                 () -> new ObjectNotFoundException("invite with lobbyId " + inviteId + " not found", Invite.class));
     }
 

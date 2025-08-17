@@ -27,20 +27,14 @@ public class Lobby extends LobbyBase {
 
     public Lobby(String title, OffsetTime time, AppUser owner) {
         super(title, time, owner);
-        setType(LobbyType.ACTIVE);
+        setType(LobbyType.INACTIVE);
         this.invites = new ArrayList<>();
     }
 
     public Lobby(long id, String title, OffsetTime time, AppUser owner) {
         super(title, time, owner);
-        setType(LobbyType.ACTIVE);
+        setType(LobbyType.INACTIVE);
         this.id = id;
-        this.invites = new ArrayList<>();
-    }
-
-    public Lobby(LobbyPreset preset) {
-        super(preset.getTitle(), preset.getTime(), preset.getOwner());
-        setType(LobbyType.ACTIVE);
         this.invites = new ArrayList<>();
     }
 
