@@ -38,7 +38,7 @@ public interface LobbyControllerApi {
             @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
-    @PostMapping
+    @PostMapping("activate")
     ResponseEntity<LobbyResponse> activateLobby(
             @RequestBody
             @Valid
@@ -179,7 +179,7 @@ public interface LobbyControllerApi {
             @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
-    @PatchMapping("{lobbyId}")
+    @PatchMapping("deactivate/{lobbyId}")
     ResponseEntity<LobbyResponse> deactivateLobby(
             @PathVariable("lobbyId")
             @NotNull

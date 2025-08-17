@@ -63,7 +63,7 @@ public class LobbyController implements LobbyControllerApi {
 
     @Override
     public ResponseEntity<LobbyResponse> deactivateLobby(Long lobbyId, Authentication auth) {
-        return ResponseEntity.ok(lobbyService.deActivateLobby(lobbyId, auth));
+        return ResponseEntity.ok(lobbyService.deactivateLobby(lobbyId, auth));
     }
 
     @Override

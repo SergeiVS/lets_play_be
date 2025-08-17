@@ -572,7 +572,7 @@ class LobbyServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(repository.save(lobby)).thenReturn(lobby);
 
-        var result = service.deActivateLobby(lobby.getId(), auth);
+        var result = service.deactivateLobby(lobby.getId(), auth);
 
         assertEquals("INACTIVE", result.lobbyType());
         result.users().forEach(user -> assertEquals("INACTIVE", user.inviteState()));
@@ -589,7 +589,7 @@ class LobbyServiceTest {
     void deActivateLobby_Throws_LobbyIsInactive() {
         when(getterService.getLobbyByIdOrThrow(lobby.getId())).thenReturn(lobby);
 
-        assertThrows(RestException.class, () -> service.deActivateLobby(lobby.getId(), auth));
+        assertThrows(RestException.class, () -> service.deactivateLobby(lobby.getId(), auth));
 
         verify(getterService, times(1)).getLobbyByIdOrThrow(lobby.getId());
         verifyNoInteractions(userService);
@@ -606,7 +606,7 @@ class LobbyServiceTest {
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         doThrow(IllegalArgumentException.class).when(baseUpdateService).isLobbyOwner(lobby, owner.getId());
 
-        assertThrows(IllegalArgumentException.class, () -> service.deActivateLobby(lobby.getId(), auth));
+        assertThrows(IllegalArgumentException.class, () -> service.deactivateLobby(lobby.getId(), auth));
 
         verify(getterService, times(1)).getLobbyByIdOrThrow(lobby.getId());
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
@@ -624,7 +624,7 @@ class LobbyServiceTest {
         when(repository.save(lobby)).thenReturn(lobby);
         doThrow(RuntimeException.class).when(notificationService).notifyLobbyMembers(anyLong(), any(NotificationData.class));
 
-        assertThrows(RuntimeException.class, ()-> service.deActivateLobby(lobby.getId(), auth));
+        assertThrows(RuntimeException.class, ()-> service.deactivateLobby(lobby.getId(), auth));
 
         verify(getterService, times(1)).getLobbyByIdOrThrow(lobby.getId());
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());

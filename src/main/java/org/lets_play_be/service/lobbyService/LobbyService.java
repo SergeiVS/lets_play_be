@@ -173,7 +173,7 @@ public class LobbyService {
     }
 
     @Transactional
-    public LobbyResponse deActivateLobby(Long lobbyId, Authentication auth) {
+    public LobbyResponse deactivateLobby(Long lobbyId, Authentication auth) {
         var lobbyForDeactivate = lobbyGetter.getLobbyByIdOrThrow(lobbyId);
 
         if (!isActive(lobbyForDeactivate)) {
