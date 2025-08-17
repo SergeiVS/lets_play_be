@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("api/v1/invite")
 public interface InviteControllerApi {
 
-    @Operation(summary = "Getting all User invites")
+    @Operation(summary = "Getting all invites of the Authenticated User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Invites were found or List is empty",
                     content = {@Content(mediaType = "application/json",
@@ -39,8 +39,8 @@ public interface InviteControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping("user/{id}")
-    ResponseEntity<List<InviteResponse>> getAllUserInvitesByUser(@PathVariable("id") @NotNull long userId);
+    @GetMapping("user")
+    ResponseEntity<List<InviteResponse>> getAllInvitesForAUser(Authentication auth);
 
     @Operation(summary = "Getting all invites of current lobby")
     @ApiResponses(value = {

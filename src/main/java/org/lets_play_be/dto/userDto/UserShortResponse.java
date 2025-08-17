@@ -1,5 +1,6 @@
 package org.lets_play_be.dto.userDto;
 
+import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.entity.user.AppUser;
 
 import java.io.Serializable;
@@ -12,6 +13,10 @@ public record UserShortResponse(
 
     public UserShortResponse(AppUser user) {
         this(user.getId(), user.getName());
+    }
+
+    public UserShortResponse(Invite invite) {
+        this(invite.getRecipient().getId(), invite.getRecipient().getName());
     }
 
     @Override

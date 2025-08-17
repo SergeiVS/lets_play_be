@@ -6,6 +6,7 @@ import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.service.InviteService.InviteService;
+import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,11 +19,14 @@ import java.util.List;
 public class InviteController implements InviteControllerApi {
 
     private final InviteService inviteService;
+    private final AppUserService appUserService;
 
     @Override
-    public ResponseEntity<List<InviteResponse>> getAllUserInvitesByUser(long userId) {
-
-        List<InviteResponse> response = inviteService.getAllUserInviteResponses(userId);
+    public ResponseEntity<List<InviteResponse>> getAllInvitesForAUser(Authentication auth) {
+        List<InviteResponse> response =
+                inviteService.getAllUserInviteResponses(
+                        appUserService.getUserByEmailOrThrow(auth.getName()).getId()
+                );
 
         return ResponseEntity.ok(response);
     }
