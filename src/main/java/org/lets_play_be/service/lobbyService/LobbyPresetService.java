@@ -104,13 +104,18 @@ public class LobbyPresetService {
 
         LobbyPreset presetForChange = getPresetByIdOrThrow(request.lobbyId());
 
-        baseUpdateService.setNewValues(request, presetForChange, owner.getId());
+        if(!presetForChange.getOwner().equals(owner)) {
+            throw new IllegalArgumentException("Authenticated user is not the preset's owner");
+        }
+
+        baseUpdateService.setNewValues(request, presetForChange);
 
         LobbyPreset savedPreset = repository.save(presetForChange);
 
         return new PresetFullResponse(savedPreset);
     }
 
+    @Deprecated
     public LobbyPreset getPresetByOwnerIdOrThrow(long ownerId) {
         return repository.findUniqueByOwnerId(ownerId).orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
     }

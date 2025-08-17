@@ -157,11 +157,9 @@ public class LobbyService {
 
     @Transactional
     public LobbyResponse updateLobbyTitleAndTime(UpdateLobbyRequest request, Authentication auth) {
-        AppUser owner = userService.getUserByEmailOrThrow(auth.getName());
+        Lobby lobbyForChange = lobbyGetter.loadLobbyByAuth(auth);
 
-        Lobby lobbyForChange = lobbyGetter.getLobbyByIdOrThrow(request.lobbyId());
-
-        baseUpdateService.setNewValues(request, lobbyForChange, owner.getId());
+        baseUpdateService.setNewValues(request, lobbyForChange);
 
         Lobby savedLobby = repository.save(lobbyForChange);
 
@@ -176,12 +174,13 @@ public class LobbyService {
 
     @Transactional
     public LobbyResponse deActivateLobby(Long lobbyId, Authentication auth) {
-        if (!isActive(lobbyGetter.loadLobbyByAuth(auth))) {
+        var lobbyForDeactivate = lobbyGetter.getLobbyByIdOrThrow(lobbyId);
+
+        if (!isActive(lobbyForDeactivate)) {
             throw new RestException("You can't close an inactive lobby", HttpStatus.BAD_REQUEST);
         }
 
         var owner = userService.getUserByEmailOrThrow(auth.getName());
-        var lobbyForDeactivate = lobbyGetter.getLobbyByIdOrThrow(lobbyId);
 
         baseUpdateService.isLobbyOwner(lobbyForDeactivate, owner.getId());
 
