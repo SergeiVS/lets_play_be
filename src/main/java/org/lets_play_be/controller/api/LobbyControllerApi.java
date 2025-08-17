@@ -22,7 +22,22 @@ import org.springframework.web.bind.annotation.*;
 public interface LobbyControllerApi {
 
     @Operation(summary = "Activates Lobby")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lobby were activated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LobbyResponse.class))}), @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))}), @ApiResponse(responseCode = "404", description = "User not found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby were activated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
     @PostMapping
     ResponseEntity<LobbyResponse> activateLobby(
             @RequestBody
@@ -31,14 +46,44 @@ public interface LobbyControllerApi {
             Authentication auth);
 
     @Operation(summary = "Returns current lobby for authenticated user ")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Returns LobbyResponse or null", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LobbyResponse.class))}), @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))}), @ApiResponse(responseCode = "404", description = "Lobby not found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returns LobbyResponse or null",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
     @GetMapping
     ResponseEntity<LobbyResponse> getLobby(
             Authentication auth
     );
 
     @Operation(summary = "Updating Title and Time fields in User's Lobby")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lobby was updated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LobbyResponse.class))}), @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))}), @ApiResponse(responseCode = "404", description = "Lobby not found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby was updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
     @PatchMapping
     ResponseEntity<LobbyResponse> updateLobbyData(
             @RequestBody
@@ -47,7 +92,22 @@ public interface LobbyControllerApi {
             Authentication auth);
 
     @Operation(summary = "invite new users to Active Lobby")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lobby was updated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LobbyResponse.class))}), @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))}), @ApiResponse(responseCode = "404", description = "Lobby not found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby was updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
     @PatchMapping("users")
     ResponseEntity<LobbyResponse> inviteNewUsers(
             @RequestBody
@@ -56,7 +116,22 @@ public interface LobbyControllerApi {
             Authentication auth);
 
     @Operation(summary = "Leave an active Lobby by invited user")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lobby was updated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LobbyResponse.class))}), @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))}), @ApiResponse(responseCode = "404", description = "Lobby not found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby was updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
     @PatchMapping("leave/{lobbyId}")
     ResponseEntity<LobbyResponse> leaveLobby(
             @PathVariable("lobbyId")
@@ -64,7 +139,22 @@ public interface LobbyControllerApi {
             Authentication auth);
 
     @Operation(summary = "Kick users from Active Lobby by lobby owner")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lobby was updated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LobbyResponse.class))}), @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))}), @ApiResponse(responseCode = "404", description = "Lobby not found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby was updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Lobby not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
     @PatchMapping("kick")
     ResponseEntity<LobbyResponse> kickUsers(
             @RequestBody
@@ -73,7 +163,22 @@ public interface LobbyControllerApi {
             Authentication auth);
 
     @Operation(summary = "Deactivate lobby by owner")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Lobby were Deactivated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LobbyResponse.class))}), @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ValidationErrorResponse.class))}), @ApiResponse(responseCode = "404", description = "User not found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}), @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lobby were Deactivated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LobbyResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - User is not authenticated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
     @PatchMapping("{lobbyId}")
     ResponseEntity<LobbyResponse> deactivateLobby(
             @PathVariable("lobbyId")
