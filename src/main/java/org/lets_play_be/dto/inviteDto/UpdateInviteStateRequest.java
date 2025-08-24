@@ -8,7 +8,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 @Schema(description = "Received from client with new InviteState. If newState equals- delayed, delayed for must be over zero. " +
         "In case of other values of newState field. delayedFor will be ignored")
 public record UpdateInviteStateRequest(@NotNull long inviteId,
-                                       @NotNull long userId,
                                        @NotEmpty String newState,
                                        //By newState == delayed delayedFor must be >0
                                        @NotNull

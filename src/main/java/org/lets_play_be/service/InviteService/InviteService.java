@@ -81,11 +81,11 @@ public class InviteService {
         return invites.stream().map(InviteResponse::new).toList();
     }
 
-    public InviteResponse updateInviteState(UpdateInviteStateRequest request) {
+    public InviteResponse updateInviteState(UpdateInviteStateRequest request, long userId) {
 
         var invite = getInviteByIdOrElseThrow(request.inviteId());
 
-        isRecipient(invite, request.userId());
+        isRecipient(invite, userId);
 
         setNewStateToInvite(invite, request);
 

@@ -217,7 +217,7 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Not_Delayed() {
-        var request = new UpdateInviteStateRequest(1L, 3L, "accepted", 1);
+        var request = new UpdateInviteStateRequest(1L, "accepted", 1);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
         when(repositoryMock.save(invite1)).thenReturn(invite1);
@@ -225,7 +225,7 @@ class InviteServiceTest {
         assertThat(invite1.getState().equals(InviteState.PENDING)).isTrue();
         assertThat(invite1.getDelayedFor() == 0).isTrue();
 
-        var result = inviteService.updateInviteState(request);
+        var result = inviteService.updateInviteState(request, 3);
 
         var expectedResponse = new InviteResponse(invite1);
 
@@ -241,7 +241,7 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Delayed() {
-        var request = new UpdateInviteStateRequest(1L, 3L, "Delayed", 1);
+        var request = new UpdateInviteStateRequest(1L, "Delayed", 1);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
         when(repositoryMock.save(invite1)).thenReturn(invite1);
@@ -249,7 +249,7 @@ class InviteServiceTest {
         assertThat(invite1.getState().equals(InviteState.PENDING)).isTrue();
         assertThat(invite1.getDelayedFor() == 0).isTrue();
 
-        var result = inviteService.updateInviteState(request);
+        var result = inviteService.updateInviteState(request, 3);
 
         var expectedResponse = new InviteResponse(invite1);
 
@@ -265,12 +265,12 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Throws_State_Not_Found() {
-        var request = new UpdateInviteStateRequest(1L, 3L, "SomeState", 0);
+        var request = new UpdateInviteStateRequest(1L, "SomeState", 0);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
         assertThrowsExactly(IllegalArgumentException.class,
-                () -> inviteService.updateInviteState(request),
+                () -> inviteService.updateInviteState(request, 3),
                 "New invite state do not meet an Enum");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());
@@ -281,12 +281,12 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Throws_DelayedFor_Zero() {
-        var request = new UpdateInviteStateRequest(1L, 3L, "Delayed", 0);
+        var request = new UpdateInviteStateRequest(1L, "Delayed", 0);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
         assertThrowsExactly(IllegalArgumentException.class,
-                () -> inviteService.updateInviteState(request),
+                () -> inviteService.updateInviteState(request, 3),
                 "If newState equals delayed, value of delayedFor should be positive number over 0");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());
@@ -297,12 +297,12 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Throws_False_Recipient() {
-        var request = new UpdateInviteStateRequest(1L, 6L, "Delayed", 1);
+        var request = new UpdateInviteStateRequest(1L, "Delayed", 1);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
         assertThrowsExactly(IllegalArgumentException.class,
-                () -> inviteService.updateInviteState(request),
+                () -> inviteService.updateInviteState(request, 6),
                 "User is not recipient of this invite");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());

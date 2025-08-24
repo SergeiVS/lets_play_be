@@ -33,30 +33,33 @@ public class InviteController implements InviteControllerApi {
 
     @Override
     public ResponseEntity<List<InviteResponse>> getAllInvitesByLobby(long lobbyId) {
-
         List<InviteResponse> response = inviteService.getAllInvitesByLobbyId(lobbyId);
+
         return ResponseEntity.ok(response);
     }
 
     @Override
-    public ResponseEntity<InviteResponse> deleteInvite(UpdateInviteStateRequest request) {
+    public ResponseEntity<InviteResponse> updateInvite(UpdateInviteStateRequest request, Authentication auth) {
+        var user = appUserService.getUserByEmailOrThrow(auth.getName());
 
-        var response = inviteService.updateInviteState(request);
+        var response = inviteService.updateInviteState(request, user.getId());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<StandardStringResponse> updateInviteISeen(long inviteId, Authentication auth) {
-
         inviteService.updateIsSeen(auth, inviteId);
+
         var response = new StandardStringResponse("Is seen was updated to " + inviteId);
+
         return ResponseEntity.ok(response);
     }
 
     @Override
     public ResponseEntity<InviteResponse> deleteInvite(long inviteId, Authentication auth) {
-
         var response = inviteService.removeInvite(inviteId, auth);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

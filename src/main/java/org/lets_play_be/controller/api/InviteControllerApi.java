@@ -82,7 +82,7 @@ public interface InviteControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping("user")
-    ResponseEntity<InviteResponse> deleteInvite(@RequestBody UpdateInviteStateRequest request);
+    ResponseEntity<InviteResponse> updateInvite(@RequestBody UpdateInviteStateRequest request, Authentication auth);
 
     @Operation(summary = "Update invite isSeen")
     @ApiResponses(value = {
