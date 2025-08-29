@@ -17,6 +17,7 @@ import static org.lets_play_be.notification.NotificationFactory.createNotificati
 
 class NotificationFactoryTest {
 
+    public static final long NOTIFICATION_ORIGINATOR_ID = 1;
     private AppUser testUser;
     private Lobby testLobby;
     private String testMessage;
@@ -40,10 +41,9 @@ class NotificationFactoryTest {
 
     @Test
     void createNotification_Message() {
-
         NotificationData data = new MessageNotificationData(testMessage);
 
-        Notification result = createNotification(data);
+        Notification result = createNotification(data, NOTIFICATION_ORIGINATOR_ID);
 
         assertThat(result.id()).isNotNull();
         assertThat(result.createdAt()).isNotNull();
@@ -56,7 +56,7 @@ class NotificationFactoryTest {
 
         NotificationData data = new LobbyActivatedNotificationData(testLobby);
 
-        Notification result = createNotification(data);
+        Notification result = createNotification(data, NOTIFICATION_ORIGINATOR_ID);
 
         assertThat(result.id()).isNotNull();
         assertThat(result.createdAt()).isNotNull();
@@ -69,7 +69,7 @@ class NotificationFactoryTest {
 
         NotificationData data = new LobbyUpdatedNotificationData(testLobby);
 
-        Notification result = createNotification(data);
+        Notification result = createNotification(data, NOTIFICATION_ORIGINATOR_ID);
 
         assertThat(result.id()).isNotNull();
         assertThat(result.createdAt()).isNotNull();
@@ -82,7 +82,7 @@ class NotificationFactoryTest {
 
         NotificationData data = new LobbyClosedNotificationData(testLobby);
 
-        Notification result = createNotification(data);
+        Notification result = createNotification(data, NOTIFICATION_ORIGINATOR_ID);
 
         assertThat(result.id()).isNotNull();
         assertThat(result.createdAt()).isNotNull();
@@ -95,7 +95,7 @@ class NotificationFactoryTest {
 
         NotificationData data = new InviteResponse(testInvite);
 
-        Notification result = createNotification(data);
+        Notification result = createNotification(data, NOTIFICATION_ORIGINATOR_ID);
 
         assertThat(result.id()).isNotNull();
         assertThat(result.createdAt()).isNotNull();
@@ -108,7 +108,8 @@ class NotificationFactoryTest {
 
         NotificationData data = new FalseNotificationData(testMessage);
 
-        assertThrowsExactly(IllegalStateException.class, () -> createNotification(data), "Unexpected value: " + data);
+        assertThrowsExactly(IllegalStateException.class, () -> createNotification(data, NOTIFICATION_ORIGINATOR_ID),
+                            "Unexpected value: " + data);
     }
 
     private record FalseNotificationData(String message) implements NotificationData {

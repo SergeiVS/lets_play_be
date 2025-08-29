@@ -25,7 +25,7 @@ class SseServiceTest {
 
     @Test
     void createSseConnection() {
-        SseEmitter result = sseService.createSseConnection();
+        SseEmitter result = sseService.createSseConnection(1L);
 
         assertNotNull(result);
         assertInstanceOf(SseEmitter.class, result);

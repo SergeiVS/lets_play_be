@@ -3,6 +3,7 @@ package org.lets_play_be.entity.invite;
 import jakarta.persistence.*;
 import lombok.*;
 import org.lets_play_be.entity.enums.InviteState;
+import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 
@@ -47,7 +48,7 @@ public class Invite {
 
     public Invite(AppUser recipient, Lobby lobby, String message) {
         this.recipient = recipient;
-        this.state = InviteState.PENDING;
+        this.state = lobby.getType() == LobbyType.ACTIVE ? InviteState.PENDING : InviteState.INACTIVE;
         this.createdAt = OffsetDateTime.now();
         this.isDelivered = false;
         this.isSeen = false;

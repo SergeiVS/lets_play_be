@@ -14,11 +14,11 @@ import static org.lets_play_be.utils.FormattingUtils.dateTimeToStringFormatter;
 @Service
 public class NotificationFactory {
 
-    public static Notification createNotification(NotificationData data) {
+    public static Notification createNotification(NotificationData data, Long notificationOriginatorId) {
         UUID uuid = UUID.randomUUID();
         String createdAt = dateTimeToStringFormatter(OffsetDateTime.now());
         String type = getNotificationType(data);
-        return new Notification(uuid, createdAt, type, data);
+        return new Notification(uuid, notificationOriginatorId, createdAt, type, data);
     }
 
     private static String getNotificationType(NotificationData data) {

@@ -34,7 +34,7 @@ public class SseNotificationService {
             return recipientPool.getObserver(recipient.getId()).getEmitter();
         }
 
-        final SseEmitter emitter = sseService.createSseConnection();
+        final SseEmitter emitter = sseService.createSseConnection(recipient.getId());
 
         createSseObserver(emitter, recipient.getId());
 
@@ -59,11 +59,11 @@ public class SseNotificationService {
         }
     }
 
-    public void notifyLobbyMembers(long lobbyId, NotificationData data) {
+    public void notifyLobbyMembers(long lobbyId, long userId, NotificationData data) {
         try {
             var subject = subjectPool.getSubject(lobbyId);
 
-            var notification = createNotification(data);
+            var notification = createNotification(data, userId);
 
             subject.notifyObservers(notification);
         } catch (RuntimeException e) {

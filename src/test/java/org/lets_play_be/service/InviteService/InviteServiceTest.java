@@ -135,8 +135,8 @@ class InviteServiceTest {
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
         assertThrowsExactly(IllegalArgumentException.class,
-                () -> inviteService.updateIsSeen(auth2, invite1.getId()),
-                "User is not recipient of this invite");
+                            () -> inviteService.updateIsSeen(auth2, invite1.getId()),
+                            "User is not recipient of this invite");
 
         verify(userServiceMock, times(1)).getUserByEmailOrThrow(user2.getEmail());
         verify(repositoryMock, times(1)).findById(invite1.getId());
@@ -180,8 +180,8 @@ class InviteServiceTest {
         when(repositoryMock.findInvitesByUserId(4L)).thenReturn(listOf());
 
         assertThrowsExactly(RestException.class,
-                () -> inviteService.getAllUserInviteResponses(4L),
-                "No invites were found");
+                            () -> inviteService.getAllUserInviteResponses(4L),
+                            "No invites were found");
 
         verify(repositoryMock, times(1)).findInvitesByUserId(4L);
         verify(repositoryMock, times(0)).findById(any(Long.class));
@@ -209,8 +209,8 @@ class InviteServiceTest {
         when(repositoryMock.findInvitesByLobbyId(4L)).thenReturn(listOf());
 
         assertThrowsExactly(RestException.class,
-                () -> inviteService.getAllInvitesByLobbyId(4L),
-                "No invites were found");
+                            () -> inviteService.getAllInvitesByLobbyId(4L),
+                            "No invites were found");
 
         verify(repositoryMock, times(1)).findInvitesByLobbyId(4L);
     }
@@ -236,7 +236,7 @@ class InviteServiceTest {
         verify(repositoryMock, times(1)).findById(invite1.getId());
         verify(repositoryMock, times(1)).save(invite1);
         verify(notificationServiceMock, times(1))
-                .notifyLobbyMembers(anyLong(), any(InviteResponse.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(InviteResponse.class));
     }
 
     @Test
@@ -260,7 +260,7 @@ class InviteServiceTest {
         verify(repositoryMock, times(1)).findById(invite1.getId());
         verify(repositoryMock, times(1)).save(invite1);
         verify(notificationServiceMock, times(1))
-                .notifyLobbyMembers(anyLong(), any(InviteResponse.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(InviteResponse.class));
     }
 
     @Test
@@ -270,13 +270,13 @@ class InviteServiceTest {
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
         assertThrowsExactly(IllegalArgumentException.class,
-                () -> inviteService.updateInviteState(request, 3),
-                "New invite state do not meet an Enum");
+                            () -> inviteService.updateInviteState(request, 3),
+                            "New invite state do not meet an Enum");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());
         verify(repositoryMock, times(0)).save(invite1);
         verify(notificationServiceMock, times(0))
-                .notifyLobbyMembers(anyLong(), any(InviteResponse.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(InviteResponse.class));
     }
 
     @Test
@@ -286,13 +286,13 @@ class InviteServiceTest {
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
         assertThrowsExactly(IllegalArgumentException.class,
-                () -> inviteService.updateInviteState(request, 3),
-                "If newState equals delayed, value of delayedFor should be positive number over 0");
+                            () -> inviteService.updateInviteState(request, 3),
+                            "If newState equals delayed, value of delayedFor should be positive number over 0");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());
         verify(repositoryMock, times(0)).save(invite1);
         verify(notificationServiceMock, times(0))
-                .notifyLobbyMembers(anyLong(), any(InviteResponse.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(InviteResponse.class));
     }
 
     @Test
@@ -302,13 +302,13 @@ class InviteServiceTest {
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
         assertThrowsExactly(IllegalArgumentException.class,
-                () -> inviteService.updateInviteState(request, 6),
-                "User is not recipient of this invite");
+                            () -> inviteService.updateInviteState(request, 6),
+                            "User is not recipient of this invite");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());
         verify(repositoryMock, times(0)).save(invite1);
         verify(notificationServiceMock, times(0))
-                .notifyLobbyMembers(anyLong(), any(InviteResponse.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(InviteResponse.class));
     }
 
     @Test
@@ -333,8 +333,8 @@ class InviteServiceTest {
         when(userServiceMock.getUserByEmailOrThrow(user2.getEmail())).thenReturn(user2);
 
         assertThrowsExactly(RestException.class,
-                () -> inviteService.removeInvite(invite1.getId(), auth2),
-                "User is not recipient of this invite");
+                            () -> inviteService.removeInvite(invite1.getId(), auth2),
+                            "User is not recipient of this invite");
 
         verify(repositoryMock, times(1)).findById(invite1.getId());
         verify(userServiceMock, times(1)).getUserByEmailOrThrow(anyString());

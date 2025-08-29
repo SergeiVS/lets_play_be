@@ -38,7 +38,6 @@ public class LobbySubject implements NotificationSubject {
 
     @Override
     public void notifyObservers(Notification notification) {
-
         this.observers.parallelStream().forEach(observer -> {
             try {
                 observer.update(notification);

@@ -93,7 +93,7 @@ class LobbyNotificationsServiceTest {
         verify(sseNotificationService, times(2))
                 .subscribeSseObserverToLobby(anyLong(), anyLong());
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any(NotificationData.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verifyNoMoreInteractions(recipientPool);
         verifyNoMoreInteractions(sseNotificationService);
     }
@@ -106,7 +106,7 @@ class LobbyNotificationsServiceTest {
 
         verify(recipientPool, times(2))
                 .isInPool(anyLong());
-        verify(sseNotificationService, times(1)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        verify(sseNotificationService, times(1)).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verifyNoMoreInteractions(recipientPool);
         verifyNoMoreInteractions(sseNotificationService);
     }
@@ -134,7 +134,7 @@ class LobbyNotificationsServiceTest {
         verify(lobbyGetterService, times(numberOfKickedUsers))
                 .getUserCurrentLobby(any(AppUser.class));
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any(NotificationData.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
     }
 
     @Test
@@ -154,7 +154,7 @@ class LobbyNotificationsServiceTest {
         verify(userService, times(1))
                 .getUsersListByIds(anyList());
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any(NotificationData.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verifyNoMoreInteractions(recipientPool);
         verifyNoInteractions(lobbyGetterService);
     }
@@ -181,7 +181,7 @@ class LobbyNotificationsServiceTest {
         when(subjectPool.getSubject(lobby.getId())).thenReturn(lobbySubject);
         when(recipientPool.isInPool(anyLong())).thenReturn(false);
         when(userService.getUsersListByIds(List.of(user1.getId(), user2.getId()))).thenReturn(List.of(user1, user2));
-        doThrow(RuntimeException.class).when(sseNotificationService).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        doThrow(RuntimeException.class).when(sseNotificationService).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
 
         var numberOfKickedUsers = request.usersIds().size();
 
@@ -194,7 +194,7 @@ class LobbyNotificationsServiceTest {
         verify(userService, times(1))
                 .getUsersListByIds(anyList());
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any(NotificationData.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verifyNoMoreInteractions(recipientPool);
         verifyNoInteractions(lobbyGetterService);
     }
@@ -202,28 +202,28 @@ class LobbyNotificationsServiceTest {
     @Test
     void notifyInvitedUsers_Success() {
         doNothing().when(sseNotificationService)
-                .notifyLobbyMembers(anyLong(), any());
+                .notifyLobbyMembers(anyLong(), anyLong(), any());
 
         lobbyNotificationsService
-                .notifyInvitedUsers(lobby, new MessageNotificationData("message"));
+                .notifyInvitedUsers(lobby, 1L, new MessageNotificationData("message"));
 
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any(NotificationData.class));
+                .notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verifyNoMoreInteractions(sseNotificationService);
     }
 
     @Test
     void notifyInvitedUsers_Throws_ByNotifyingMembers() {
         doThrow(RuntimeException.class)
-                .when(sseNotificationService).notifyLobbyMembers(anyLong(), any());
+                .when(sseNotificationService).notifyLobbyMembers(anyLong(), anyLong(), any());
 
         assertThrows(RuntimeException.class,
-                () -> lobbyNotificationsService.notifyInvitedUsers(lobby, new MessageNotificationData("message"))
+                     () -> lobbyNotificationsService.notifyInvitedUsers(lobby, 1L, new MessageNotificationData(
+                             "message"))
         );
 
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any(NotificationData.class));
-        verifyNoMoreInteractions(sseNotificationService);
+                .notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verifyNoMoreInteractions(sseNotificationService);
     }
 
@@ -231,7 +231,7 @@ class LobbyNotificationsServiceTest {
     void subscribeLobbySubjectInPool_Success_MembersAreInPool() {
         doNothing().when(subjectPool).addSubject(any(LobbySubject.class));
         when(recipientPool.isInPool(anyLong())).thenReturn(true);
-        doNothing().when(sseNotificationService).notifyLobbyMembers(anyLong(), any());
+        doNothing().when(sseNotificationService).notifyLobbyMembers(anyLong(), anyLong(), any());
 
         var numberOfUsersInList = request.usersIds().size();
 
@@ -239,7 +239,7 @@ class LobbyNotificationsServiceTest {
                 .subscribeLobbySubjectInPool(lobby, request.usersIds());
         System.out.println(request.usersIds());
 
-        result.forEach(id->assertTrue(request.usersIds().contains(id)));
+        result.forEach(id -> assertTrue(request.usersIds().contains(id)));
 
 
         verify(subjectPool, times(1))
@@ -247,9 +247,9 @@ class LobbyNotificationsServiceTest {
         verify(recipientPool, times(numberOfUsersInList))
                 .isInPool(anyLong());
         verify(sseNotificationService, times(numberOfUsersInList))
-                .subscribeSseObserverToLobby(anyLong(),anyLong());
+                .subscribeSseObserverToLobby(anyLong(), anyLong());
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any());
+                .notifyLobbyMembers(anyLong(), anyLong(), any());
         verifyNoMoreInteractions(subjectPool);
         verifyNoMoreInteractions(recipientPool);
 
@@ -260,7 +260,7 @@ class LobbyNotificationsServiceTest {
     void subscribeLobbySubjectInPool_Success_MembersAreNotInPool() {
         doNothing().when(subjectPool).addSubject(any(LobbySubject.class));
         when(recipientPool.isInPool(anyLong())).thenReturn(false);
-        doNothing().when(sseNotificationService).notifyLobbyMembers(anyLong(), any());
+        doNothing().when(sseNotificationService).notifyLobbyMembers(anyLong(), anyLong(), any());
 
         var numberOfUsersInList = request.usersIds().size();
 
@@ -273,7 +273,7 @@ class LobbyNotificationsServiceTest {
         verify(recipientPool, times(numberOfUsersInList))
                 .isInPool(anyLong());
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any());
+                .notifyLobbyMembers(anyLong(), anyLong(), any());
         verifyNoMoreInteractions(subjectPool);
         verifyNoMoreInteractions(recipientPool);
         verifyNoMoreInteractions(sseNotificationService);
@@ -283,7 +283,7 @@ class LobbyNotificationsServiceTest {
     void subscribeLobbySubjectInPoo_Throws_ByNotifyingMembers() {
         doNothing().when(subjectPool).addSubject(any(LobbySubject.class));
         when(recipientPool.isInPool(anyLong())).thenReturn(false);
-        doThrow(RuntimeException.class).when(sseNotificationService).notifyLobbyMembers(anyLong(), any());
+        doThrow(RuntimeException.class).when(sseNotificationService).notifyLobbyMembers(anyLong(), anyLong(), any());
 
         var numberOfUsersInList = request.usersIds().size();
 
@@ -295,7 +295,7 @@ class LobbyNotificationsServiceTest {
         verify(recipientPool, times(numberOfUsersInList))
                 .isInPool(anyLong());
         verify(sseNotificationService, times(1))
-                .notifyLobbyMembers(anyLong(), any());
+                .notifyLobbyMembers(anyLong(), anyLong(), any());
         verifyNoMoreInteractions(subjectPool);
         verifyNoMoreInteractions(recipientPool);
         verifyNoMoreInteractions(sseNotificationService);

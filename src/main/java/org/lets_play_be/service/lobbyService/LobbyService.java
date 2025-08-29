@@ -23,8 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +66,7 @@ public class LobbyService {
 
         lobbyNotificationsService.notifyInvitedUsers(
                 lobby,
+                user.getId(),
                 new LobbyActivatedNotificationData(lobby)
         );
 
@@ -109,6 +110,7 @@ public class LobbyService {
 
         lobbyNotificationsService.notifyInvitedUsers(
                 updatedLobby,
+                user.getId(),
                 new MessageNotificationData(
                         LEFT_LOBBY_MSG
                                 .formatted(
@@ -139,7 +141,7 @@ public class LobbyService {
         var lobby = lobbyGetter.loadLobbyByAuth(auth);
         if (isActive(lobby)) {
             throw new RestException("You can't remove users from an active lobby (kicks only)",
-                    HttpStatus.BAD_REQUEST);
+                                    HttpStatus.BAD_REQUEST);
         }
 
         return new LobbyResponse(lobbyUserService.removeUsers(request, auth));
@@ -166,7 +168,11 @@ public class LobbyService {
         if (isActive(savedLobby)) {
             var notificationData = new LobbyUpdatedNotificationData(savedLobby);
 
-            sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
+            sseNotificationService.notifyLobbyMembers(
+                    savedLobby.getId(),
+                    lobbyForChange.getOwner().getId(),
+                    notificationData
+            );
         }
 
         return new LobbyResponse(savedLobby);
@@ -187,7 +193,7 @@ public class LobbyService {
         var savedLobby = saveDeactivatedLobby(lobbyForDeactivate);
 
         var data = new LobbyClosedNotificationData(savedLobby);
-        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), data);
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), savedLobby.getOwner().getId(), data);
         lobbyNotificationsService.removeLobbySubject(savedLobby.getId());
 
         return new LobbyResponse(savedLobby);
@@ -207,11 +213,13 @@ public class LobbyService {
     }
 
     private List<Long> getRecipientsIds(Lobby lobby) {
-        List<Long> recipientsIds = new ArrayList<>();
-
-        lobby.getInvites().forEach(invite -> recipientsIds.add(invite.getRecipient().getId()));
-
-        return recipientsIds;
+        return
+                Stream.concat(
+                        lobby.getInvites()
+                                .stream()
+                                .map(invite -> invite.getRecipient().getId()),
+                        Stream.of(lobby.getOwner().getId())
+                ).toList();
     }
 
     private void isInLobby(Lobby lobby, AppUser user) {
@@ -225,6 +233,6 @@ public class LobbyService {
     }
 
     private boolean isActive(Lobby lobby) {
-        return lobby.getType().equals(LobbyType.ACTIVE);
+        return lobby.getType() == LobbyType.ACTIVE;
     }
 }

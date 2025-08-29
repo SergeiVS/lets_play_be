@@ -93,7 +93,7 @@ public class InviteService {
 
         var response = new InviteResponse(savedInvite);
 
-        notificationService.notifyLobbyMembers(savedInvite.getLobby().getId(), response);
+        notificationService.notifyLobbyMembers(savedInvite.getLobby().getId(), userId, response);
 
         return response;
     }

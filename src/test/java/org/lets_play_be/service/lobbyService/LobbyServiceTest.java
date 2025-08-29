@@ -181,9 +181,9 @@ class LobbyServiceTest {
         when(getterService.findOrCreateUserLobby(owner)).thenReturn(lobby);
         when(lobbyNotificationsService.subscribeLobbySubjectInPool(
                 lobby,
-                List.of(user1.getId(), user2.getId(), user3.getId()))
+                List.of(user1.getId(), user2.getId(), user3.getId(), lobby.getOwner().getId()))
         )
-                .thenReturn(List.of(user1.getId(), user2.getId(), user3.getId()));
+                .thenReturn(List.of(user1.getId(), user2.getId(), user3.getId(), lobby.getOwner().getId()));
         when(repository.save(any(Lobby.class))).thenAnswer(i -> i.getArgument(0));
 
         assertThat(lobby.getType()).isEqualTo(LobbyType.INACTIVE);
@@ -206,7 +206,7 @@ class LobbyServiceTest {
         when(getterService.findOrCreateUserLobby(owner)).thenReturn(lobby);
         when(lobbyNotificationsService.subscribeLobbySubjectInPool(
                 lobby,
-                List.of(user1.getId(), user2.getId(), user3.getId()))
+                List.of(user1.getId(), user2.getId(), user3.getId(), lobby.getOwner().getId()))
         )
                 .thenReturn(List.of());
         when(repository.save(any(Lobby.class))).thenAnswer(i -> i.getArgument(0));
@@ -231,9 +231,9 @@ class LobbyServiceTest {
         when(getterService.findOrCreateUserLobby(owner)).thenReturn(blancLobby);
         when(lobbyNotificationsService.subscribeLobbySubjectInPool(
                 blancLobby,
-                List.of())
+                List.of(blancLobby.getOwner().getId()))
         )
-                .thenReturn(List.of());
+                .thenReturn(List.of(blancLobby.getOwner().getId()));
         when(repository.save(any(Lobby.class))).thenAnswer(i -> i.getArgument(0));
 
         assertThat(blancLobby.getType()).isEqualTo(LobbyType.INACTIVE);
@@ -544,7 +544,7 @@ class LobbyServiceTest {
         verify(getterService, times(1)).loadLobbyByAuth(auth);
         verify(baseUpdateService, times(1)).setNewValues(updateLobbyRequest, lobby);
         verify(repository, times(1)).save(lobby);
-        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
     }
 
     @Test
@@ -556,13 +556,13 @@ class LobbyServiceTest {
 
         when(getterService.loadLobbyByAuth(auth)).thenReturn(lobby);
         when(repository.save(lobby)).thenReturn(changedLobby);
-        doThrow(RuntimeException.class).when(notificationService).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        doThrow(RuntimeException.class).when(notificationService).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
 
         assertThrows(RuntimeException.class, () -> service.updateLobbyTitleAndTime(updateLobbyRequest, auth));
         verify(getterService, times(1)).loadLobbyByAuth(auth);
         verify(baseUpdateService, times(1)).setNewValues(updateLobbyRequest, lobby);
         verify(repository, times(1)).save(lobby);
-        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
     }
 
     @Test
@@ -581,7 +581,7 @@ class LobbyServiceTest {
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(baseUpdateService, times(1)).isLobbyOwner(lobby, owner.getId());
         verify(repository, times(1)).save(lobby);
-        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verify(lobbyNotificationsService, times(1)).removeLobbySubject(lobby.getId());
     }
 
@@ -622,15 +622,15 @@ class LobbyServiceTest {
         when(getterService.getLobbyByIdOrThrow(lobby.getId())).thenReturn(lobby);
         when(userService.getUserByEmailOrThrow(auth.getName())).thenReturn(owner);
         when(repository.save(lobby)).thenReturn(lobby);
-        doThrow(RuntimeException.class).when(notificationService).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        doThrow(RuntimeException.class).when(notificationService).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
 
-        assertThrows(RuntimeException.class, ()-> service.deactivateLobby(lobby.getId(), auth));
+        assertThrows(RuntimeException.class, () -> service.deactivateLobby(lobby.getId(), auth));
 
         verify(getterService, times(1)).getLobbyByIdOrThrow(lobby.getId());
         verify(userService, times(1)).getUserByEmailOrThrow(auth.getName());
         verify(baseUpdateService, times(1)).isLobbyOwner(lobby, owner.getId());
         verify(repository, times(1)).save(lobby);
-        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), any(NotificationData.class));
+        verify(notificationService, times(1)).notifyLobbyMembers(anyLong(), anyLong(), any(NotificationData.class));
         verifyNoInteractions(lobbyNotificationsService);
     }
 }

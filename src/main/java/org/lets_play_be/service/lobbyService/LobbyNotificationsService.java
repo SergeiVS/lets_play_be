@@ -44,7 +44,7 @@ public class LobbyNotificationsService {
         }
         NotificationData notificationData = new UsersInvitedNotificationData(lobby);
 
-        notifyInvitedUsers(lobby, notificationData);
+        notifyInvitedUsers(lobby, lobby.getOwner().getId(), notificationData);
 
         return subscribedRecipients;
     }
@@ -55,20 +55,20 @@ public class LobbyNotificationsService {
         var message = new MessageNotificationData(request.message());
 
         users.forEach(user -> {
-                    if (recipientPool.isInPool(user.getId())) {
-                        var observer = recipientPool.getObserver(user.getId());
-                        lobbySubject.unsubscribe(observer);
-                        notifyKickedUser(user, observer, message);
-                    }
-                }
+                          if (recipientPool.isInPool(user.getId())) {
+                              var observer = recipientPool.getObserver(user.getId());
+                              lobbySubject.unsubscribe(observer);
+                              notifyKickedUser(user, observer, message);
+                          }
+                      }
         );
 
         final var notificationData = new UsersKickedNotificationData(lobby);
-        notifyInvitedUsers(lobby, notificationData);
+        notifyInvitedUsers(lobby, lobby.getOwner().getId(), notificationData);
     }
 
-    public void notifyInvitedUsers(Lobby savedLobby, NotificationData notificationData) {
-        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), notificationData);
+    public void notifyInvitedUsers(Lobby savedLobby, long userId, NotificationData notificationData) {
+        sseNotificationService.notifyLobbyMembers(savedLobby.getId(), userId, notificationData);
     }
 
     public List<Long> subscribeLobbySubjectInPool(Lobby lobby, List<Long> recipientsIds) {
@@ -76,7 +76,7 @@ public class LobbyNotificationsService {
 
         subjectPool.addSubject(subject);
 
-       return subscribeNotifyRecipients(lobby, recipientsIds);
+        return subscribeNotifyRecipients(lobby, recipientsIds);
     }
 
     public void removeLobbySubject(long lobbyId) {
@@ -88,8 +88,8 @@ public class LobbyNotificationsService {
             var userCurrentLobby = lobbyGetterService.getUserCurrentLobby(user);
             var lobbyResponse = new LobbyResponse(userCurrentLobby);
 
-            observer.update(createNotification(message));
-            observer.update(createNotification(lobbyResponse));
+            observer.update(createNotification(message, user.getId()));
+            observer.update(createNotification(lobbyResponse, user.getId()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

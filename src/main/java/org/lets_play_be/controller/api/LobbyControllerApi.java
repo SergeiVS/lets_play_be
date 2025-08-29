@@ -18,7 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/v1/lobby/active")
+@RequestMapping("api/v1/lobby")
 public interface LobbyControllerApi {
 
     @Operation(summary = "Activates Lobby")
@@ -108,7 +108,7 @@ public interface LobbyControllerApi {
             @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
-    @PatchMapping("users")
+    @PatchMapping("users/invite")
     ResponseEntity<LobbyResponse> inviteNewUsers(
             @RequestBody
             @Valid
@@ -155,7 +155,7 @@ public interface LobbyControllerApi {
             @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
-    @PatchMapping("kick")
+    @PatchMapping("users/kick")
     ResponseEntity<LobbyResponse> kickUsers(
             @RequestBody
             @Valid
@@ -204,7 +204,7 @@ public interface LobbyControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PutMapping("user")
+    @PutMapping("users/add")
     ResponseEntity<LobbyResponse> addUsers(
             @RequestBody
             @Valid
@@ -230,7 +230,7 @@ public interface LobbyControllerApi {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @DeleteMapping("user")
+    @DeleteMapping("users/remove")
     ResponseEntity<LobbyResponse> removeUsers(
             @RequestBody
             @Valid
