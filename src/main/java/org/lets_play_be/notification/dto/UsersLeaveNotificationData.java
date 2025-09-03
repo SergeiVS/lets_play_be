@@ -8,15 +8,15 @@ import java.util.List;
 
 import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
-public record UsersKickedNotificationData(long lobbyId,
-                                          String time,
-                                          String ownerName,
-                                          String lobbyType,
-                                          String title,
-                                          List<InvitedUserResponse> invitedUsers
+public record UsersLeaveNotificationData(long lobbyId,
+                                         String time,
+                                         String ownerName,
+                                         String lobbyType,
+                                         String title,
+                                         List<InvitedUserResponse> invitedUsers
 ) implements Serializable, NotificationData {
 
-    public UsersKickedNotificationData(Lobby lobby) {
+    public UsersLeaveNotificationData(Lobby lobby) {
         this(
                 lobby.getId(),
                 timeToStringFormatter(lobby.getTime()),

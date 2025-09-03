@@ -10,17 +10,17 @@ import static org.lets_play_be.utils.FormattingUtils.timeToStringFormatter;
 
 public record UsersInvitedNotificationData(long lobbyId,
                                            String time,
-                                           InvitedUserResponse owner,
+                                           String ownerName,
                                            String lobbyType,
                                            String title,
-                                           List<InvitedUserResponse> invitedNewUsers
+                                           List<InvitedUserResponse> invitedUsers
 ) implements Serializable, NotificationData {
 
     public UsersInvitedNotificationData(Lobby lobby) {
         this(
                 lobby.getId(),
                 timeToStringFormatter(lobby.getTime()),
-                new InvitedUserResponse(lobby.getOwner()),
+                lobby.getOwner().getEmail(),
                 lobby.getType().toString(),
                 lobby.getTitle(),
                 lobby.getInvites().stream().map(InvitedUserResponse::new).toList()

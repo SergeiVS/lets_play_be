@@ -11,10 +11,7 @@ import org.lets_play_be.entity.enums.LobbyType;
 import org.lets_play_be.entity.lobby.Lobby;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
-import org.lets_play_be.notification.dto.LobbyActivatedNotificationData;
-import org.lets_play_be.notification.dto.LobbyClosedNotificationData;
-import org.lets_play_be.notification.dto.LobbyUpdatedNotificationData;
-import org.lets_play_be.notification.dto.MessageNotificationData;
+import org.lets_play_be.notification.dto.*;
 import org.lets_play_be.notification.notificationService.sseNotification.SseNotificationService;
 import org.lets_play_be.repository.LobbyRepository;
 import org.lets_play_be.service.InviteService.InviteService;
@@ -111,13 +108,7 @@ public class LobbyService {
         lobbyNotificationsService.notifyInvitedUsers(
                 updatedLobby,
                 user.getId(),
-                new MessageNotificationData(
-                        LEFT_LOBBY_MSG
-                                .formatted(
-                                        user.getName(),
-                                        updatedLobby.getTitle()
-                                )
-                )
+                new UsersLeaveNotificationData(updatedLobby)
         );
 
         return new LobbyResponse(lobbyGetter.getUserCurrentLobby(user));
