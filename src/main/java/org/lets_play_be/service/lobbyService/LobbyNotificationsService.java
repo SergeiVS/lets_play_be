@@ -42,9 +42,12 @@ public class LobbyNotificationsService {
                 subscribedRecipients.add(recipientId);
             }
         }
-        NotificationData notificationData = new UsersInvitedNotificationData(lobby);
 
-        notifyInvitedUsers(lobby, lobby.getOwner().getId(), notificationData);
+        notifyInvitedUsers(
+                lobby,
+                lobby.getOwner().getId(),
+                new UsersInvitedNotificationData(lobby)
+        );
 
         return subscribedRecipients;
     }
@@ -55,16 +58,15 @@ public class LobbyNotificationsService {
         var message = new MessageNotificationData(request.message());
 
         users.forEach(user -> {
-                          if (recipientPool.isInPool(user.getId())) {
-                              var observer = recipientPool.getObserver(user.getId());
-                              lobbySubject.unsubscribe(observer);
-                              notifyKickedUser(user, observer, message);
-                          }
-                      }
+                    if (recipientPool.isInPool(user.getId())) {
+                        var observer = recipientPool.getObserver(user.getId());
+                        lobbySubject.unsubscribe(observer);
+                        notifyKickedUser(user, observer, message);
+                    }
+                }
         );
 
-        final var notificationData = new UsersKickedNotificationData(lobby);
-        notifyInvitedUsers(lobby, lobby.getOwner().getId(), notificationData);
+                notifyInvitedUsers(lobby, lobby.getOwner().getId(), new UsersKickedNotificationData(lobby));
     }
 
     public void notifyInvitedUsers(Lobby savedLobby, long userId, NotificationData notificationData) {
