@@ -40,7 +40,7 @@ public class InviteService {
 
         var invite = getInviteByIdOrElseThrow(inviteId);
 
-        isRecipient(invite, user.getId());
+        isRecipientGuard(invite, user.getId());
 
         invite.setSeen(true);
 
@@ -82,10 +82,9 @@ public class InviteService {
     }
 
     public InviteResponse updateInviteState(UpdateInviteStateRequest request, long userId) {
-
         var invite = getInviteByIdOrElseThrow(request.inviteId());
 
-        isRecipient(invite, userId);
+        isRecipientGuard(invite, userId);
 
         setNewStateToInvite(invite, request);
 
@@ -133,24 +132,17 @@ public class InviteService {
     }
 
     private void setNewStateToInvite(Invite invite, UpdateInviteStateRequest request) {
-
-        String newState = request.newState();
-
-        List<String> states = InviteState.getValuesInviteStateStringsList();
-
-        if (!states.contains(newState.toUpperCase())) {
-            throw new IllegalArgumentException("New invite state do not meet an Enum");
-        }
-
-        if (newState.equalsIgnoreCase("delayed")) {
+        if (request.newState() == InviteState.DELAYED) {
             validateDelayedFor(request);
-            setNewStateDelayed(invite, newState, request.delayedFor());
-        }
 
-        invite.setState(InviteState.valueOf(newState.toUpperCase()));
+            invite.setState(request.newState());
+            invite.setDelayedFor(request.delayedFor());
+        } else {
+            invite.setState(request.newState());
+        }
     }
 
-    private void isRecipient(Invite invite, long userId) {
+    private void isRecipientGuard(Invite invite, long userId) {
         if (userId != invite.getRecipient().getId()) {
             throw new IllegalArgumentException("User is not recipient of this invite");
         }
@@ -171,10 +163,5 @@ public class InviteService {
         if (request.delayedFor() < 1) {
             throw new IllegalArgumentException("If newState equals delayed, value of delayedFor should be positive number over 0");
         }
-    }
-
-    private void setNewStateDelayed(Invite invite, String newState, int delayedFor) {
-        invite.setState(InviteState.valueOf(newState.toUpperCase()));
-        invite.setDelayedFor(delayedFor);
     }
 }

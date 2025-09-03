@@ -6,7 +6,6 @@ import org.lets_play_be.dto.StandardStringResponse;
 import org.lets_play_be.dto.inviteDto.InviteResponse;
 import org.lets_play_be.dto.inviteDto.UpdateInviteStateRequest;
 import org.lets_play_be.entity.enums.InviteState;
-import org.lets_play_be.entity.invite.Invite;
 import org.lets_play_be.service.InviteService.InviteService;
 import org.lets_play_be.service.appUserService.AppUserService;
 import org.springframework.http.HttpStatus;
@@ -66,6 +65,4 @@ public class InviteController implements InviteControllerApi {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
 }
