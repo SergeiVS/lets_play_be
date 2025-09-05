@@ -217,7 +217,7 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Not_Delayed() {
-        var request = new UpdateInviteStateRequest(1L, "accepted", 1);
+        var request = new UpdateInviteStateRequest(1L, InviteState.ACCEPTED, 1);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
         when(repositoryMock.save(invite1)).thenReturn(invite1);
@@ -241,7 +241,7 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Delayed() {
-        var request = new UpdateInviteStateRequest(1L, "Delayed", 1);
+        var request = new UpdateInviteStateRequest(1L, InviteState.DELAYED, 1);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
         when(repositoryMock.save(invite1)).thenReturn(invite1);
@@ -264,24 +264,8 @@ class InviteServiceTest {
     }
 
     @Test
-    void updateInviteState_Throws_State_Not_Found() {
-        var request = new UpdateInviteStateRequest(1L, "SomeState", 0);
-
-        when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
-
-        assertThrowsExactly(IllegalArgumentException.class,
-                            () -> inviteService.updateInviteState(request, 3),
-                            "New invite state do not meet an Enum");
-
-        verify(repositoryMock, times(1)).findById(invite1.getId());
-        verify(repositoryMock, times(0)).save(invite1);
-        verify(notificationServiceMock, times(0))
-                .notifyLobbyMembers(anyLong(), anyLong(), any(InviteResponse.class));
-    }
-
-    @Test
     void updateInviteState_Throws_DelayedFor_Zero() {
-        var request = new UpdateInviteStateRequest(1L, "Delayed", 0);
+        var request = new UpdateInviteStateRequest(1L, InviteState.DELAYED, 0);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 
@@ -297,7 +281,7 @@ class InviteServiceTest {
 
     @Test
     void updateInviteState_Throws_False_Recipient() {
-        var request = new UpdateInviteStateRequest(1L, "Delayed", 1);
+        var request = new UpdateInviteStateRequest(1L, InviteState.DELAYED, 1);
 
         when(repositoryMock.findById(invite1.getId())).thenReturn(Optional.ofNullable(invite1));
 

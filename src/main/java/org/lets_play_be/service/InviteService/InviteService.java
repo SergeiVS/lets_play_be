@@ -135,11 +135,10 @@ public class InviteService {
         if (request.newState() == InviteState.DELAYED) {
             validateDelayedFor(request);
 
-            invite.setState(request.newState());
             invite.setDelayedFor(request.delayedFor());
-        } else {
-            invite.setState(request.newState());
         }
+
+        invite.setState(request.newState());
     }
 
     private void isRecipientGuard(Invite invite, long userId) {
