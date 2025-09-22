@@ -6,9 +6,11 @@ import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.security.filter.JwtAuthenticationFilter;
 import org.lets_play_be.security.handler.AppAccessDeniedHandler;
 import org.lets_play_be.security.handler.AppEntryPointHandler;
+import org.lets_play_be.security.oauth2.CustomOAuth2UserService;
 import org.lets_play_be.security.utils.AppUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,7 +21,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -38,6 +39,9 @@ public class WebSecurityConfig {
 
     private final AppUserRepository userRepository;
     private final JwtAuthenticationFilter jwtFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -50,22 +54,42 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/oauth2/**", "/login/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.ASYNC)
+                        .permitAll()
+                        .requestMatchers("/oauth2/authorization/**", "/api/**")
+                        .permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2Login(
+                        custom -> custom
+                                .userInfoEndpoint(authorize -> authorize
+                                        .userService(customOAuth2UserService)
+                                )
+                                .defaultSuccessUrl("/oauth2/login-success", true)
+                );
+        return http.build();
+    }
 
-        http.csrf(AbstractHttpConfigurer::disable)
+    @Bean
+    @Order(2)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/**")
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.ASYNC)
                         .permitAll()
@@ -85,7 +109,9 @@ public class WebSecurityConfig {
                                 new AntPathRequestMatcher("/swagger-ui.html"),
                                 new AntPathRequestMatcher("/api/v1/auth/login"),
                                 new AntPathRequestMatcher("/api/v1/auth/refresh"),
-                                new AntPathRequestMatcher("/api/v1/auth/register")
+                                new AntPathRequestMatcher("/api/v1/auth/register"),
+                                new AntPathRequestMatcher("/login/**"),
+                                new AntPathRequestMatcher("/oauth2/**")
                         ).permitAll()
                         .anyRequest()
                         .authenticated()
@@ -101,9 +127,9 @@ public class WebSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider());
-
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

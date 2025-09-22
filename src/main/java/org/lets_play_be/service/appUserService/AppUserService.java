@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetTime;
 import java.util.List;
+import java.util.Optional;
 
-import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 import static org.lets_play_be.utils.FormattingUtils.timeStringToOffsetTime;
 import static org.lets_play_be.utils.ValidationUtils.isFromTimeBeforeTo;
 import static org.lets_play_be.utils.ValidationUtils.validateAvailabilityString;
@@ -31,13 +31,16 @@ public class AppUserService {
 
     public List<AppUserFullResponse> getAllUsers() {
         var users = userRepository.findAll();
-
         return users.stream().map(AppUserFullResponse::new).toList();
     }
 
     public AppUserFullResponse getAppUserFullData(String email) {
         AppUser user = getUserByEmailOrThrow(email);
         return new AppUserFullResponse(user);
+    }
+
+    public Optional<AppUser> getOptionalUserByEmail(String email) {
+        return userRepository.findAppUserByEmail(email);
     }
 
     @Transactional
@@ -51,7 +54,6 @@ public class AppUserService {
         if (request.newName().isEmpty() && request.newAvatarUrl().isEmpty()) {
             throw new IllegalArgumentException("Both request fields are empty");
         }
-
         setNewNameToUser(request, user);
         setNewAvatarUrlToUser(request, user);
 
@@ -60,34 +62,31 @@ public class AppUserService {
     }
 
     @Transactional
-    public AppUserFullResponse updateUserAvailability(UserAvailabilityUpdateRequest request, String email) {
-
+    public AppUserFullResponse updateUserAvailability(
+            UserAvailabilityUpdateRequest request,
+            String email
+    ) {
         AppUser user = getUserByEmailOrThrow(email);
-
         setNewAvailability(request, user);
-
         AppUser savedUser = userRepository.save(user);
 
         return new AppUserFullResponse(savedUser);
     }
 
     public AppUser getUserByEmailOrThrow(String email) {
-        return userRepository.findAppUserByEmail(normalizeEmail(email))
+        return getOptionalUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString()));
     }
 
     public List<AppUser> getUsersListByIds(List<Long> ids) {
-
         if (ids.isEmpty()) {
             throw new IllegalArgumentException("List of users is empty");
         }
-
         List<AppUser> users = userRepository.findAllById(ids);
 
         if (users.isEmpty()) {
             throw new UsernameNotFoundException(ErrorMessage.USER_NOT_FOUND.toString());
         }
-
         if (users.size() != ids.size()) {
             throw new UsernameNotFoundException("Request contains " + (ids.size() - users.size()) + " invalid users Ids");
         }
@@ -95,22 +94,19 @@ public class AppUserService {
     }
 
     private void setNewAvailability(UserAvailabilityUpdateRequest request, AppUser user) {
-
         UserAvailability availability = user.getAvailability();
-
         String availabilityString = request.newAvailability();
-
         validateAvailabilityString(availabilityString);
-
         availability.setAvailabilityType(AvailabilityEnum.valueOf(availabilityString.toUpperCase()));
-
         setTemporaryUnavailabilityTime(request, availability);
 
         user.setAvailability(availability);
     }
 
-    private void setTemporaryUnavailabilityTime(UserAvailabilityUpdateRequest request, UserAvailability availability) {
-
+    private void setTemporaryUnavailabilityTime(
+            UserAvailabilityUpdateRequest request,
+            UserAvailability availability
+    ) {
         if (availability.getAvailabilityType().equals(AvailabilityEnum.TEMPORARILY_UNAVAILABLE)) {
 
             OffsetTime unavailableFrom = timeStringToOffsetTime(request.newUnavailableFrom());

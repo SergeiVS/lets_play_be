@@ -27,7 +27,6 @@ public class InviteController implements InviteControllerApi {
                 inviteService.getAllUserInviteResponses(
                         appUserService.getUserByEmailOrThrow(auth.getName()).getId()
                 );
-
         return ResponseEntity.ok(response);
     }
 
@@ -62,6 +61,4 @@ public class InviteController implements InviteControllerApi {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
 }

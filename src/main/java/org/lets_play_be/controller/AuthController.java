@@ -24,7 +24,7 @@ public class AuthController implements AuthControllerApi {
     private final RegisterNewUserService registerNewUserService;
 
     @Override
-    public ResponseEntity<LoginResponse> login(LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> usernamePasswordLogin(LoginRequest loginRequest, HttpServletResponse response) {
         LoginResponse loginResponse = authService.login(loginRequest, response);
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }

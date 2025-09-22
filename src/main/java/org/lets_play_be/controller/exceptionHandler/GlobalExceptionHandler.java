@@ -3,6 +3,7 @@ package org.lets_play_be.controller.exceptionHandler;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.lets_play_be.dto.errorDto.ErrorResponse;
 import org.lets_play_be.exception.RestException;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 
 @RestControllerAdvice
 @Hidden
@@ -104,8 +107,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
-                                                                  HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            @NonNull MethodArgumentNotValidException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
         ValidationErrorResponse errorsResponse = new ValidationErrorResponse();
         errorsResponse.setErrors(ex.getAllErrors().stream()
                 .filter(FieldError.class::isInstance)
@@ -117,4 +124,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorsResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(OAuth2AuthenticationException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse AuthenticationException(OAuth2AuthenticationException e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
 }

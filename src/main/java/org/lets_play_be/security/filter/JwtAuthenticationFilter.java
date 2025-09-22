@@ -39,7 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         try {
             if (isRequestToSwagger(request)) {
-                log.info("Request from Swagger");
                 return;
             }
 
@@ -54,7 +53,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void handleFilterInternal(HttpServletRequest request) {
-
         var accessJwt = getAtJwtFromCookie(request);
         var refreshJwt = getRefreshJwtFromCookie(request);
 
@@ -72,7 +70,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void validateCredentials(HttpServletRequest request, UserDetails userDetails) {
-
         var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -108,7 +105,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (request.getCookies() != null) {
             jwt = jwtService.getAccessTokenFromCookie(request);
         }
-
         return jwt;
     }
 

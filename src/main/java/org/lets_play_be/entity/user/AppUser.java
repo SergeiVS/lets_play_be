@@ -30,7 +30,7 @@ public class AppUser {
     private String email;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Setter

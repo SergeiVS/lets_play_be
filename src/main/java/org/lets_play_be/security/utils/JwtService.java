@@ -1,6 +1,9 @@
 package org.lets_play_be.security.utils;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +36,13 @@ public class JwtService {
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-
         Claims claims = extractAllClaims(token);
+
         return claimsResolver.apply(claims);
     }
 
     public boolean isTokenExpired(String token) {
         try {
-
             return extractExpiration(token).before(new Date());
         } catch (Exception e) {
             throw new JwtException("Token is expired");
@@ -54,7 +56,6 @@ public class JwtService {
         if (!isValid) {
             log.error("Token id not valid");
         }
-
         return (isValid && !isTokenExpired(token));
     }
 
@@ -64,16 +65,17 @@ public class JwtService {
 
     public ResponseCookie generateAccessTokenCookie(String email, List<AppUserRole> roles) {
         String jwt = generateAccessToken(email, roles);
+
         return generateCookie(config.getAtCookieName(), jwt, config.getAtExpirationInMs());
     }
 
     public ResponseCookie generateRefreshTokenCookie(String email, List<AppUserRole> roles) {
         String jwt = generateRefreshToken(email, roles);
+
         return generateCookie(config.getRtCookieName(), jwt, config.getRtExpirationInMs());
     }
 
     public String getRefreshTokenFromCookie(HttpServletRequest request) {
-
         var refreshToken = getCookieValueByName(request, config.getRtCookieName());
 
         if (refreshToken != null) {
@@ -105,13 +107,24 @@ public class JwtService {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    public ResponseCookie generateCookie(String name, String value, int maxAge) {
+        return ResponseCookie
+                .from(name, value)
+                .path("/")
+                .maxAge(maxAge)
+                .httpOnly(true)
+                .build();
+    }
+
     private String generateAccessToken(String email, List<AppUserRole> userRoles) {
         Date expireAt = new Date(System.currentTimeMillis() + config.getAtExpirationInMs());
+
         return generateJwtToken(email, expireAt, userRoles);
     }
 
     private String generateRefreshToken(String email, List<AppUserRole> userRoles) {
         Date expireAt = new Date(System.currentTimeMillis() + config.getRtExpirationInMs());
+
         return generateJwtToken(email, expireAt, userRoles);
     }
 
@@ -128,6 +141,7 @@ public class JwtService {
 
     private Key getSignKey() {
         byte[] keyBytes = config.getJwtSecret().getBytes();
+
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
@@ -138,15 +152,6 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    private ResponseCookie generateCookie(String name, String value, int maxAge) {
-        return ResponseCookie
-                .from(name, value)
-                .path("/")
-                .maxAge(maxAge)
-                .httpOnly(true)
-                .build();
     }
 
     private String getCookieValueByName(HttpServletRequest request, String name) {

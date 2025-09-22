@@ -1,8 +1,10 @@
 package org.lets_play_be.security.utils;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.lets_play_be.entity.BlacklistedToken;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.exception.RestException;
@@ -22,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -30,6 +33,7 @@ import static org.lets_play_be.utils.FormattingUtils.normalizeEmail;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final AuthenticationManager authManager;
@@ -42,39 +46,44 @@ public class AuthService {
 
 
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
-
         var auth = getAuthentication(loginRequest);
+        return getLoginResponse(response, auth);
+    }
 
-        if (auth.isAuthenticated()) {
+    public LoginResponse oAuthLoginSetJwt(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication auth) {
+        var loginResponse = getLoginResponse(response, auth);
 
-            var accessTokenCookie = setResponseCookies(response, auth);
-            var tokenExpiration = getTokenExpirationFromToken(accessTokenCookie.getValue());
-
-            return new LoginResponse(tokenExpiration.toString());
-
-        } else {
-            SecurityContextHolder.getContext().setAuthentication(null);
-
-            throw new RestException("User is not authenticated", HttpStatus.UNAUTHORIZED);
-        }
+        setSessionCookie(request, response);
+        return loginResponse;
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
-
         final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
-
         assert refreshToken != null : "Refresh token is null";
 
         final var tokenExpiration = getTokenExpirationFromToken(refreshToken);
         final var user = userService.getUserByEmailOrThrow(auth.getName());
 
         removeSseRecipient(user);
-
         cleanTokens(response, user, refreshToken, tokenExpiration);
     }
 
-    public LoginResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    private LoginResponse getLoginResponse(HttpServletResponse response, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            var accessTokenCookie = setResponseCookies(response, auth);
+            var tokenExpiration = getTokenExpirationFromToken(accessTokenCookie.getValue());
 
+            return new LoginResponse(tokenExpiration.toString());
+        } else {
+            SecurityContextHolder.getContext().setAuthentication(null);
+            throw new RestException("User is not authenticated", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public LoginResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         final var refreshToken = jwtService.getRefreshTokenFromCookie(request);
         final var userEmail = jwtService.getUsernameFromToken(refreshToken);
         final var userDetails = userDetailsService.loadUserByUsername(userEmail);
@@ -82,23 +91,19 @@ public class AuthService {
         isTokenValid(refreshToken, userDetails);
 
         var atCookie = getNewAtCookie(userEmail);
-
         response.addHeader(HttpHeaders.SET_COOKIE, atCookie.toString());
-
         var tokenExpiration = getTokenExpirationFromToken(atCookie.getValue());
 
         return new LoginResponse(tokenExpiration.toString());
     }
 
     private ResponseCookie getNewAtCookie(String userEmail) {
-
         final var profile = getUserProfileService.getUserProfile(userEmail);
 
         return jwtService.generateAccessTokenCookie(userEmail, profile.roles());
     }
 
     private void isTokenValid(String refreshToken, UserDetails userDetails) {
-
         try {
             var isValid = jwtService.validateToken(refreshToken, userDetails);
 
@@ -111,7 +116,6 @@ public class AuthService {
     }
 
     private ResponseCookie setResponseCookies(HttpServletResponse response, Authentication authentication) {
-
         var userProfile = getUserProfileService.getUserProfile(authentication.getName());
         var accessTokenCookie = jwtService.generateAccessTokenCookie(userProfile.email(), userProfile.roles());
         var refreshTokenCookie = jwtService.generateRefreshTokenCookie(userProfile.email(), userProfile.roles());
@@ -126,39 +130,49 @@ public class AuthService {
         return jwtService.extractExpiration(token).toInstant().atOffset(ZoneOffset.of("+01:00"));
     }
 
-
     private Authentication getAuthentication(LoginRequest loginRequest) {
-
         Authentication authentication;
         var email = normalizeEmail(loginRequest.email());
         var password = loginRequest.password().trim();
 
         try {
             authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
         } catch (BadCredentialsException e) {
-
             throw new RestException(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return authentication;
     }
 
     private void removeSseRecipient(AppUser user) {
-
         if (recipientPool.isInPool(user.getId())) {
             recipientPool.removeRecipient(user.getId());
         }
     }
 
-    private void cleanTokens(HttpServletResponse response, AppUser user, String refreshToken, OffsetDateTime expiry) {
-
+    private void cleanTokens(
+            HttpServletResponse response,
+            AppUser user,
+            String refreshToken,
+            OffsetDateTime expiry
+    ) {
         blacklistedTokenRepository.save(new BlacklistedToken(user, refreshToken, expiry));
 
         response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanAccessTokenCookie().toString());
         response.addHeader(HttpHeaders.SET_COOKIE, jwtService.cleanRefreshTokenCookie().toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtService.generateCookie("JSESSIONID", "", 0).toString());
     }
 
+    private void setSessionCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie sessionCookie = WebUtils.getCookie(request, "JSESSIONID");
+        if (sessionCookie != null) {
+            ResponseCookie responseCookie = jwtService.generateCookie(
+                    sessionCookie.getName(),
+                    sessionCookie.getValue(),
+                    sessionCookie.getMaxAge()
+            );
+            response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+        }
+    }
 }

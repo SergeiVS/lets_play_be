@@ -31,7 +31,6 @@ public class UserAvailability {
     @TimeZoneStorage(TimeZoneStorageType.COLUMN)
     private OffsetTime unavailableTo;
 
-
     public UserAvailability(AvailabilityEnum availabilityType) {
         this.availabilityType = availabilityType;
         this.unavailableFrom = OffsetTime.parse("10:00:00+01:00");

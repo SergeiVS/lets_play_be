@@ -43,7 +43,7 @@ public interface AuthControllerApi {
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping("login")
-    ResponseEntity<LoginResponse> login(
+    ResponseEntity<LoginResponse> usernamePasswordLogin(
             @RequestBody @Validated @NotNull LoginRequest loginRequest, HttpServletResponse response);
 
     @Operation(summary = "Registering a new User")
@@ -65,7 +65,7 @@ public interface AuthControllerApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User is logged out")
     })
-    @PostMapping("logout")
+    @GetMapping("logout")
     void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth);
 
     @Operation(summary = "Refresh access token if expire")
