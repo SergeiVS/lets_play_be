@@ -44,5 +44,4 @@ public class AuthController implements AuthControllerApi {
     public ResponseEntity<LoginResponse> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         return new ResponseEntity<>(authService.refreshAccessToken(request, response), HttpStatus.OK);
     }
-
 }

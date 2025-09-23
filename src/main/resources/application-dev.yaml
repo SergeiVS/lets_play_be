@@ -2,9 +2,9 @@ spring:
   application:
     name: Lets Play Backend
   datasource:
-    url: ENC(80BpL9v5qXLd07KA4zm0hkUSko8UgJE/B/6tqsJykoBH2J5llCFlRz3JW/sXJY0muM/zcV/QreZy6DhqEnzQvzncIw4VglZOsBVVqjXyoTQ=)
+    url: ENC(fGuBWwB/Bln+P5puPViT004dwc0cRaeqDFzB+IPR0s7iVc2UuUi19StlhxQ5mPM9XGq628pFS95jGjV3PgfaR6XlVmyERlGUkvfCdg0j8/U=)
     username: admin
-    password: ENC(7mAbYTzEhPHxqubHmLoCj+Bak7iLGIrZourE6a2X3JrlTb8XKmrp9H+As+qJr0FI)
+    password: ENC(7crvkvh5qUwXymmiKHm2BIsoaby8LbfPtHVIl24zfxpFW7SORr8dS3WQPXqc1fAQ)
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
@@ -19,15 +19,15 @@ spring:
       client:
         registration:
           github:
-            client-id: ENC(D92W2tJto746zgVcgMhhcbiijC/sn7bY0/NjEsnJsLpsEDpNJHBRIdBcDdIzvPaIIlf150wTpS+gdex+MEXw0w==)
-            client-secret: ENC(sg20KDL6xLsdvKUSkzcAjoHGPt0tJ/nslBYX289NHfc9cg/rzsZF18FKDYWoVi0Gzb55GEXJ+9z+g/4nYwUH5TlXXi20f4vtEY94KD1YjI8=)
+            client-id: ENC(DeZugMOQYn5FQ852tp4zuq+4gsdzEJwiEJikgcrupQ6KNHx3q9OtyWCU12SYdtyjlbY42PHu1c36MD5pNuwdtg==)
+            client-secret: ENC(9l3XiWqWr65Wq28/FmvAdRHtJOEuuPTV3KbWHHL179CEHfK0GQsvDAeJ3YVK8hH/Q41teT/AMbx3h3xtV7K24cYDbiqa+jTTdoAL0bPYsO4=)
             provider: github
             scope:
               - read:user
               - user:email
           discord:
-            client-id: ENC(qe5HjX5b03OYej/kKALbYsFiw0F92vYZutnPefhi9cnXT+pJ8VjtZvGbvDOWUpfdNWvZm6TGkaSs+vuYzMJOIg==)
-            client-secret: ENC(x6fgAq2mwyBSmTAlO9gIoh2zLy4YXMKdHWuzomLkHsn4a7Wdc6XkQHDpapXHY04/eypJvv19K98s7uYKCgkw8KbOcV5Q8PAu9TOGh5DU0JYLGy7vs2VyMNbyVodHmJCrkCSUcjh/WPsuP3jIgI9NBA==)
+            client-id: ENC(9AXCDv4q/TdxXHILiigqjbyArtrYGatBHaGr0652RngtADYK6Wt+lkeqVWlMuy/PXMuRmZllQ7fXw50LzZaDdg==)
+            client-secret: ENC(McbrnjuXQfxv43q3yN06h3l1tjyzJwJlp3RRBqa8NvTAvjvkfTgzagUPpR9BOpQ+vPj15kSBbU2tL8w8w2eVLxoax9E7mW66zCe2jGe3/fo=)
             redirect-uri: http://localhost:8080/login/oauth2/code/discord
             authorization-grant-type: authorization_code
             client-name: Discord
@@ -35,7 +35,6 @@ spring:
             scope:
               - email
               - identify
-              - openid
         provider:
           github:
             authorization-uri: https://github.com/login/oauth/authorize
@@ -46,16 +45,16 @@ spring:
             authorization-uri: https:///discord.com/oauth2/authorize
             token-uri: https://discord.com/api/oauth2/token
             user-info-uri: https://discordapp.com/api/users/@me
-            user-name-attribute: email
+            user-name-attribute: id
 
 jwt:
   at-cookie-name: access-token
   rt-cookie-name: refresh-token
-  jwt-secret: ENC(HB5zpIZmZLBFMdvVbRJFLTg2Qm115msh2QO+I7P9yNLwSUunA8zGYH2HbPBP5DMCikhprJech8IOUqgbGi0BdSdkKLYiHEOyoqeTk9y6/6OpPC8TwaCU6EJ9x8lsfEMy)
+  jwt-secret: ENC(rz0LCFlDXNQQxORJ31hoWrfzTSZq06Snk5CVtIXHdJvWEwx7vL/vJ37PDDWfYCkhZiM/klN3aQqW57MO193nI0HRzWiw/3+jTiRIWc+qpOWKFb2vs8eMY0gSHTKgzjqV)
   at-expiration-in-ms: 900000
   rt-expiration-in-ms: 604800000
 encryption:
-  refresh-token-secret: ENC(7JNQ2ldqLJJo81CQR/2QM6GjHOo/c07UOjLGN/X8BdZyTE82I0dBWDqnOrxcPWo8BLVFgKpTUTT4Pp4UHrv2aJrskkSfoOzBu2Jdnd4YKZ8=)
+  refresh-token-secret: ENC(ifjWIJTtFuo27ZUsv1sRXcoZAWWgzTkDWQEJvaedqJcD/ama3bAwpj/vVHYejj/TpkvAbwAR0cCnjYQGElfgrI2haU/rd805BFb9iripCss=)
 
 springdoc:
   swagger-ui:

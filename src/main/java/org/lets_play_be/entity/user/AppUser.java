@@ -3,6 +3,7 @@ package org.lets_play_be.entity.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 import org.lets_play_be.entity.enums.AvailabilityEnum;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @ToString
-@Table(name = "accounts")
+@Table(name = "accounts", indexes = {@Index(columnList = "email"), @Index(columnList = "name")})
 public class AppUser {
 
     @Id
@@ -22,11 +23,12 @@ public class AppUser {
     private Long id;
 
     @Setter
-    @Column(nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     @Email(message = "email is in wrong format")
+    @NaturalId
     private String email;
 
     @Setter
