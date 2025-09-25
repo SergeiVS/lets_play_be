@@ -2,6 +2,7 @@ package org.lets_play_be.security.securityConfig;
 
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+import org.lets_play_be.common.UrlEnum;
 import org.lets_play_be.repository.AppUserRepository;
 import org.lets_play_be.security.filter.JwtAuthenticationFilter;
 import org.lets_play_be.security.handler.AppAccessDeniedHandler;
@@ -67,10 +68,11 @@ public class WebSecurityConfig {
         http
                 .securityMatcher("/oauth2/**", "/login/**")
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> corsConfigurationSource())
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.ASYNC)
                         .permitAll()
-                        .requestMatchers("/oauth2/authorization/**", "/api/**")
+                        .requestMatchers("/api/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
@@ -79,7 +81,7 @@ public class WebSecurityConfig {
                                 .userInfoEndpoint(authorize -> authorize
                                         .userService(customOAuth2UserService)
                                 )
-                                .defaultSuccessUrl("/oauth2/login-success", true)
+                                .defaultSuccessUrl(UrlEnum.SUCCESS_URL.getUrl(), true)
                 );
         return http.build();
     }
@@ -136,9 +138,9 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.applyPermitDefaultValues();
         config.setAllowedOrigins(List.of("capacitor://localhost", "ionic://localhost", "http://localhost:8080", "http" +
-                "://localhost:4200", "http://localhost:9000"));
+                "://localhost:4200", "http://localhost:9000", "http://localhost:63342/**"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization","Access-Control-Allow-Origin"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

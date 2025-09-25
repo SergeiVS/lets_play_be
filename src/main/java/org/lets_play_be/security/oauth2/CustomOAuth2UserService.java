@@ -2,6 +2,7 @@ package org.lets_play_be.security.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.lets_play_be.common.UrlEnum;
 import org.lets_play_be.entity.user.AppUser;
 import org.lets_play_be.security.utils.UserDetailsMapper;
 import org.lets_play_be.service.appUserService.AppUserService;
@@ -31,10 +32,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private static final String GITHUB_REGISTRATION = "github";
     private static final String DISCORD_REGISTRATION = "discord";
-    private static final String GITHUB_EMAILS_URL = "https://api.github.com/user/emails";
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String DISCORD_AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.png";
-    private static final String DISCORD_USERINFO_URL = "https://discordapp.com/api/users/@me";
     private static final String GITHUB_USERNAME_ATTRIBUTE = "login";
     private static final String DISCORD_USERNAME_ATTRIBUTE = "username";
 
@@ -91,7 +89,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private String getUserName(OAuth2User auth2User, String registrationId) {
-
         if (registrationId.equals(GITHUB_REGISTRATION)) {
             return auth2User.getAttribute(GITHUB_USERNAME_ATTRIBUTE);
         } else if (registrationId.equals(DISCORD_REGISTRATION)) {
@@ -119,7 +116,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private String fetchDiscordEmailAddress(String tokenValue) {
         MultiValueMap<String, String> body = restClient
                 .get()
-                .uri(DISCORD_USERINFO_URL)
+                .uri(UrlEnum.DISCORD_USERINFO_URL.getUrl())
                 .header(HttpHeaders.AUTHORIZATION,
                         BEARER_PREFIX + tokenValue)
                 .header(HttpHeaders.ACCEPT, "application/x-www-form-urlencoded")
@@ -136,7 +133,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private String fetchGitHubPrimaryEmailAddress(String token) {
         List<EmailVm> emailVmList = restClient
                 .get()
-                .uri(GITHUB_EMAILS_URL)
+                .uri(UrlEnum.GITHUB_EMAILS_URL.getUrl())
                 .header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token)
                 .header(HttpHeaders.ACCEPT, "application/vnd.github+json")
                 .retrieve()
@@ -161,7 +158,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return loadedUser.getAttribute("avatar_url");
         } else if (registrationId.equals(DISCORD_REGISTRATION)) {
             return String.format(
-                    DISCORD_AVATAR_URL,
+                    UrlEnum.DISCORD_AVATAR_URL.getUrl(),
                     loadedUser.getAttribute("id"),
                     loadedUser.getAttribute("avatar"));
         } else {
