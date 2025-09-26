@@ -113,7 +113,10 @@ public class WebSecurityConfig {
                                 new AntPathRequestMatcher("/api/v1/auth/refresh"),
                                 new AntPathRequestMatcher("/api/v1/auth/register"),
                                 new AntPathRequestMatcher("/login/**"),
-                                new AntPathRequestMatcher("/oauth2/**")
+                                new AntPathRequestMatcher("/oauth2/**"),
+                                new AntPathRequestMatcher("/index.html"),
+                                new AntPathRequestMatcher("/index.js"),
+                                new AntPathRequestMatcher("/styles.css")
                         ).permitAll()
                         .anyRequest()
                         .authenticated()
