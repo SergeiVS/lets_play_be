@@ -9,6 +9,7 @@ import org.lets_play_be.security.handler.AppEntryPointHandler;
 import org.lets_play_be.security.utils.AppUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -23,7 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -56,8 +57,7 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -70,22 +70,22 @@ public class WebSecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.ASYNC)
                         .permitAll()
                         .requestMatchers(
-                                new AntPathRequestMatcher("/api/v1/user/**"),
-                                new AntPathRequestMatcher("/api/v1/sse"),
-                                new AntPathRequestMatcher("/api/v1/invite"),
-                                new AntPathRequestMatcher("/api/v1/auth/logout"),
-                                new AntPathRequestMatcher("/api/v1/lobby/**", "POST"),
-                                new AntPathRequestMatcher("/api/v1/lobby/**", "PATCH"),
-                                new AntPathRequestMatcher("/api/v1/lobby/**", "DELETE")
+                                PathPatternRequestMatcher.withDefaults().matcher("/api/v1/user/**"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/api/v1/sse"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/api/v1/invite"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/api/v1/auth/logout"),
+                                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/v1/lobby/**"),
+                                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.PATCH, "/api/v1/lobby/**"),
+                                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.DELETE, "/api/v1/lobby/**")
                         ).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(
-                                new AntPathRequestMatcher("/swagger-ui/**"),
-                                new AntPathRequestMatcher("/v3/api-docs/**"),
-                                new AntPathRequestMatcher("/v3/api-docs.yaml"),
-                                new AntPathRequestMatcher("/swagger-ui.html"),
-                                new AntPathRequestMatcher("/api/v1/auth/login"),
-                                new AntPathRequestMatcher("/api/v1/auth/refresh"),
-                                new AntPathRequestMatcher("/api/v1/auth/register")
+                                PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/v3/api-docs/**"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/v3/api-docs.yaml"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui.html"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/api/v1/auth/login"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/api/v1/auth/refresh"),
+                                PathPatternRequestMatcher.withDefaults().matcher("/api/v1/auth/register")
                         ).permitAll()
                         .anyRequest()
                         .authenticated()
