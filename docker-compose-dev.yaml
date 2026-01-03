@@ -17,12 +17,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: "variables.env"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/devDb
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_PROFILES_ACTIVE=dev
-      - JWT_JWT-SECRET=${JWT_AT_SECRET}
       - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD}
       - SPRING_SERVER="0.0.0.0"
       - SPRING_PORT="8080"
